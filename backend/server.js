@@ -1,12 +1,29 @@
 import express from "express";
+import http from "http";
+import { WebSocketServer } from "ws";
 
-const app = express();
 const PORT = 5000;
 
-app.get("/", (req, res) => {
-  res.send("Prueba");
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  console.log("Client Conectat");
+
+  ws.on("message", (missatge) => {
+    console.log(missatge);
+  });
+
+  ws.on("close", () => {
+    console.log("Client Desconectat");
+  });
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Servidor HTTP i WebSocket funcionant!");
+});
+
+server.listen(PORT, () => {
+  console.log(`Servidor escoltant en el port ${PORT}`);
 });
