@@ -1,7 +1,8 @@
 <template>
-  <HelloWorld />
+  <Sessions />
+  <NavBar />
 </template>
 
 <script setup>
-  //
+//
 </script>
