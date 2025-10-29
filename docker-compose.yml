@@ -7,12 +7,19 @@ services:
       - "5000:5000"
     volumes:
       - ./backend/dades:/app/dades
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    restart: unless-stopped
