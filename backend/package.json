@@ -14,8 +14,7 @@
   "type": "module",
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "http": "^0.0.1-security",
+    "express": "^4.19.2",
     "nodemon": "^3.1.10",
     "ws": "^8.18.3"
   }

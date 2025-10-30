@@ -9,14 +9,14 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
-  console.log("Client Conectat");
+  console.log("Cliente conectado");
 
-  ws.on("message", (missatge) => {
-    console.log(missatge);
+  ws.on("message", (message) => {
+    console.log("Mensaje recibido:", message.toString());
   });
 
   ws.on("close", () => {
-    console.log("Client Desconectat");
+    console.log("Cliente desconectado");
   });
 });
 
@@ -25,5 +25,5 @@ app.get("/", (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Servidor escoltant en el port ${PORT}`);
+  console.log(`Servidor escuchando en el puerto ${PORT}`);
 });
