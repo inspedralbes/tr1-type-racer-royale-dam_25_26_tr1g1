@@ -1,39 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router'
+/**
+ * router/index.ts
+ *
+ * Automatic routes for `./src/pages/*.vue`
+ */
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import(/* webpackChunkName: "home" */ '@/pages/index.vue'),
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/pages/login.vue'),
-  },
-  {
-    path: '/crear-sesion',
-    name: 'CrearSesion',
-    component: () => import('@/pages/CrearSession.vue'),
-  },
-]
+// Composables
+import { createRouter, createWebHistory } from 'vue-router'
+import { setupLayouts } from 'virtual:generated-layouts'
+import { routes } from 'vue-router/auto-routes'
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: setupLayouts(routes),
 })
 
-router.beforeEach((to, from, next) => {
-  // Comprueba si el usuario ha iniciado sesión (simulado con localStorage)
-  const loggedIn = localStorage.getItem('user-token');
-
-  // Si la ruta no es '/login' y el usuario no ha iniciado sesión,
-  // redirige a '/login'.
-  if (to.name !== 'Login' && !loggedIn) {
-    next({ name: 'Login' });
+// Workaround for https://github.com/vitejs/vite/issues/11804
+router.onError((err, to) => {
+  if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
+    if (localStorage.getItem('vuetify:dynamic-reload')) {
+      console.error('Dynamic import error, reloading page did not fix it', err)
+    } else {
+      console.log('Reloading page to fix dynamic import error')
+      localStorage.setItem('vuetify:dynamic-reload', 'true')
+      location.assign(to.fullPath)
+    }
   } else {
-    next(); // Si todo está bien, permite la navegación.
+    console.error(err)
   }
-});
+})
+
+router.isReady().then(() => {
+  localStorage.removeItem('vuetify:dynamic-reload')
+})
 
 export default router

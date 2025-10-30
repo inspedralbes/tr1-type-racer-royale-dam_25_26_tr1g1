@@ -11,10 +11,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    BuscarSessio: typeof import('./src/components/BuscarSessio.vue')['default']
+    CrearSession: typeof import('./src/components/CrearSession.vue')['default']
+    FormLogin: typeof import('./src/components/FormLogin.vue')['default']
+    FormRegister: typeof import('./src/components/FormRegister.vue')['default']
     Navbar: typeof import('./src/components/Navbar.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
+    Perfil: typeof import('./src/pages/perfil.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Sessions: typeof import('./src/components/Sessions.vue')['default']
+    Sessions: typeof import('./src/pages/sessions.vue')['default']
   }
 }
