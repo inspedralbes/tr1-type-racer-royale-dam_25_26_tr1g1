@@ -9,14 +9,19 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
-  console.log("Cliente conectado");
+  console.log("Client Conectat");
 
-  ws.on("message", (message) => {
-    console.log("Mensaje recibido:", message.toString());
+  ws.on("message", (missatge) => {
+    try {
+      const data = JSON.parse(missatge);
+      console.log(data);
+    } catch (err) {
+      console.error("Error al parsear JSON:", err);
+    }
   });
 
   ws.on("close", () => {
-    console.log("Cliente desconectado");
+    console.log("Client Desconectat");
   });
 });
 
@@ -25,5 +30,5 @@ app.get("/", (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Servidor escuchando en el puerto ${PORT}`);
+  console.log(`Servidor escoltant en el port ${PORT}`);
 });
