@@ -1,6 +1,5 @@
 <template>
-<NavBar />
-<BuscarSessio ></BuscarSessio>
-<CrearSession ></CrearSession>
-
+  <NavBar />
+  <BuscarSessio></BuscarSessio>
+  <CrearSession></CrearSession>
 </template>

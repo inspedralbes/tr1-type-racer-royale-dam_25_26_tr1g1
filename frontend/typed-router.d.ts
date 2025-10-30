@@ -21,7 +21,7 @@ declare module 'vue-router/auto-routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/perfil': RouteRecordInfo<'/perfil', '/perfil', Record<never, never>, Record<never, never>>,
     '/sessions': RouteRecordInfo<'/sessions', '/sessions', Record<never, never>, Record<never, never>>,
-    '/wolf': RouteRecordInfo<'/wolf', '/wolf', Record<never, never>, Record<never, never>>,
+    '/social': RouteRecordInfo<'/social', '/social', Record<never, never>, Record<never, never>>,
   }
 
   /**
@@ -47,8 +47,8 @@ declare module 'vue-router/auto-routes' {
       routes: '/sessions'
       views: never
     }
-    'src/pages/wolf.vue': {
-      routes: '/wolf'
+    'src/pages/social.vue': {
+      routes: '/social'
       views: never
     }
   }
