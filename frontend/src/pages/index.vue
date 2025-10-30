@@ -1,39 +1,53 @@
 <template>
-  <v-container>
-    <div v-if="appStore.isAuthenticated"></div>
-    <div v-else>
+  <v-container class="d-flex align-center justify-center fill-height">
+    <div v-if="appStore.isAuthenticated">
+      <!-- Puedes poner aquí un mensaje o loader -->
+    </div>
+
+    <div v-else class="w-100" style="max-width: 420px">
       <v-alert
         v-if="appStore.notification.message"
         :type="appStore.notification.type"
         closable
+        border="start"
+        elevation="2"
         class="mb-4"
       >
         {{ appStore.notification.message }}
       </v-alert>
 
-      <v-card>
-        <v-tabs v-model="tab" bg-color="primary">
-          <v-tab value="login">Login</v-tab>
-          <v-tab value="register">Register</v-tab>
-        </v-tabs>
+      <v-card elevation="8" rounded="xl" class="overflow-hidden">
+        <v-window v-model="tab" class="pa-6">
+          <v-window-item value="login">
+            <FormLogin />
+          </v-window-item>
 
-        <v-card-text>
-          <v-window v-model="tab">
-            <v-window-item value="login">
-              <FormLogin />
-            </v-window-item>
-            <v-window-item value="register">
-              <FormRegister />
-            </v-window-item>
-          </v-window>
-        </v-card-text>
+          <v-window-item value="register">
+            <FormRegister />
+          </v-window-item>
+        </v-window>
+
+        <v-card-actions class="justify-center py-4">
+          <v-btn
+            v-if="!appStore.isAuthenticated"
+            variant="text"
+            color="grey-darken-1"
+            @click="tab = tab === 'login' ? 'register' : 'login'"
+          >
+            {{
+              tab === "login"
+                ? "¿No tens compte? Registrat"
+                : "¿Ja tens compte? Inicia sessió"
+            }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </div>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
@@ -51,20 +65,12 @@ onMounted(() => {
   if (!websocketStore.isConnected) {
     websocketStore.connect("ws://localhost:5000");
   }
-
-  if (appStore.isAuthenticated) {
-    router.push("/sessions");
-  }
 });
 
 watch(
   () => appStore.isAuthenticated,
   (isAuth) => {
-    if (isAuth) {
-      router.push("/sessions");
-    } else {
-      router.push("/");
-    }
+    router.push(isAuth ? "/sessions" : "/");
   }
 );
 

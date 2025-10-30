@@ -6,7 +6,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./backend/dades:/app/dades
+      - ./backend:/app
     restart: unless-stopped
 
   mysql:
@@ -36,4 +36,3 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
-

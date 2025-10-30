@@ -1,23 +1,21 @@
 <template>
-  <v-card class="pa-4">
-    <v-card-title>Login</v-card-title>
-    <v-card-text>
-      <v-form @submit.prevent="login">
-        <v-text-field
-          v-model="username"
-          label="Username"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="password"
-          label="Password"
-          type="password"
-          required
-        ></v-text-field>
-        <v-btn type="submit" color="primary">Login</v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <h2 class="py-4">Inici de sessió</h2>
+  <v-form @submit.prevent="login">
+    <v-text-field
+      v-model="username"
+      label="Username"
+      prepend-icon="mdi-account"
+      required
+    ></v-text-field>
+    <v-text-field
+      v-model="password"
+      label="Password"
+      type="password"
+      prepend-icon="mdi-lock"
+      required
+    ></v-text-field>
+    <v-btn type="submit" color="primary">Login</v-btn>
+  </v-form>
 </template>
 
 <script setup>

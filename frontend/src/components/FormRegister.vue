@@ -1,29 +1,28 @@
 <template>
-  <v-card class="pa-4">
-    <v-card-title>Register</v-card-title>
-    <v-card-text>
-      <v-form @submit.prevent="register">
-        <v-text-field
-          v-model="username"
-          label="Username"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="email"
-          label="Email"
-          type="email"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="password"
-          label="Password"
-          type="password"
-          required
-        ></v-text-field>
-        <v-btn type="submit" color="primary">Register</v-btn>
-      </v-form>
-    </v-card-text>
-  </v-card>
+  <h2 class="py-4">Registrat</h2>
+  <v-form @submit.prevent="register">
+    <v-text-field
+      v-model="username"
+      label="Username"
+      prepend-icon="mdi-account"
+      required
+    ></v-text-field>
+    <v-text-field
+      v-model="email"
+      label="Email"
+      type="email"
+      prepend-icon="mdi-email"
+      required
+    ></v-text-field>
+    <v-text-field
+      v-model="password"
+      label="Password"
+      type="password"
+      prepend-icon="mdi-lock"
+      required
+    ></v-text-field>
+    <v-btn type="submit" color="primary">Register</v-btn>
+  </v-form>
 </template>
 
 <script setup>

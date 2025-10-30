@@ -1,0 +1,24 @@
+[
+  {
+    "id": "session_001",
+    "users": ["MartiCas", "Pepito"],
+    "workout": "Full Body Express",
+    "state": {
+      "status": "IN_PROGRESS",
+      "startTime": "2025-10-30T18:00:00Z",
+      "currentExerciseIndex": 1,
+      "progress": 0.5
+    }
+  },
+  {
+    "id": "session_002",
+    "users": ["Paco", "Pulp"],
+    "workout": "Full Body Express",
+    "state": {
+      "status": "WAITING",
+      "startTime": null,
+      "currentExerciseIndex": 0,
+      "progress": 0
+    }
+  }
+]

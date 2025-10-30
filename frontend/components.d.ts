@@ -12,14 +12,18 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BuscarSessio: typeof import('./src/components/BuscarSessio.vue')['default']
-    CrearSession: typeof import('./src/components/CrearSession.vue')['default']
+    CrearSessio: typeof import('./src/components/CrearSessio.vue')['default']
+    CrearSession: typeof import('./src/components/CrearSessio.vue')['default']
     FormLogin: typeof import('./src/components/FormLogin.vue')['default']
     FormRegister: typeof import('./src/components/FormRegister.vue')['default']
-    Navbar: typeof import('./src/components/Navbar.vue')['default']
+    ItemSessio: typeof import('./src/components/ItemSessio.vue')['default']
+    ListaSessions: typeof import('./src/components/LlistarSessio.vue')['default']
+    LlistarSessio: typeof import('./src/components/LlistarSessio.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     Perfil: typeof import('./src/pages/perfil.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SessionLista: typeof import('./src/components/LlistarSessio.vue')['default']
     Sessions: typeof import('./src/pages/sessions.vue')['default']
   }
 }

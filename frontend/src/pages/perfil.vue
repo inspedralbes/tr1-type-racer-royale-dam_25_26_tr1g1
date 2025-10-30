@@ -10,6 +10,7 @@
         />
       </v-avatar>
       <h2 class="text-h5 font-weight-bold">{{ appStore.username }}</h2>
+      <p class="text-subtitle-1 text-grey-darken-1">{{ appStore.email }}</p>
       <p class="text-subtitle-1 text-grey-darken-1">PUNTS: {{ puntos }}</p>
 
       <v-divider class="my-4"></v-divider>
@@ -41,8 +42,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 const appStore = useAppStore();
 </script>
