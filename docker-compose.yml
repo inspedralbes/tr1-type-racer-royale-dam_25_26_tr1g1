@@ -9,6 +9,19 @@ services:
       - ./backend/dades:/app/dades
     restart: unless-stopped
 
+  mysql:
+    image: mysql:8.0
+    container_name: tr1-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: fitAi
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+
   frontend:
     build:
       context: ./frontend
@@ -23,3 +36,4 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
