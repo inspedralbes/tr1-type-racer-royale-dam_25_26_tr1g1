@@ -83,7 +83,8 @@ app.put("/users/me", async (req, res) => {
 });
 
 app.post("/users/register", async (req, res) => {
-  const { username, email, password, pesoActual, altura, pesoObjetivo } = req.body;
+  const { username, email, password, pesoActual, altura, pesoObjetivo } =
+    req.body;
   if (!username || !email || !password)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
@@ -109,10 +110,7 @@ app.post("/users/register", async (req, res) => {
 app.post("/users/login", (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = loginUser(username, password);
-    const token = jwt.sign({ username: user.username }, SECRET, {
-      expiresIn: "1h",
-    });
+    const { token } = loginUser(username, password);
     res.json({ token });
   } catch (err) {
     res.status(401).json({ message: "Credencials incorrectes" });

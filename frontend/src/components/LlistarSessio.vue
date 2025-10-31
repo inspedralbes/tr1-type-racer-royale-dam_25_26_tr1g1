@@ -4,9 +4,9 @@
     <v-row>
       <v-col v-for="session in sessions" :key="session.id" cols="12" md="4">
         <v-card>
-                    <v-card-title>{{ session.workout }}</v-card-title>
-                    <v-card-text>
-                      <p>Jugadors: {{ session.users.length }}</p>
+          <v-card-title>{{ session.workout }}</v-card-title>
+          <v-card-text>
+            <p>Jugadors: {{ session.users.length }}</p>
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary">Unir-se</v-btn>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from "vue";
+import { onMounted, computed, watch } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 
 const websocketStore = useWebSocketStore();
@@ -26,6 +26,18 @@ const websocketStore = useWebSocketStore();
 const sessions = computed(() => websocketStore.sessions);
 
 onMounted(() => {
-  websocketStore.getSessions();
+  if (websocketStore.isConnected) {
+    websocketStore.getSessions();
+  } else {
+    const unwatch = watch(
+      () => websocketStore.isConnected,
+      (isConnected) => {
+        if (isConnected) {
+          websocketStore.getSessions();
+          unwatch();
+        }
+      }
+    );
+  }
 });
 </script>

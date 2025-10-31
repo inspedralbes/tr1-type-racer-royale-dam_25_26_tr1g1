@@ -62,17 +62,10 @@ const appStore = useAppStore();
 const tab = ref("login");
 
 onMounted(() => {
-  if (!websocketStore.isConnected) {
+  if (appStore.isAuthenticated && !websocketStore.isConnected) {
     websocketStore.connect("ws://localhost:5000");
   }
 });
-
-watch(
-  () => appStore.isAuthenticated,
-  (isAuth) => {
-    router.push(isAuth ? "/sessions" : "/");
-  }
-);
 
 const logout = () => {
   appStore.setLoggedOut();

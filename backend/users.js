@@ -60,7 +60,12 @@ export const registerUser = async (
   };
   usuaris.push(newUser);
   await saveUsers();
-  return newUser;
+
+  const token = jwt.sign({ username: newUser.username }, SECRET, {
+    expiresIn: "1h",
+  });
+
+  return { user: newUser, token };
 };
 
 export const loginUser = (username, password) => {
@@ -73,7 +78,7 @@ export const loginUser = (username, password) => {
     expiresIn: "1h",
   });
 
-  return user;
+  return { user, token };
 };
 
 export const updateUser = async (username, updateData) => {
