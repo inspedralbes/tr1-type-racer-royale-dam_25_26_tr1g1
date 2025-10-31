@@ -31,7 +31,7 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async register(username, email, password, pesoActual, altura, pesoObjetivo) {
+    async register(username, email, password, pesoActual, altura) {
       try {
         const res = await fetch("http://localhost:5000/users/register", {
           method: "POST",
@@ -42,14 +42,16 @@ export const useAppStore = defineStore("app", {
             password,
             pesoActual,
             altura,
-            pesoObjetivo,
           }),
         });
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
 
-        this.setNotification("Registro correcto, ahora inicia sesión", "success");
+        this.setNotification(
+          "Registro correcto, ahora inicia sesión",
+          "success"
+        );
         return true;
       } catch (err) {
         this.setNotification(err.message, "error");

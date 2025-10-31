@@ -33,12 +33,6 @@
       type="number"
       prepend-icon="mdi-human-male-height"
     ></v-text-field>
-    <v-text-field
-      v-model.number="pesoObjetivo"
-      label="Peso objetivo (kg)"
-      type="number"
-      prepend-icon="mdi-target"
-    ></v-text-field>
     <v-btn type="submit" color="primary">Register</v-btn>
   </v-form>
 </template>
@@ -52,7 +46,6 @@ const email = ref("");
 const password = ref("");
 const pesoActual = ref(null);
 const altura = ref(null);
-const pesoObjetivo = ref(null);
 
 const appStore = useAppStore();
 
@@ -62,8 +55,7 @@ const register = () => {
     email.value,
     password.value,
     pesoActual.value,
-    altura.value,
-    pesoObjetivo.value
+    altura.value
   );
 };
 </script>

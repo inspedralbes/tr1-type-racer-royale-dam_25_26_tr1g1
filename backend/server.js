@@ -33,7 +33,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
-  setupWebsocketHandlers(ws);
+  setupWebsocketHandlers(ws, wss);
 });
 
 app.get("/", (req, res) => {
@@ -58,7 +58,6 @@ app.get("/users/me", (req, res) => {
       date_created: user.date_created || null,
       pesoActual: user.pesoActual || null,
       altura: user.altura || null,
-      pesoObjetivo: user.pesoObjetivo || null,
     });
   } catch (err) {
     res.status(401).json({ message: "Token inválido" });
@@ -83,8 +82,7 @@ app.put("/users/me", async (req, res) => {
 });
 
 app.post("/users/register", async (req, res) => {
-  const { username, email, password, pesoActual, altura, pesoObjetivo } =
-    req.body;
+  const { username, email, password, pesoActual, altura } = req.body;
   if (!username || !email || !password)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
@@ -94,8 +92,7 @@ app.post("/users/register", async (req, res) => {
       email,
       password,
       pesoActual,
-      altura,
-      pesoObjetivo
+      altura
     );
     res.json(newUser);
   } catch (err) {

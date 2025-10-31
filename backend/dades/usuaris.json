@@ -3,8 +3,14 @@
     "username": "MartiCas",
     "email": "marticastano@gmail.com",
     "password": "123",
-    "pesoActual": null,
-    "altura": null,
-    "pesoObjetivo": null
+    "pesoActual": 75,
+    "altura": 179
+  },
+  {
+    "username": "Paquito",
+    "email": "paquito@gmail.com",
+    "password": "paquito",
+    "pesoActual": 80,
+    "altura": 180
   }
 ]

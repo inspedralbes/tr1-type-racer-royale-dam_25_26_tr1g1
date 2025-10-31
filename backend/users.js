@@ -44,8 +44,7 @@ export const registerUser = async (
   email,
   password,
   pesoActual,
-  altura,
-  pesoObjetivo
+  altura
 ) => {
   if (findUserByUsername(username)) {
     throw new Error("USERNAME_EXISTS");
@@ -56,7 +55,6 @@ export const registerUser = async (
     password,
     pesoActual,
     altura,
-    pesoObjetivo,
   };
   usuaris.push(newUser);
   await saveUsers();

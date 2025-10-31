@@ -52,8 +52,8 @@ import { useWebSocketStore } from "@/stores/websocket";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 
-import FormLogin from "@/components/FormLogin.vue";
-import FormRegister from "@/components/FormRegister.vue";
+import FormLogin from "@/components/Forms/FormLogin.vue";
+import FormRegister from "@/components/Forms/FormRegister.vue";
 
 const router = useRouter();
 const websocketStore = useWebSocketStore();

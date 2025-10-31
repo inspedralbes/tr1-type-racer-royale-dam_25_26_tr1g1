@@ -1,7 +1,7 @@
 import { registerUser, loginUser } from "./users.js";
-import { getSessions } from "./sessions.js";
+import { createSession, getSessions } from "./sessions.js";
 
-export const setupWebsocketHandlers = (ws) => {
+export const setupWebsocketHandlers = (ws, wss) => {
   ws.on("message", async (message) => {
     try {
       const data = JSON.parse(message);
@@ -65,6 +65,24 @@ export const setupWebsocketHandlers = (ws) => {
               JSON.stringify({
                 type: "SESSIONS_ERROR",
                 payload: "Error a l'obtenir les sessions",
+              })
+            );
+          }
+          break;
+
+        case "CREATE_SESSION":
+          try {
+            await createSession(data.payload.workout);
+            wss.clients.forEach((client) => {
+              if (client.readyState === 1) {
+                client.send(JSON.stringify({ type: "NEW_SESSION" }));
+              }
+            });
+          } catch (err) {
+            ws.send(
+              JSON.stringify({
+                type: "CREATE_SESSION_ERROR",
+                payload: err.message,
               })
             );
           }

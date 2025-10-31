@@ -33,6 +33,18 @@ export const getSessions = () => sessions;
 
 export const getSessionById = (id) => sessions.find((s) => s.id === id);
 
+export const createSession = async (workout) => {
+  const newSession = {
+    id: `s${Date.now()}`,
+    workout,
+    users: [],
+    state: "waiting",
+  };
+  sessions.push(newSession);
+  await saveSessions();
+  return newSession;
+};
+
 export const addUserToSession = async (id, username) => {
   const session = getSessionById(id);
   if (!session) return { error: "Sessió no trobada" };
