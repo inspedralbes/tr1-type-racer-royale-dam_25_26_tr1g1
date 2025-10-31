@@ -29,12 +29,19 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async register(username, email, password) {
+    async register(username, email, password, pesoActual, altura, pesoObjetivo) {
       try {
         const res = await fetch("http://localhost:5000/users/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, email, password }),
+          body: JSON.stringify({
+            username,
+            email,
+            password,
+            pesoActual,
+            altura,
+            pesoObjetivo,
+          }),
         });
 
         if (!res.ok) {
@@ -60,6 +67,7 @@ export const useAppStore = defineStore("app", {
       const websocketStore = useWebSocketStore();
       this.isAuthenticated = false;
       this.token = null;
+      this.notification = { message: null, type: null };
       websocketStore.disconnect();
     },
 

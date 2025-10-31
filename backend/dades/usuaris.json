@@ -43,5 +43,21 @@
     "username": "yoquese",
     "email": "masda",
     "password": "123"
+  },
+  {
+    "username": "Roberto",
+    "email": "a22roblotlot@inspedralbes.cat",
+    "password": "123",
+    "pesoActual": 85,
+    "altura": 199,
+    "pesoObjetivo": 75
+  },
+  {
+    "username": "123",
+    "email": "a22roblotlot@inspedralbes.cat",
+    "password": "123",
+    "pesoActual": 89,
+    "altura": 200,
+    "pesoObjetivo": 44
   }
 ]

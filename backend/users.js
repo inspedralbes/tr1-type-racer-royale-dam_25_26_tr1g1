@@ -39,11 +39,25 @@ export const findUserByUsername = (username) => {
   return usuaris.find((u) => u.username === username);
 };
 
-export const registerUser = async (username, email, password) => {
+export const registerUser = async (
+  username,
+  email,
+  password,
+  pesoActual,
+  altura,
+  pesoObjetivo
+) => {
   if (findUserByUsername(username)) {
     throw new Error("USERNAME_EXISTS");
   }
-  const newUser = { username, email, password };
+  const newUser = {
+    username,
+    email,
+    password,
+    pesoActual,
+    altura,
+    pesoObjetivo,
+  };
   usuaris.push(newUser);
   await saveUsers();
   return newUser;
@@ -60,4 +74,15 @@ export const loginUser = (username, password) => {
   });
 
   return user;
+};
+
+export const updateUser = async (username, updateData) => {
+  const userIndex = usuaris.findIndex((u) => u.username === username);
+  if (userIndex === -1) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  usuaris[userIndex] = { ...usuaris[userIndex], ...updateData };
+  await saveUsers();
+  return usuaris[userIndex];
 };

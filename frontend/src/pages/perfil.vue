@@ -83,6 +83,13 @@
                   outlined
                   dense
                 ></v-text-field>
+                <v-text-field
+                  v-model.number="editedPesoMeta"
+                  label="Peso objetivo (kg)"
+                  type="number"
+                  outlined
+                  dense
+                ></v-text-field>
                 <v-card-actions class="pa-0 mt-4">
                   <v-spacer></v-spacer>
                   <v-btn @click="cancelarEdicion" variant="text"
@@ -118,14 +125,15 @@ const userData = ref({ username: "", email: "", date_created: "" });
 // Datos de perfil local
 const nombreUsuario = ref("Nom Usuari");
 const puntos = ref(1250);
-const pesoActual = ref(70);
-const pesoMeta = ref(65);
-const altura = ref(180);
+const pesoActual = ref(null);
+const pesoMeta = ref(null);
+const altura = ref(null);
 
 // Refs temporales para edición
 const editedNombre = ref("");
 const editedPeso = ref(0);
 const editedAltura = ref(0);
+const editedPesoMeta = ref(0);
 
 // Funciones
 
@@ -140,6 +148,12 @@ onMounted(async () => {
 
     if (!res.ok) throw new Error("No se pudo cargar el perfil");
     userData.value = await res.json();
+
+    // Populate profile data from fetched user data
+    nombreUsuario.value = userData.value.username;
+    pesoActual.value = userData.value.pesoActual;
+    altura.value = userData.value.altura;
+    pesoMeta.value = userData.value.pesoObjetivo;
   } catch (err) {
     console.error(err);
   }
@@ -149,15 +163,43 @@ const iniciarEdicion = () => {
   editedNombre.value = nombreUsuario.value;
   editedPeso.value = pesoActual.value;
   editedAltura.value = altura.value;
+  editedPesoMeta.value = pesoMeta.value;
   isEditing.value = true;
 };
 
-const guardarCambios = () => {
-  nombreUsuario.value = editedNombre.value;
-  pesoActual.value = editedPeso.value;
-  altura.value = editedAltura.value;
-  isEditing.value = false;
-  alert("Perfil actualitzat correctament!");
+const guardarCambios = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const updates = {
+      pesoActual: editedPeso.value,
+      altura: editedAltura.value,
+      pesoObjetivo: editedPesoMeta.value,
+    };
+
+    const res = await fetch("http://localhost:5000/users/me", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!res.ok) throw new Error("Error al actualizar el perfil");
+
+    const updatedUser = await res.json();
+
+    // Update local data
+    pesoActual.value = updatedUser.pesoActual;
+    altura.value = updatedUser.altura;
+    pesoMeta.value = updatedUser.pesoObjetivo;
+
+    isEditing.value = false;
+    alert("Perfil actualitzat correctament!");
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
 };
 
 const cancelarEdicion = () => {
@@ -169,8 +211,8 @@ const verHistorial = () => {
 };
 
 const handleLogout = () => {
-  localStorage.removeItem("token"); // corregido para coincidir con onMounted
-  router.push("/login");
+  localStorage.removeItem("token");
+  router.push("/");
 };
 </script>
 

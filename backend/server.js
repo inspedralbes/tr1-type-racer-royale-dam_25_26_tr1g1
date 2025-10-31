@@ -13,6 +13,7 @@ import {
   registerUser,
   loginUser,
   findUserByUsername,
+  updateUser,
 } from "./users.js";
 import {
   loadSessions,
@@ -55,19 +56,46 @@ app.get("/users/me", (req, res) => {
       username: user.username,
       email: user.email,
       date_created: user.date_created || null,
+      pesoActual: user.pesoActual || null,
+      altura: user.altura || null,
+      pesoObjetivo: user.pesoObjetivo || null,
     });
   } catch (err) {
     res.status(401).json({ message: "Token inválido" });
   }
 });
 
+app.put("/users/me", async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ message: "No autorizado" });
+
+  const token = authHeader.split(" ")[1];
+  try {
+    const payload = jwt.verify(token, SECRET);
+    const updatedUser = await updateUser(payload.username, req.body);
+    res.json(updatedUser);
+  } catch (err) {
+    if (err.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.status(401).json({ message: "Token inválido o error al actualizar" });
+  }
+});
+
 app.post("/users/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, pesoActual, altura, pesoObjetivo } = req.body;
   if (!username || !email || !password)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
   try {
-    const newUser = await registerUser(username, email, password);
+    const newUser = await registerUser(
+      username,
+      email,
+      password,
+      pesoActual,
+      altura,
+      pesoObjetivo
+    );
     res.json(newUser);
   } catch (err) {
     if (err.message === "USERNAME_EXISTS") {
