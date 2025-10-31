@@ -9,8 +9,10 @@
           alt="Avatar"
         />
       </v-avatar>
-      <h2 class="text-h5 font-weight-bold">{{ appStore.username }}</h2>
-      <p class="text-subtitle-1 text-grey-darken-1">{{ appStore.email }}</p>
+      <h2 class="text-h5 font-weight-bold">{{ appStore.user.username }}</h2>
+      <p class="text-subtitle-1 text-grey-darken-1">
+        {{ appStore.user.email }}
+      </p>
       <p class="text-subtitle-1 text-grey-darken-1">PUNTS: {{ puntos }}</p>
 
       <v-divider class="my-4"></v-divider>

@@ -1,7 +1,7 @@
 [
   {
     "id": "session_001",
-    "users": ["MartiCas", "Pepito"],
+    "users": [],
     "workout": "Full Body Express",
     "state": {
       "status": "IN_PROGRESS",
@@ -12,7 +12,7 @@
   },
   {
     "id": "session_002",
-    "users": ["Paco", "Pulp"],
+    "users": [],
     "workout": "Full Body Express",
     "state": {
       "status": "WAITING",

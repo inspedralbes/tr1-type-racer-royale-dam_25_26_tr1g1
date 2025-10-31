@@ -1,20 +1,12 @@
 <template>
   <v-container>
-    <h2 class="py-4">Sessions Actives</h2>
+    <h1>Sessions disponibles</h1>
     <v-row>
-      <v-col
-        v-for="session in appStore.sessions"
-        :key="session.id"
-        cols="12"
-        sm="6"
-        md="4"
-      >
+      <v-col v-for="session in sessions" :key="session.id" cols="12" md="4">
         <v-card>
-          <v-card-title>{{ session.workout }}</v-card-title>
-          <v-card-subtitle>ID: {{ session.id }}</v-card-subtitle>
-          <v-card-text>
-            <div><strong>Usuaris:</strong> {{ session.users.join(", ") }}</div>
-            <div><strong>Estat:</strong> {{ session.state.status }}</div>
+                    <v-card-title>{{ session.workout }}</v-card-title>
+                    <v-card-text>
+                      <p>Jugadors: {{ session.users.length }}</p>
           </v-card-text>
           <v-card-actions>
             <v-btn color="primary">Unir-se</v-btn>
@@ -25,7 +17,17 @@
   </v-container>
 </template>
 
-<script>
+<script setup>
+import { onMounted, computed } from "vue";
 import { useAppStore } from "@/stores/app";
+import { useWebSocketStore } from "@/stores/websocket";
+
 const appStore = useAppStore();
+const websocketStore = useWebSocketStore();
+
+const sessions = computed(() => appStore.sessions);
+
+onMounted(() => {
+  websocketStore.getSessions();
+});
 </script>
