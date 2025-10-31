@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
   const appStore = useAppStore();
   const requiresAuth = ["/sessions", "/perfil", "/social"];
 
-  if (requiresAuth.includes(to.path) && !appStore.isAuthenticated) {
+  if (requiresAuth.some(path => to.path.startsWith(path)) && !appStore.isAuthenticated) {
     next("/");
   } else {
     next();

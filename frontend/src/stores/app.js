@@ -3,49 +3,71 @@ import { useWebSocketStore } from "./websocket";
 
 export const useAppStore = defineStore("app", {
   state: () => ({
-    sessions: [],
-    user: {
-      username: "",
-      email: "",
-      password: "",
-      date_created: "",
-    },
     isAuthenticated: false,
+    token: null,
     notification: { message: null, type: null },
   }),
+
   actions: {
-    login(username, password) {
-      const websocketStore = useWebSocketStore();
-      websocketStore.sendMessage({
-        type: "LOGIN_USER",
-        payload: { username, password },
-      });
+    async login(username, password) {
+      try {
+        const res = await fetch("http://localhost:5000/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        localStorage.setItem("token", data.token);
+        this.setLoggedIn(data.token);
+
+        this.setNotification("Inicio de sesión correcto", "success");
+      } catch (err) {
+        this.setNotification(err.message, "error");
+      }
     },
-    register(username, email, password) {
-      const websocketStore = useWebSocketStore();
-      websocketStore.sendMessage({
-        type: "REGISTER_USER",
-        payload: { username, email, password },
-      });
+
+    async register(username, email, password) {
+      try {
+        const res = await fetch("http://localhost:5000/users/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.message);
+        }
+
+        this.setLoggedIn();
+        this.setNotification("Registro correcto", "success");
+      } catch (err) {
+        this.setNotification(err.message, "error");
+      }
     },
-    setLoggedIn(user) {
+
+    setLoggedIn(token) {
+      const websocketStore = useWebSocketStore();
       this.isAuthenticated = true;
-      this.user.username = user.username;
-      this.user.email = user.email;
-      this.user.date_created = user.date_created;
+      this.token = token;
+      websocketStore.connect("ws://localhost:5000");
     },
+
     setLoggedOut() {
+      const websocketStore = useWebSocketStore();
       this.isAuthenticated = false;
-      this.user = { username: "", email: "", date_created: "", token: "" };
+      this.token = null;
+      websocketStore.disconnect();
     },
+
     setNotification(message, type) {
       this.notification = { message, type };
       setTimeout(() => {
         this.notification = { message: null, type: null };
       }, 5000);
-    },
-    setSessions(sessions) {
-      this.sessions = sessions;
     },
   },
 });

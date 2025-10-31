@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { useAppStore } from "./app";
-import router from "@/router";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
@@ -8,59 +7,69 @@ export const useWebSocketStore = defineStore("websocket", {
     isConnected: false,
     message: null,
   }),
+
   actions: {
     connect(url) {
-      if (this.socket && this.isConnected) return;
-      this.socket = new WebSocket(url);
-      this.socket.onopen = () => {
-        this.isConnected = true;
-      };
-      this.socket.onmessage = (event) => {
-        const appStore = useAppStore();
-        const data = JSON.parse(event.data);
+      return new Promise((resolve, reject) => {
+        if (this.socket && this.isConnected) return resolve();
 
-        this.message = data;
-        switch (data.type) {
-          case "LOGIN_SUCCESS":
-            appStore.setLoggedIn(data.payload);
-            router.push("/sessions");
-            break;
-          case "LOGIN_ERROR":
-            appStore.setNotification(data.payload, "error");
-            break;
-          case "REGISTER_SUCCESS":
-            appStore.setLoggedIn(data.payload);
-            router.push("/sessions");
-            break;
-          case "REGISTER_ERROR":
-            appStore.setNotification(data.payload, "error");
-            break;
-          case "SESSIONS_LIST":
-            appStore.setSessions(data.payload);
-            break;
-        }
-      };
-      this.socket.onclose = () => {
-        this.isConnected = false;
-      };
-      this.socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
+        this.socket = new WebSocket(url);
+
+        this.socket.onopen = () => {
+          this.isConnected = true;
+          console.log("WebSocket conectado");
+          resolve();
+        };
+
+        this.socket.onmessage = (event) => {
+          const appStore = useAppStore();
+          const data = JSON.parse(event.data);
+          this.message = data;
+
+          switch (data.type) {
+            case "SESSIONS_LIST":
+              appStore.setSessions(data.payload);
+              break;
+
+            case "NEW_SESSION":
+              appStore.setNotification("Nueva sesión activa detectada", "info");
+              this.getSessions();
+              break;
+
+            default:
+              console.warn("Tipo de mensaje desconocido:", data.type);
+          }
+        };
+
+        this.socket.onclose = () => {
+          this.isConnected = false;
+          console.log("WebSocket desconectado");
+        };
+
+        this.socket.onerror = (error) => {
+          console.error("WebSocket error:", error);
+          reject(error);
+        };
+      });
     },
+
     disconnect() {
       if (this.socket) {
         this.socket.close();
         this.socket = null;
         this.isConnected = false;
+        console.log("WebSocket cerrado");
       }
     },
+
     sendMessage(message) {
       if (this.socket && this.isConnected) {
         this.socket.send(JSON.stringify(message));
       } else {
-        console.error("WebSocket is not connected.");
+        console.error("WebSocket no está conectado.");
       }
     },
+
     getSessions() {
       this.sendMessage({ type: "GET_SESSIONS" });
     },

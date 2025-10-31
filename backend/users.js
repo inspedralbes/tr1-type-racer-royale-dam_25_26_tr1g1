@@ -1,8 +1,14 @@
 import fs from "fs";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const fsp = fs.promises;
 const USERS_FILE = "./dades/usuaris.json";
 
 let usuaris = [];
+const SECRET = process.env.JWT_SECRET;
 
 export const loadUsers = async () => {
   try {
@@ -48,5 +54,10 @@ export const loginUser = (username, password) => {
     (u) => u.username === username && u.password === password
   );
   if (!user) throw new Error("INVALID_CREDENTIALS");
+
+  const token = jwt.sign({ username: user.username }, SECRET, {
+    expiresIn: "1h",
+  });
+
   return user;
 };

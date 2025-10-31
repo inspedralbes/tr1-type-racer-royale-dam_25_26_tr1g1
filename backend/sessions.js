@@ -29,6 +29,17 @@ export const saveSessions = async () => {
   }
 };
 
-export const getSessions = () => {
-  return sessions;
+export const getSessions = () => sessions;
+
+export const getSessionById = (id) => sessions.find((s) => s.id === id);
+
+export const addUserToSession = async (id, username) => {
+  const session = getSessionById(id);
+  if (!session) return { error: "Sessió no trobada" };
+  if (session.users.includes(username)) {
+    return { error: "L'usuari ja està a la sessió" };
+  }
+  session.users.push(username);
+  await saveSessions();
+  return { message: "Usuari afegit correctament", session };
 };
