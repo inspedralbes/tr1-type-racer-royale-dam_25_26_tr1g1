@@ -24,12 +24,8 @@ export const useWebSocketStore = defineStore("websocket", {
           const data = JSON.parse(event.data);
 
           switch (data.type) {
-            case "SESSIONS_LIST":
+            case "SESSIONS_UPDATE":
               this.sessions = data.payload;
-              break;
-
-            case "NEW_SESSION":
-              this.getSessions();
               break;
 
             default:

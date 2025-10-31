@@ -33,7 +33,7 @@
       type="number"
       prepend-icon="mdi-human-male-height"
     ></v-text-field>
-    <v-btn type="submit" color="primary">Register</v-btn>
+    <v-btn type="submit" color="primary" :loading="loading" :disabled="loading">Register</v-btn>
   </v-form>
 </template>
 
@@ -46,16 +46,19 @@ const email = ref("");
 const password = ref("");
 const pesoActual = ref(null);
 const altura = ref(null);
+const loading = ref(false);
 
 const appStore = useAppStore();
 
-const register = () => {
-  appStore.register(
+const register = async () => {
+  loading.value = true;
+  await appStore.register(
     username.value,
     email.value,
     password.value,
     pesoActual.value,
     altura.value
   );
+  loading.value = false;
 };
 </script>

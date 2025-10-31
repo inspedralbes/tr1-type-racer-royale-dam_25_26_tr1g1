@@ -20,16 +20,5 @@
       "currentExerciseIndex": 1,
       "progress": 0.5
     }
-  },
-  {
-    "id": "session_003",
-    "users": [],
-    "workout": "Full Body Express",
-    "state": {
-      "status": "IN_PROGRESS",
-      "startTime": "2025-10-30T18:00:00Z",
-      "currentExerciseIndex": 1,
-      "progress": 0.5
-    }
   }
 ]

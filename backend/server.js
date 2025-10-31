@@ -20,6 +20,7 @@ import {
   getSessions,
   addUserToSession,
   getSessionById,
+  init as initSessions,
 } from "./sessions.js";
 
 const PORT = 5000;
@@ -133,19 +134,12 @@ app.post("/sessions/:id/join", async (req, res) => {
   if (result.error) return res.status(400).json({ message: result.error });
 
   res.json(result);
-
-  const msg = JSON.stringify({
-    type: "SESSION_UPDATE",
-    payload: result.session,
-  });
-  wss.clients.forEach((client) => {
-    if (client.readyState === 1) client.send(msg);
-  });
 });
 
 const startServer = async () => {
   await loadUsers();
   await loadSessions();
+  initSessions(wss);
   server.listen(PORT, () =>
     console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
   );

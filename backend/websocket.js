@@ -6,59 +6,12 @@ export const setupWebsocketHandlers = (ws, wss) => {
     try {
       const data = JSON.parse(message);
       switch (data.type) {
-        case "REGISTER_USER":
-          try {
-            const result = await registerUser(
-              data.payload.username,
-              data.payload.email,
-              data.payload.password
-            );
-            ws.send(
-              JSON.stringify({ type: "REGISTER_SUCCESS", payload: result })
-            );
-            console.log(result);
-          } catch (err) {
-            if (err.message === "USERNAME_EXISTS") {
-              ws.send(
-                JSON.stringify({
-                  type: "REGISTER_ERROR",
-                  payload: "El nom d'usuari ja existeix",
-                })
-              );
-            } else {
-              ws.send(
-                JSON.stringify({
-                  type: "REGISTER_ERROR",
-                  payload: "Error intern al registrar",
-                })
-              );
-            }
-          }
-          break;
-
-        case "LOGIN_USER":
-          try {
-            const user = loginUser(
-              data.payload.username,
-              data.payload.password
-            );
-            ws.send(JSON.stringify({ type: "LOGIN_SUCCESS", payload: user }));
-          } catch (err) {
-            ws.send(
-              JSON.stringify({
-                type: "LOGIN_ERROR",
-                payload: "Credencials incorrectes",
-              })
-            );
-          }
-          break;
-
         case "GET_SESSIONS":
           try {
             const sessions = getSessions();
 
             ws.send(
-              JSON.stringify({ type: "SESSIONS_LIST", payload: sessions })
+              JSON.stringify({ type: "SESSIONS_UPDATE", payload: sessions })
             );
           } catch (err) {
             ws.send(
@@ -73,11 +26,6 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case "CREATE_SESSION":
           try {
             await createSession(data.payload.workout);
-            wss.clients.forEach((client) => {
-              if (client.readyState === 1) {
-                client.send(JSON.stringify({ type: "NEW_SESSION" }));
-              }
-            });
           } catch (err) {
             ws.send(
               JSON.stringify({
@@ -97,7 +45,5 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 
-  ws.on("close", () => {
-    // aquí podrías limpiar recursos del socket si hace falta
-  });
+  ws.on("close", () => {});
 };

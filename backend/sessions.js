@@ -3,6 +3,24 @@ const fsp = fs.promises;
 const SESSIONS_FILE = "./dades/sessions.json";
 
 let sessions = [];
+let wss;
+
+export const init = (websocketServer) => {
+  wss = websocketServer;
+};
+
+const broadcastSessionsUpdate = () => {
+  if (!wss) return;
+  const message = JSON.stringify({
+    type: "SESSIONS_UPDATE",
+    payload: sessions,
+  });
+  wss.clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(message);
+    }
+  });
+};
 
 export const loadSessions = async () => {
   try {
@@ -24,6 +42,7 @@ export const loadSessions = async () => {
 export const saveSessions = async () => {
   try {
     await fsp.writeFile(SESSIONS_FILE, JSON.stringify(sessions, null, 2));
+    broadcastSessionsUpdate();
   } catch (error) {
     console.error("Error al guardar les sessions:", error);
   }
