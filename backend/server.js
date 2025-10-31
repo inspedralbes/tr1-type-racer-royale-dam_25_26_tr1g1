@@ -67,8 +67,8 @@ app.post("/users/register", async (req, res) => {
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
   try {
-    const newUser = await registerUser(username, email, password);
-    res.json(newUser);
+    const { token } = await registerUser(username, email, password);
+    res.json({ token });
   } catch (err) {
     if (err.message === "USERNAME_EXISTS") {
       res.status(400).json({ message: "El nom d'usuari ja existeix" });
@@ -81,10 +81,7 @@ app.post("/users/register", async (req, res) => {
 app.post("/users/login", (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = loginUser(username, password);
-    const token = jwt.sign({ username: user.username }, SECRET, {
-      expiresIn: "1h",
-    });
+    const { token } = loginUser(username, password);
     res.json({ token });
   } catch (err) {
     res.status(401).json({ message: "Credencials incorrectes" });

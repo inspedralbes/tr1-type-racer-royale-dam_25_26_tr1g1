@@ -21,11 +21,13 @@ export const useAppStore = defineStore("app", {
         if (!res.ok) throw new Error(data.message);
 
         localStorage.setItem("token", data.token);
-        this.setLoggedIn(data.token);
+        await this.setLoggedIn(data.token);
 
         this.setNotification("Inicio de sesión correcto", "success");
+        return true;
       } catch (err) {
         this.setNotification(err.message, "error");
+        return false;
       }
     },
 
@@ -37,23 +39,22 @@ export const useAppStore = defineStore("app", {
           body: JSON.stringify({ username, email, password }),
         });
 
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.message);
-        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
 
-        this.setLoggedIn();
-        this.setNotification("Registro correcto", "success");
+        this.setNotification("Registro correcto, ahora inicia sesión", "success");
+        return true;
       } catch (err) {
         this.setNotification(err.message, "error");
+        return false;
       }
     },
 
-    setLoggedIn(token) {
+    async setLoggedIn(token) {
       const websocketStore = useWebSocketStore();
+      await websocketStore.connect("ws://localhost:5000");
       this.isAuthenticated = true;
       this.token = token;
-      websocketStore.connect("ws://localhost:5000");
     },
 
     setLoggedOut() {

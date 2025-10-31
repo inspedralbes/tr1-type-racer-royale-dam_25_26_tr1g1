@@ -35,7 +35,14 @@ const password = ref("");
 
 const appStore = useAppStore();
 
-const register = () => {
-  appStore.register(username.value, email.value, password.value);
+const register = async () => {
+  const success = await appStore.register(
+    username.value,
+    email.value,
+    password.value
+  );
+  if (success) {
+    window.location.href = "/";
+  }
 };
 </script>
