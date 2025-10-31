@@ -2,52 +2,9 @@
   {
     "username": "MartiCas",
     "email": "marticastano@gmail.com",
-    "password": "123"
-  },
-  {
-    "username": "Pepito",
-    "email": "marticastano@gmail.com",
-    "password": "123"
-  },
-  {
-    "username": "Paco",
-    "email": "marticastano@gmail.com",
-    "password": "123"
-  },
-  {
-    "username": "Pulp",
-    "email": "martias@afmasd.com",
-    "password": "123"
-  },
-  {
-    "username": "asd",
-    "email": "marticastarno@gmail.com",
-    "password": "123"
-  },
-  {
-    "username": "123123",
-    "email": "1123",
-    "password": "123"
-  },
-  {
-    "username": "ç",
-    "email": "asd",
-    "password": "123"
-  },
-  {
-    "username": "Roberto",
-    "email": "a22roblotlot@inspedralbes.cat",
     "password": "123",
-    "pesoActual": 85,
-    "altura": 199,
-    "pesoObjetivo": 75
-  },
-  {
-    "username": "123",
-    "email": "a22roblotlot@inspedralbes.cat",
-    "password": "123",
-    "pesoActual": 89,
-    "altura": 200,
-    "pesoObjetivo": 44
+    "pesoActual": null,
+    "altura": null,
+    "pesoObjetivo": null
   }
 ]
