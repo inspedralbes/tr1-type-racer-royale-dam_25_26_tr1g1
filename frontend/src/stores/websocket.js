@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
-import { useAppStore } from "./app";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
-    message: null,
+    sessions: [],
   }),
 
   actions: {
@@ -22,17 +21,14 @@ export const useWebSocketStore = defineStore("websocket", {
         };
 
         this.socket.onmessage = (event) => {
-          const appStore = useAppStore();
           const data = JSON.parse(event.data);
-          this.message = data;
 
           switch (data.type) {
             case "SESSIONS_LIST":
-              appStore.setSessions(data.payload);
+              this.sessions = data.payload;
               break;
 
             case "NEW_SESSION":
-              appStore.setNotification("Nueva sesión activa detectada", "info");
               this.getSessions();
               break;
 

@@ -56,7 +56,6 @@ export const setupWebsocketHandlers = (ws) => {
         case "GET_SESSIONS":
           try {
             const sessions = getSessions();
-            console.log(sessions);
 
             ws.send(
               JSON.stringify({ type: "SESSIONS_LIST", payload: sessions })

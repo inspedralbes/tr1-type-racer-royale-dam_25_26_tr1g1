@@ -19,13 +19,11 @@
 
 <script setup>
 import { onMounted, computed } from "vue";
-import { useAppStore } from "@/stores/app";
 import { useWebSocketStore } from "@/stores/websocket";
 
-const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
 
-const sessions = computed(() => appStore.sessions);
+const sessions = computed(() => websocketStore.sessions);
 
 onMounted(() => {
   websocketStore.getSessions();
