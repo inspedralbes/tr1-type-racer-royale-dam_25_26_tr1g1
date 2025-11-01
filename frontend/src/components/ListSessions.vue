@@ -47,7 +47,7 @@ const joinSession = (sessionId) => {
   }
 };
 
-watch(currentSessionId, (newSessionId) => {
+watch(() => webSocketStore.currentSessionId, (newSessionId) => {
   if (newSessionId) {
     router.push(`/game/${newSessionId}`);
   }

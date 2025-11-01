@@ -45,8 +45,10 @@ export const loadSessions = async () => {
 };
 
 export const saveSessions = async () => {
+  console.log("saveSessions: Saving sessions...");
   try {
     await fsp.writeFile(SESSIONS_FILE, JSON.stringify(sessions, null, 2));
+    console.log("saveSessions: Sessions saved successfully");
     broadcastSessionsUpdate();
   } catch (error) {
     console.error("Error al guardar les sessions:", error);
@@ -58,6 +60,7 @@ export const getSessions = () => sessions;
 export const getSessionById = (id) => sessions.find((s) => s.id === id);
 
 export const createSession = async (options) => {
+  console.log("createSession: Received options", options);
   const { type, time, isPublic, maxUsers, hostId } = options;
   const newSession = {
     id: `s${Date.now()}`,
@@ -74,6 +77,7 @@ export const createSession = async (options) => {
       progress: 0,
     },
   };
+  console.log("createSession: New session created", newSession);
   sessions.push(newSession);
   await saveSessions();
   return newSession;

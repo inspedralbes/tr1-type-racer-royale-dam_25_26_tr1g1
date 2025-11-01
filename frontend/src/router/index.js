@@ -13,7 +13,12 @@ import { useAppStore } from "@/stores/app";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: setupLayouts(routes),
+  routes: setupLayouts(routes.map(route => {
+    if (route.path === '/game') {
+      return { ...route, path: '/game/:id' };
+    }
+    return route;
+  })),
 });
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
