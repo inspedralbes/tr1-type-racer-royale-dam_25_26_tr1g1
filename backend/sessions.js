@@ -17,7 +17,11 @@ const broadcastSessionsUpdate = () => {
   });
   wss.clients.forEach((client) => {
     if (client.readyState === 1) {
-      client.send(message);
+      try {
+        client.send(message);
+      } catch (err) {
+        console.error("Error sending message to client:", err);
+      }
     }
   });
 };
@@ -27,6 +31,7 @@ export const loadSessions = async () => {
     const data = await fsp.readFile(SESSIONS_FILE, "utf8");
     sessions = JSON.parse(data);
     console.log("Sessions carregades correctament.");
+    console.log(sessions);
   } catch (error) {
     if (error.code === "ENOENT") {
       await saveSessions();
@@ -52,25 +57,59 @@ export const getSessions = () => sessions;
 
 export const getSessionById = (id) => sessions.find((s) => s.id === id);
 
-export const createSession = async (workout) => {
+export const createSession = async (options) => {
+  const { type, time, isPublic, maxUsers, hostId } = options;
   const newSession = {
     id: `s${Date.now()}`,
-    workout,
-    users: [],
-    state: "waiting",
+    type: type || "Full Body",
+    time: time || 30,
+    isPublic: isPublic !== undefined ? isPublic : true,
+    maxUsers: maxUsers || 8,
+    hostId: hostId,
+    users: [hostId], // El creador s'uneix automàticament
+    state: {
+      status: "waiting",
+      startTime: null,
+      currentExerciseIndex: 0,
+      progress: 0,
+    },
   };
   sessions.push(newSession);
   await saveSessions();
   return newSession;
 };
 
-export const addUserToSession = async (id, username) => {
+export const addUserToSession = async (id, userId) => {
   const session = getSessionById(id);
   if (!session) return { error: "Sessió no trobada" };
-  if (session.users.includes(username)) {
+  if (session.users.length >= session.maxUsers) {
+    return { error: "La sessió està plena" };
+  }
+  if (session.users.includes(userId)) {
     return { error: "L'usuari ja està a la sessió" };
   }
-  session.users.push(username);
+  session.users.push(userId);
   await saveSessions();
   return { message: "Usuari afegit correctament", session };
+};
+
+export const removeUserFromSession = async (userId) => {
+  const sessionIndex = sessions.findIndex((s) => s.users.includes(userId));
+  if (sessionIndex === -1) {
+    return { error: "L'usuari no està a cap sessió" };
+  }
+
+  const session = sessions[sessionIndex];
+  const userIndex = session.users.indexOf(userId);
+  session.users.splice(userIndex, 1);
+
+  // Si el usuari era el host o la sessió queda buida, s'elimina la sessió
+  if (session.hostId === userId || session.users.length === 0) {
+    sessions.splice(sessionIndex, 1);
+    await saveSessions();
+    return { message: "Sessió eliminada correctament" };
+  } else {
+    await saveSessions();
+    return { message: "Usuari eliminat correctament", session };
+  }
 };

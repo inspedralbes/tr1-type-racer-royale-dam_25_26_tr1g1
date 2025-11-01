@@ -1,6 +1,7 @@
 import fs from "fs";
-import jwt from "jsonwebtoken";
+
 import dotenv from "dotenv";
+import { v4 as uuidv4 } from "uuid";
 
 dotenv.config();
 
@@ -8,13 +9,14 @@ const fsp = fs.promises;
 const USERS_FILE = "./dades/usuaris.json";
 
 let usuaris = [];
-const SECRET = process.env.JWT_SECRET;
+
 
 export const loadUsers = async () => {
   try {
     const data = await fsp.readFile(USERS_FILE, "utf8");
     usuaris = JSON.parse(data);
     console.log("Usuaris carregats correctament.");
+    console.log(usuaris);
   } catch (error) {
     if (error.code === "ENOENT") {
       await saveUsers();
@@ -35,6 +37,10 @@ export const saveUsers = async () => {
   }
 };
 
+export const findUserById = (id) => {
+  return usuaris.find((u) => u.id === id);
+};
+
 export const findUserByUsername = (username) => {
   return usuaris.find((u) => u.username === username);
 };
@@ -49,7 +55,13 @@ export const registerUser = async (
   if (findUserByUsername(username)) {
     throw new Error("USERNAME_EXISTS");
   }
+  let newId;
+  do {
+    newId = uuidv4();
+  } while (findUserById(newId));
+
   const newUser = {
+    id: newId,
     username,
     email,
     password,
@@ -59,11 +71,7 @@ export const registerUser = async (
   usuaris.push(newUser);
   await saveUsers();
 
-  const token = jwt.sign({ username: newUser.username }, SECRET, {
-    expiresIn: "1h",
-  });
-
-  return { user: newUser, token };
+  return { user: newUser };
 };
 
 export const loginUser = (username, password) => {
@@ -72,15 +80,11 @@ export const loginUser = (username, password) => {
   );
   if (!user) throw new Error("INVALID_CREDENTIALS");
 
-  const token = jwt.sign({ username: user.username }, SECRET, {
-    expiresIn: "1h",
-  });
-
-  return { user, token };
+  return { user };
 };
 
-export const updateUser = async (username, updateData) => {
-  const userIndex = usuaris.findIndex((u) => u.username === username);
+export const updateUser = async (id, updateData) => {
+  const userIndex = usuaris.findIndex((u) => u.id === id);
   if (userIndex === -1) {
     throw new Error("USER_NOT_FOUND");
   }

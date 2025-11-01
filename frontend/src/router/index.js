@@ -8,6 +8,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { setupLayouts } from "virtual:generated-layouts";
 import { routes } from "vue-router/auto-routes";
+
 import { useAppStore } from "@/stores/app";
 
 const router = createRouter({
@@ -27,20 +28,6 @@ router.onError((err, to) => {
     }
   } else {
     console.error(err);
-  }
-});
-
-router.beforeEach((to, from, next) => {
-  const appStore = useAppStore();
-  const requiresAuth = ["/sessions", "/perfil", "/social"];
-
-  if (
-    requiresAuth.some((path) => to.path.startsWith(path)) &&
-    !appStore.isAuthenticated
-  ) {
-    next("/");
-  } else {
-    next();
   }
 });
 

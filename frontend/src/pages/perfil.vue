@@ -4,7 +4,7 @@
   <v-container>
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8" lg="6">
-        <v-card class="text-center">
+        <v-card class="text-center" v-if="userData">
           <v-card-text>
             <v-avatar size="120" class="mb-4">
               <img
@@ -55,44 +55,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { useAppStore } from "@/stores/app";
 import NavBar from "@/components/NavBar.vue";
 
 const router = useRouter();
-const userData = ref({
-  username: "",
-  email: "",
-  date_created: "",
-  puntos: 0,
-  pesoActual: null,
-  altura: null,
-  pesoMeta: null,
-});
+const appStore = useAppStore();
 
-onMounted(async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/"); // Redirect to login if no token
-      return;
-    }
+const userData = computed(() => appStore.user);
 
-    const res = await fetch("http://localhost:5000/users/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error("No se pudo cargar el perfil");
-
-    const data = await res.json();
-    userData.value = { ...userData.value, ...data };
-  } catch (err) {
-    console.error(err);
+onMounted(() => {
+  if (!appStore.isAuthenticated) {
+    router.push("/");
   }
 });
 
 const handleLogout = () => {
-  localStorage.removeItem("token");
+  appStore.setLoggedOut();
   router.push("/");
 };
 </script>

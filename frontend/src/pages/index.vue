@@ -1,15 +1,10 @@
 <template>
   <v-container class="d-flex align-center justify-center fill-height">
-    <div v-if="appStore.isAuthenticated">
-      <!-- Puedes poner aquí un mensaje o loader -->
-    </div>
-
-    <div v-else class="w-100" style="max-width: 420px">
+    <div class="w-100" style="max-width: 420px">
       <v-alert
         v-if="appStore.notification.message"
         :type="appStore.notification.type"
         closable
-        border="start"
         elevation="2"
         class="mb-4"
       >
@@ -47,27 +42,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
-import { useWebSocketStore } from "@/stores/websocket";
-import { useRouter } from "vue-router";
+import { ref } from "vue";
 import { useAppStore } from "@/stores/app";
 
 import FormLogin from "@/components/Forms/FormLogin.vue";
 import FormRegister from "@/components/Forms/FormRegister.vue";
 
-const router = useRouter();
-const websocketStore = useWebSocketStore();
 const appStore = useAppStore();
 
 const tab = ref("login");
-
-onMounted(() => {
-  if (appStore.isAuthenticated && !websocketStore.isConnected) {
-    websocketStore.connect("ws://localhost:5000");
-  }
-});
-
-const logout = () => {
-  appStore.setLoggedOut();
-};
 </script>

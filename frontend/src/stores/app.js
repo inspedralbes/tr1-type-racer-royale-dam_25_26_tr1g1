@@ -4,14 +4,14 @@ import { useWebSocketStore } from "./websocket";
 export const useAppStore = defineStore("app", {
   state: () => ({
     isAuthenticated: false,
-    token: null,
+    user: null,
     notification: { message: null, type: null },
   }),
 
   actions: {
     async login(username, password) {
       try {
-        const res = await fetch("http://localhost:5000/users/login", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
@@ -20,8 +20,7 @@ export const useAppStore = defineStore("app", {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
 
-        localStorage.setItem("token", data.token);
-        await this.setLoggedIn(data.token);
+        await this.setLoggedIn(data.user);
 
         this.setNotification("Inicio de sesión correcto", "success");
         return true;
@@ -33,7 +32,7 @@ export const useAppStore = defineStore("app", {
 
     async register(username, email, password, pesoActual, altura) {
       try {
-        const res = await fetch("http://localhost:5000/users/register", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -59,17 +58,17 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async setLoggedIn(token) {
+    async setLoggedIn(user) {
       const websocketStore = useWebSocketStore();
-      await websocketStore.connect("ws://localhost:5000");
+      await websocketStore.connect("ws://localhost:5000", user.id);
       this.isAuthenticated = true;
-      this.token = token;
+      this.user = user;
     },
 
     setLoggedOut() {
       const websocketStore = useWebSocketStore();
       this.isAuthenticated = false;
-      this.token = null;
+      this.user = null;
       this.notification = { message: null, type: null };
       websocketStore.disconnect();
     },

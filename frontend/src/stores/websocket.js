@@ -1,14 +1,17 @@
 import { defineStore } from "pinia";
+import router from "@/router"; // Importa el router
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
     sessions: [],
+    currentSessionId: null,
+    currentSession: null,
   }),
 
   actions: {
-    connect(url) {
+    connect(url, userId) {
       return new Promise((resolve, reject) => {
         if (this.socket && this.isConnected) return resolve();
 
@@ -17,6 +20,10 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.onopen = () => {
           this.isConnected = true;
           console.log("WebSocket conectado");
+          if (userId) {
+            this.registerWebSocket(userId);
+          }
+          this.getSessions();
           resolve();
         };
 
@@ -27,7 +34,12 @@ export const useWebSocketStore = defineStore("websocket", {
             case "SESSIONS_UPDATE":
               this.sessions = data.payload;
               break;
-
+            case "SESSION_CREATED":
+            case "SESSION_JOINED":
+              this.currentSessionId = data.payload.id;
+              this.currentSession = data.payload;
+              router.push(`/game/${data.payload.id}`);
+              break;
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
           }
@@ -64,6 +76,21 @@ export const useWebSocketStore = defineStore("websocket", {
 
     getSessions() {
       this.sendMessage({ type: "GET_SESSIONS" });
+    },
+
+    createSession(options) {
+      this.sendMessage({ type: "CREATE_SESSION", payload: options });
+    },
+
+    joinSession(sessionId, userId) {
+      this.sendMessage({
+        type: "JOIN_SESSION",
+        payload: { sessionId, userId },
+      });
+    },
+
+    registerWebSocket(userId) {
+      this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
     },
   },
 });

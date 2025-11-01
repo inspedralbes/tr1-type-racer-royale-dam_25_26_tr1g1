@@ -2,7 +2,6 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,21 +9,21 @@ dotenv.config();
 import { setupWebsocketHandlers } from "./websocket.js";
 import {
   loadUsers,
+  findUserById,
   registerUser,
   loginUser,
-  findUserByUsername,
   updateUser,
 } from "./users.js";
 import {
   loadSessions,
   getSessions,
-  addUserToSession,
   getSessionById,
+  addUserToSession,
   init as initSessions,
 } from "./sessions.js";
 
 const PORT = 5000;
-const SECRET = process.env.JWT_SECRET;
+
 
 const app = express();
 app.use(cors());
@@ -41,44 +40,31 @@ app.get("/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
 });
 
-app.get("/users/me", (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "No autorizado" });
+app.get("/users/:id", (req, res) => {
+  const user = findUserById(req.params.id);
 
-  const token = authHeader.split(" ")[1];
-  try {
-    const payload = jwt.verify(token, SECRET);
-    const user = findUserByUsername(payload.username);
+  if (!user)
+    return res.status(404).json({ message: "Usuario no encontrado" });
 
-    if (!user)
-      return res.status(404).json({ message: "Usuario no encontrado" });
-
-    res.json({
-      username: user.username,
-      email: user.email,
-      date_created: user.date_created || null,
-      pesoActual: user.pesoActual || null,
-      altura: user.altura || null,
-    });
-  } catch (err) {
-    res.status(401).json({ message: "Token inválido" });
-  }
+  res.json({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    date_created: user.date_created || null,
+    pesoActual: user.pesoActual || null,
+    altura: user.altura || null,
+  });
 });
 
-app.put("/users/me", async (req, res) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ message: "No autorizado" });
-
-  const token = authHeader.split(" ")[1];
+app.put("/users/:id", async (req, res) => {
   try {
-    const payload = jwt.verify(token, SECRET);
-    const updatedUser = await updateUser(payload.username, req.body);
+    const updatedUser = await updateUser(req.params.id, req.body);
     res.json(updatedUser);
   } catch (err) {
     if (err.message === "USER_NOT_FOUND") {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
-    res.status(401).json({ message: "Token inválido o error al actualizar" });
+    res.status(500).json({ message: "Error al actualizar" });
   }
 });
 
@@ -108,8 +94,17 @@ app.post("/users/register", async (req, res) => {
 app.post("/users/login", (req, res) => {
   const { username, password } = req.body;
   try {
-    const { token } = loginUser(username, password);
-    res.json({ token });
+    const { user } = loginUser(username, password);
+    res.json({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        date_created: user.date_created || null,
+        pesoActual: user.pesoActual || null,
+        altura: user.altura || null,
+      },
+    });
   } catch (err) {
     res.status(401).json({ message: "Credencials incorrectes" });
   }

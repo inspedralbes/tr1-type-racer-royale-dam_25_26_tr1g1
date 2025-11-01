@@ -1,5 +1,10 @@
 import { registerUser, loginUser } from "./users.js";
-import { createSession, getSessions } from "./sessions.js";
+import {
+  createSession,
+  getSessions,
+  addUserToSession,
+  removeUserFromSession,
+} from "./sessions.js";
 
 export const setupWebsocketHandlers = (ws, wss) => {
   ws.on("message", async (message) => {
@@ -25,7 +30,15 @@ export const setupWebsocketHandlers = (ws, wss) => {
 
         case "CREATE_SESSION":
           try {
-            await createSession(data.payload.workout);
+            const newSession = await createSession(data.payload);
+            const sessions = getSessions();
+            wss.clients.forEach((client) => {
+              if (client.readyState === 1) {
+                client.send(
+                  JSON.stringify({ type: "SESSIONS_UPDATE", payload: sessions })
+                );
+              }
+            });
           } catch (err) {
             ws.send(
               JSON.stringify({
@@ -36,6 +49,45 @@ export const setupWebsocketHandlers = (ws, wss) => {
           }
           break;
 
+        case "JOIN_SESSION":
+          try {
+            const { sessionId, userId } = data.payload;
+            const result = await addUserToSession(sessionId, userId);
+            if (result.error) {
+              ws.send(
+                JSON.stringify({
+                  type: "JOIN_SESSION_ERROR",
+                  payload: result.error,
+                })
+              );
+            } else {
+              const sessions = getSessions();
+              wss.clients.forEach((client) => {
+                if (client.readyState === 1) {
+                  client.send(
+                    JSON.stringify({
+                      type: "SESSIONS_UPDATE",
+                      payload: sessions,
+                    })
+                  );
+                }
+              });
+            }
+          } catch (err) {
+            ws.send(
+              JSON.stringify({
+                type: "JOIN_SESSION_ERROR",
+                payload: err.message,
+              })
+            );
+          }
+          break;
+        case "REGISTER_WEBSOCKET":
+          if (data.payload.userId) {
+            ws.userId = data.payload.userId;
+            console.log(`WebSocket registered for user ${ws.userId}`);
+          }
+          break;
         default:
           console.log("Tipus de missatge desconegut:", data.type);
       }
@@ -45,5 +97,12 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 
-  ws.on("close", () => {});
+  ws.on("close", () => {
+    if (ws.userId) {
+      console.log(`User ${ws.userId} disconnected. Removing from session.`);
+      removeUserFromSession(ws.userId).catch((err) => {
+        console.error("Error removing user from session:", err);
+      });
+    }
+  });
 };

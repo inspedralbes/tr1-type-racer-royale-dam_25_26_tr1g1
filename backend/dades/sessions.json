@@ -1,8 +1,14 @@
 [
   {
     "id": "session_001",
-    "users": [],
-    "workout": "Full Body Express",
+    "users": [
+      "b2a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
+      "d9943aaa-5b81-4a77-8e63-9227f17405e9"
+    ],
+    "type": "Full Body",
+    "time": 30,
+    "isPublic": true,
+    "maxUsers": 8,
     "state": {
       "status": "IN_PROGRESS",
       "startTime": "2025-10-30T18:00:00Z",
@@ -11,14 +17,52 @@
     }
   },
   {
-    "id": "session_002",
-    "users": [],
-    "workout": "Full Body Express",
+    "id": "s1762035470362",
+    "type": "Full Body",
+    "time": 30,
+    "isPublic": true,
+    "maxUsers": 8,
+    "users": [
+      "d9943aaa-5b81-4a77-8e63-9227f17405e9"
+    ],
     "state": {
-      "status": "IN_PROGRESS",
-      "startTime": "2025-10-30T18:00:00Z",
-      "currentExerciseIndex": 1,
-      "progress": 0.5
+      "status": "waiting",
+      "startTime": null,
+      "currentExerciseIndex": 0,
+      "progress": 0
+    }
+  },
+  {
+    "id": "s1762035747024",
+    "type": "Full Body",
+    "time": 30,
+    "isPublic": true,
+    "maxUsers": 8,
+    "users": [
+      null,
+      "d9943aaa-5b81-4a77-8e63-9227f17405e9"
+    ],
+    "state": {
+      "status": "waiting",
+      "startTime": null,
+      "currentExerciseIndex": 0,
+      "progress": 0
+    }
+  },
+  {
+    "id": "s1762035960137",
+    "type": "Full Body",
+    "time": 30,
+    "isPublic": true,
+    "maxUsers": 8,
+    "users": [
+      null
+    ],
+    "state": {
+      "status": "waiting",
+      "startTime": null,
+      "currentExerciseIndex": 0,
+      "progress": 0
     }
   }
 ]
