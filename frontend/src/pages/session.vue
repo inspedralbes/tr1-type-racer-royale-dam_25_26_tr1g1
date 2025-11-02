@@ -8,9 +8,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { useWebSocketStore } from '@/stores/websocket';
+import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useRoute } from "vue-router";
+import { useWebSocketStore } from "@/stores/websocket";
 
 const route = useRoute();
 const websocketStore = useWebSocketStore();
@@ -24,7 +24,9 @@ let timerInterval = null;
 const formattedTime = computed(() => {
   const minutes = Math.floor(timeElapsed.value / 60);
   const seconds = timeElapsed.value % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
 });
 
 onMounted(() => {
@@ -41,9 +43,10 @@ onUnmounted(() => {
   clearInterval(timerInterval);
   if (currentSession.value) {
     websocketStore.sendMessage({
-      type: 'LEAVE_SESSION',
+      type: "LEAVE_SESSION",
       payload: { sessionId: currentSession.value.id },
     });
+    websocketStore.setCurrentSession(null);
   }
 });
 </script>

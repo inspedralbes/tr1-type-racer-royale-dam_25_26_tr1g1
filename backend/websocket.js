@@ -82,7 +82,9 @@ export const setupWebsocketHandlers = (ws, wss) => {
               username: user.username,
             });
           } catch (error) {
-            sendMessage(ws, MESSAGE_TYPES.REGISTER_FAIL, { message: error.message });
+            sendMessage(ws, MESSAGE_TYPES.REGISTER_FAIL, {
+              message: error.message,
+            });
           }
           break;
 
@@ -98,16 +100,21 @@ export const setupWebsocketHandlers = (ws, wss) => {
               `User ${user.username} (${user.id}) logged in via WebSocket.`
             );
           } catch (error) {
-            sendMessage(ws, MESSAGE_TYPES.LOGIN_FAIL, { message: error.message });
+            sendMessage(ws, MESSAGE_TYPES.LOGIN_FAIL, {
+              message: error.message,
+            });
           }
           break;
 
         // SESSION MANAGEMENT
         case MESSAGE_TYPES.CREATE_SESSION:
           if (!ws.userId)
-            return sendMessage(ws, MESSAGE_TYPES.ERROR, { message: "User not logged in." });
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in.",
+            });
           try {
             const newSession = await createSession(payload, ws.userId);
+            ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
           } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
@@ -116,10 +123,13 @@ export const setupWebsocketHandlers = (ws, wss) => {
 
         case MESSAGE_TYPES.JOIN_SESSION:
           if (!ws.userId)
-            return sendMessage(ws, MESSAGE_TYPES.ERROR, { message: "User not logged in." });
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in.",
+            });
           try {
             const session = await joinSession(payload.sessionId, ws.userId);
             if (session) {
+              ws.currentSession = session.id;
               sendMessage(ws, MESSAGE_TYPES.JOIN_SUCCESS, session);
             }
           } catch (error) {
@@ -129,14 +139,20 @@ export const setupWebsocketHandlers = (ws, wss) => {
 
         case MESSAGE_TYPES.DELETE_SESSION:
           if (!ws.userId)
-            return sendMessage(ws, MESSAGE_TYPES.ERROR, { message: "User not logged in." });
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in.",
+            });
           deleteSession(payload.sessionId);
           break;
 
         case MESSAGE_TYPES.LEAVE_SESSION:
           if (!ws.userId)
-            return sendMessage(ws, MESSAGE_TYPES.ERROR, { message: "User not logged in." });
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in.",
+            });
           leaveSession(payload.sessionId, ws.userId);
+          ws.currentSession = null;
+          sendMessage(ws, MESSAGE_TYPES.LEAVE_SUCCESS, {});
           break;
 
         default:
@@ -147,13 +163,18 @@ export const setupWebsocketHandlers = (ws, wss) => {
       }
     } catch (err) {
       console.error("Error processing message:", err);
-      sendMessage(ws, MESSAGE_TYPES.ERROR, { message: "Invalid message format" });
+      sendMessage(ws, MESSAGE_TYPES.ERROR, {
+        message: "Invalid message format",
+      });
     }
   });
 
   ws.on("close", () => {
     if (ws.userId) {
       console.log(`User ${ws.userId} disconnected.`);
+      if (ws.currentSession) {
+        leaveSession(ws.currentSession, ws.userId);
+      }
     }
   });
 };

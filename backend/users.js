@@ -25,6 +25,14 @@ let usuaris = [
     pesoActual: 61,
     altura: 172,
   },
+  {
+    id: "fa4ba09d-d074-4824-9b81-e3d2e42f0ed7",
+    username: "PabloRod",
+    email: "pablo@gmai.com",
+    password: "123",
+    pesoActual: "67",
+    altura: 179,
+  },
 ];
 
 export const findUserById = (id) => {
@@ -57,6 +65,7 @@ export const registerUser = async (
     password,
     pesoActual,
     altura,
+    date_created: new Date(),
   };
   usuaris.push(newUser);
 

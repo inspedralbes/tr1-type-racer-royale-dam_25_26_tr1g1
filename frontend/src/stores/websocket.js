@@ -44,6 +44,9 @@ export const useWebSocketStore = defineStore("websocket", {
               router.push(`/session/${data.payload.id}`);
               break;
 
+            case "LEAVE_SUCCESS":
+              this.currentSession = null;
+              break;
 
             case "ERROR":
               console.error("Error from server:", data.payload.message);
@@ -85,6 +88,10 @@ export const useWebSocketStore = defineStore("websocket", {
 
     registerWebSocket(userId) {
       this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
+    },
+
+    setCurrentSession(session) {
+      this.currentSession = session;
     },
   },
 });

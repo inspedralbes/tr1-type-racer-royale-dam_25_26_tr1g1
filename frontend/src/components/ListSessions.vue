@@ -12,25 +12,52 @@
         md="4"
         lg="3"
       >
-        <v-card class="mx-auto" max-width="344">
+        <v-card class="mx-auto" hover elevation="8" rounded="lg">
           <v-card-item>
-            <v-card-title>Session ID: {{ session.id }}</v-card-title>
-            <v-card-subtitle>Type: {{ session.type }}</v-card-subtitle>
+            <v-card-title class="d-flex align-center">
+              <v-icon icon="mdi-dumbbell" class="mr-2" />
+              <span>{{ session.type }}</span>
+            </v-card-title>
+            <v-card-subtitle
+              >ID: {{ session.id.substring(0, 8) }}</v-card-subtitle
+            >
           </v-card-item>
 
-          <v-card-text>
-            <div>Status: {{ session.state.status }}</div>
-            <div>
-              Users: {{ session.users.length }} / {{ session.maxUsers }}
+          <v-divider />
+
+          <v-card-text class="d-flex justify-space-between align-center">
+            <div class="d-flex align-center">
+              <v-icon icon="mdi-account-group" class="mr-2" />
+              <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
             </div>
-            <div>Time: {{ session.time }} minutes</div>
-            <div>Public: {{ session.isPublic ? "Yes" : "No" }}</div>
+            <div class="d-flex align-center">
+              <v-icon icon="mdi-clock-outline" class="mr-2" />
+              <span>{{ session.time }} min</span>
+            </div>
+            <div class="d-flex align-center">
+              <v-icon
+                :icon="session.isPublic ? 'mdi-earth' : 'mdi-lock'"
+                class="mr-2"
+              />
+              <span>{{ session.isPublic ? "Public" : "Private" }}</span>
+            </div>
           </v-card-text>
 
-          <v-card-actions>
-            <v-btn variant="outlined" @click="joinSession(session.id)"
-              >Join Session</v-btn
+          <v-divider />
+
+          <v-card-actions class="justify-center">
+            <v-btn
+              color="primary"
+              variant="elevated"
+              @click="joinSession(session.id)"
+              :disabled="
+                session.users.length >= session.maxUsers ||
+                session.state.status !== 'WAITING'
+              "
             >
+              <v-icon left>mdi-play-circle-outline</v-icon>
+              Join Session
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -55,5 +82,4 @@ const joinSession = (sessionId) => {
     payload: { sessionId },
   });
 };
-
 </script>
