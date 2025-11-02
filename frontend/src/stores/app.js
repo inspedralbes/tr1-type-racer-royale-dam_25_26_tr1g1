@@ -2,12 +2,16 @@ import { defineStore } from "pinia";
 import { useWebSocketStore } from "./websocket";
 
 export const useAppStore = defineStore("app", {
-  state: () => ({
-    isAuthenticated: false,
-    user: null,
-    notification: { message: null, type: null },
-  }),
-
+  state: () => {
+    const isAuthenticated =
+      JSON.parse(localStorage.getItem("isAuthenticated")) || false;
+    const user = JSON.parse(localStorage.getItem("user")) || null;
+    return {
+      isAuthenticated,
+      user,
+      notification: { message: null, type: null },
+    };
+  },
   actions: {
     async login(username, password) {
       try {
@@ -32,17 +36,20 @@ export const useAppStore = defineStore("app", {
 
     async register(username, email, password, pesoActual, altura) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username,
-            email,
-            password,
-            pesoActual,
-            altura,
-          }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/users/register`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username,
+              email,
+              password,
+              pesoActual,
+              altura,
+            }),
+          }
+        );
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
@@ -63,6 +70,8 @@ export const useAppStore = defineStore("app", {
       await websocketStore.connect("ws://localhost:5000", user.id);
       this.isAuthenticated = true;
       this.user = user;
+      localStorage.setItem("isAuthenticated", JSON.stringify(true));
+      localStorage.setItem("user", JSON.stringify(user));
     },
 
     setLoggedOut() {
@@ -71,6 +80,8 @@ export const useAppStore = defineStore("app", {
       this.user = null;
       this.notification = { message: null, type: null };
       websocketStore.disconnect();
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("user");
     },
 
     setNotification(message, type) {

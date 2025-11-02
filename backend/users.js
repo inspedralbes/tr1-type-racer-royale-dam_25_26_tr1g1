@@ -1,41 +1,23 @@
-import fs from "fs";
-
-import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 
-dotenv.config();
-
-const fsp = fs.promises;
-const USERS_FILE = "./dades/usuaris.json";
-
-let usuaris = [];
-
-
-export const loadUsers = async () => {
-  try {
-    const data = await fsp.readFile(USERS_FILE, "utf8");
-    usuaris = JSON.parse(data);
-    console.log("Usuaris carregats correctament.");
-    console.log(usuaris);
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      await saveUsers();
-      console.log(
-        "No s'ha trobat el fitxer d'usuaris, se n'ha creat un de nou."
-      );
-    } else {
-      console.error("Error al carregar els usuaris:", error);
-    }
+let usuaris = [
+  {
+    "id": "d9943aaa-5b81-4a77-8e63-9227f17405e9",
+    "username": "MartiCas",
+    "email": "marticastano@gmail.com",
+    "password": "123",
+    "pesoActual": 72,
+    "altura": 179
+  },
+  {
+    "id": "b2a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
+    "username": "Pepito",
+    "email": "marticastano@gmail.com",
+    "password": "123",
+    "pesoActual": 82,
+    "altura": 181
   }
-};
-
-export const saveUsers = async () => {
-  try {
-    await fsp.writeFile(USERS_FILE, JSON.stringify(usuaris, null, 2));
-  } catch (error) {
-    console.error("Error al guardar els usuaris:", error);
-  }
-};
+];
 
 export const findUserById = (id) => {
   return usuaris.find((u) => u.id === id);
@@ -69,7 +51,6 @@ export const registerUser = async (
     altura,
   };
   usuaris.push(newUser);
-  await saveUsers();
 
   return { user: newUser };
 };
@@ -90,6 +71,5 @@ export const updateUser = async (id, updateData) => {
   }
 
   usuaris[userIndex] = { ...usuaris[userIndex], ...updateData };
-  await saveUsers();
   return usuaris[userIndex];
 };

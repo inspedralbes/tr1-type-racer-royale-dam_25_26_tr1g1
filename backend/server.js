@@ -7,23 +7,18 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { setupWebsocketHandlers } from "./websocket.js";
+import { findUserById, registerUser, loginUser, updateUser } from "./users.js";
 import {
-  loadUsers,
-  findUserById,
-  registerUser,
-  loginUser,
-  updateUser,
-} from "./users.js";
-import {
-  loadSessions,
-  getSessions,
+  getAllSessions,
+  createSession,
   getSessionById,
-  addUserToSession,
-  init as initSessions,
+  updateSession,
+  deleteSession,
+  setWssInstance,
+  joinSession,
 } from "./sessions.js";
 
 const PORT = 5000;
-
 
 const app = express();
 app.use(cors());
@@ -36,15 +31,89 @@ wss.on("connection", (ws) => {
   setupWebsocketHandlers(ws, wss);
 });
 
+setWssInstance(wss);
+
 app.get("/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
+});
+
+app.get("/sessions", (req, res) => {
+  res.json(getAllSessions());
+});
+
+app.post("/sessions", async (req, res) => {
+  try {
+    const newSession = await createSession(req.body);
+    res.status(201).json(newSession);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating session", error: error.message });
+  }
+});
+
+app.get("/sessions/:id", (req, res) => {
+  const session = getSessionById(req.params.id);
+  if (session) {
+    res.json(session);
+  } else {
+    res.status(404).json({ message: "Session not found" });
+  }
+});
+
+app.put("/sessions/:id", async (req, res) => {
+  try {
+    const updatedSession = await updateSession(req.params.id, req.body);
+    if (updatedSession) {
+      res.json(updatedSession);
+    } else {
+      res.status(404).json({ message: "Session not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating session", error: error.message });
+  }
+});
+
+app.delete("/sessions/:id", async (req, res) => {
+  try {
+    const success = await deleteSession(req.params.id);
+    if (success) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: "Session not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting session", error: error.message });
+  }
+});
+
+app.post("/sessions/:id/join", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    const updatedSession = await joinSession(req.params.id, userId);
+    if (updatedSession) {
+      res.json(updatedSession);
+    } else {
+      res.status(404).json({ message: "Session not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error joining session", error: error.message });
+  }
 });
 
 app.get("/users/:id", (req, res) => {
   const user = findUserById(req.params.id);
 
-  if (!user)
-    return res.status(404).json({ message: "Usuario no encontrado" });
+  if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
   res.json({
     id: user.id,
@@ -110,31 +179,7 @@ app.post("/users/login", (req, res) => {
   }
 });
 
-app.get("/sessions", (req, res) => {
-  res.json(getSessions());
-});
-
-app.get("/sessions/:id", (req, res) => {
-  const session = getSessionById(req.params.id);
-  if (!session) return res.status(404).json({ message: "Sessió no trobada" });
-  res.json(session);
-});
-
-app.post("/sessions/:id/join", async (req, res) => {
-  const { username } = req.body;
-  if (!username)
-    return res.status(400).json({ message: "Falta el nom d'usuari" });
-
-  const result = await addUserToSession(req.params.id, username);
-  if (result.error) return res.status(400).json({ message: result.error });
-
-  res.json(result);
-});
-
 const startServer = async () => {
-  await loadUsers();
-  await loadSessions();
-  initSessions(wss);
   server.listen(PORT, () =>
     console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
   );

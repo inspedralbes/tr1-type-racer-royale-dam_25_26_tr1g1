@@ -5,8 +5,7 @@ export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
-    sessions: [],
-    currentSession: null,
+    sessions: [], // New state property for sessions
   }),
 
   actions: {
@@ -14,7 +13,7 @@ export const useWebSocketStore = defineStore("websocket", {
       return new Promise((resolve, reject) => {
         if (this.socket && this.isConnected) return resolve();
 
-        this.socket = new WebSocket(url);
+        this.socket = new WebSocket(import.meta.env.VITE_WS_URL);
 
         this.socket.onopen = () => {
           this.isConnected = true;
@@ -22,7 +21,7 @@ export const useWebSocketStore = defineStore("websocket", {
           if (userId) {
             this.registerWebSocket(userId);
           }
-          this.getSessions();
+
           resolve();
         };
 
@@ -31,16 +30,8 @@ export const useWebSocketStore = defineStore("websocket", {
 
           switch (data.type) {
             case "SESSIONS_UPDATE":
-              this.handleSessionsUpdate(data.payload);
-              break;
-            case "SESSION_CREATED":
-              this.handleSessionCreatedOrJoined(data.payload);
-              break;
-            case "SESSION_JOINED":
-              this.handleSessionCreatedOrJoined(data.payload);
-              break;
-            case "JOIN_SESSION_ERROR":
-              this.handleJoinSessionError(data.payload.message);
+              this.sessions = data.payload; // Update sessions state
+              console.log("Sessions updated via WebSocket:", this.sessions);
               break;
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
@@ -76,37 +67,8 @@ export const useWebSocketStore = defineStore("websocket", {
       }
     },
 
-    getSessions() {
-      this.sendMessage({ type: "GET_SESSIONS" });
-    },
-
-    createSession(options) {
-      this.sendMessage({ type: "CREATE_SESSION", payload: options });
-    },
-
-    joinSession(sessionId, userId) {
-      this.sendMessage({
-        type: "JOIN_SESSION",
-        payload: { sessionId, userId },
-      });
-    },
-
     registerWebSocket(userId) {
       this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
-    },
-
-    handleSessionsUpdate(sessions) {
-      this.sessions = sessions;
-    },
-
-    handleSessionCreatedOrJoined(session) {
-      this.currentSessionId = session.id;
-      this.currentSession = session;
-      router.push(`/game/${session.id}`);
-    },
-
-    handleJoinSessionError(message) {
-      console.error("Error joining session:", message);
     },
   },
 });

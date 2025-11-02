@@ -40,4 +40,16 @@ router.isReady().then(() => {
   localStorage.removeItem("vuetify:dynamic-reload");
 });
 
+router.beforeEach((to, from, next) => {
+  const appStore = useAppStore();
+  const publicPages = ['/']; // Add other public pages here if any, e.g., '/register'
+  const authRequired = !publicPages.includes(to.path);
+
+  if (authRequired && !appStore.isAuthenticated) {
+    return next('/');
+  }
+
+  next();
+});
+
 export default router;

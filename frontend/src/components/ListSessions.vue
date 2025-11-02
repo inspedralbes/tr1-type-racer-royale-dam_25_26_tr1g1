@@ -1,25 +1,36 @@
 <template>
   <v-container>
-    <v-row class="">
-      <v-col cols="12">
-        <v-text-field
-          label="Filter sessions"
-          variant="outlined"
-          clearable
-        ></v-text-field>
-      </v-col>
-    </v-row>
     <v-row>
-      <v-col v-for="session in sessions" :key="session.id" cols="12">
-        <v-card>
-          <v-card-title>{{ session.id }}</v-card-title>
-          <v-card-subtitle>Workout: {{ session.workout }}</v-card-subtitle>
+      <v-col cols="12">
+        <h2 class="text-h4 mb-4">Active Sessions</h2>
+      </v-col>
+      <v-col
+        v-for="session in sessions"
+        :key="session.id"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card class="mx-auto" max-width="344">
+          <v-card-item>
+            <v-card-title>Session ID: {{ session.id }}</v-card-title>
+            <v-card-subtitle>Type: {{ session.type }}</v-card-subtitle>
+          </v-card-item>
+
           <v-card-text>
-            <div>Users: {{ session.users.length }}</div>
-            <div>State: {{ session.state }}</div>
+            <div>Status: {{ session.state.status }}</div>
+            <div>
+              Users: {{ session.users.length }} / {{ session.maxUsers }}
+            </div>
+            <div>Time: {{ session.time }} minutes</div>
+            <div>Public: {{ session.isPublic ? "Yes" : "No" }}</div>
           </v-card-text>
+
           <v-card-actions>
-            <v-btn color="primary" @click="joinSession(session.id)">Join</v-btn>
+            <v-btn variant="outlined" @click="joinSession(session.id)"
+              >Join Session</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-col>
@@ -28,32 +39,57 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
-import { storeToRefs } from "pinia";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useAppStore } from "@/stores/app";
-import { useRouter } from "vue-router";
 
-const webSocketStore = useWebSocketStore();
 const appStore = useAppStore();
-const { sessions, currentSessionId } = storeToRefs(webSocketStore);
-const router = useRouter();
+const websocketStore = useWebSocketStore();
+const userId = appStore.user.id;
 
-const joinSession = (sessionId) => {
-  if (appStore.user && appStore.user.id) {
-    webSocketStore.joinSession(sessionId, appStore.user.id);
-  } else {
-    console.error("User not authenticated. Cannot join session.");
+const sessions = computed(() => websocketStore.sessions);
+
+const fetchSessions = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/sessions`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    websocketStore.sessions = data;
+  } catch (error) {
+    console.error("Error fetching sessions:", error);
   }
 };
 
-watch(() => webSocketStore.currentSessionId, (newSessionId) => {
-  if (newSessionId) {
-    router.push(`/game/${newSessionId}`);
+const joinSession = async (sessionId) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/sessions/${sessionId}/join`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const updatedSession = await response.json();
+    console.log("Joined session:", updatedSession);
+  } catch (error) {
+    console.error("Error joining session:", error);
   }
-});
+};
 
 onMounted(() => {
-  webSocketStore.getSessions();
+  fetchSessions();
+  websocketStore.connect("ws://localhost:5000", userId);
+});
+
+onBeforeUnmount(() => {
+  websocketStore.disconnect();
 });
 </script>
