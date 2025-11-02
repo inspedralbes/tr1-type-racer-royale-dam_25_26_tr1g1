@@ -67,21 +67,29 @@ export const useAppStore = defineStore("app", {
 
     async setLoggedIn(user) {
       const websocketStore = useWebSocketStore();
-      await websocketStore.connect("ws://localhost:5000", user.id);
+      if (websocketStore.isConnected) {
+        websocketStore.registerWebSocket(user.id);
+      } else {
+        await websocketStore.connect("ws://localhost:5000", user.id);
+      }
       this.isAuthenticated = true;
       this.user = user;
       localStorage.setItem("isAuthenticated", JSON.stringify(true));
       localStorage.setItem("user", JSON.stringify(user));
     },
 
-    setLoggedOut() {
-      const websocketStore = useWebSocketStore();
+    clearUser() {
       this.isAuthenticated = false;
       this.user = null;
       this.notification = { message: null, type: null };
-      websocketStore.disconnect();
       localStorage.removeItem("isAuthenticated");
       localStorage.removeItem("user");
+    },
+
+    setLoggedOut() {
+      const websocketStore = useWebSocketStore();
+      this.clearUser();
+      websocketStore.disconnect();
     },
 
     setNotification(message, type) {

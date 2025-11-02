@@ -2,21 +2,29 @@ import { v4 as uuidv4 } from "uuid";
 
 let usuaris = [
   {
-    "id": "d9943aaa-5b81-4a77-8e63-9227f17405e9",
-    "username": "MartiCas",
-    "email": "marticastano@gmail.com",
-    "password": "123",
-    "pesoActual": 72,
-    "altura": 179
+    id: "d9943aaa-5b81-4a77-8e63-9227f17405e9",
+    username: "MartiCas",
+    email: "marticastano@gmail.com",
+    password: "123",
+    pesoActual: 72,
+    altura: 179,
   },
   {
-    "id": "b2a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
-    "username": "Pepito",
-    "email": "marticastano@gmail.com",
-    "password": "123",
-    "pesoActual": 82,
-    "altura": 181
-  }
+    id: "b2a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
+    username: "AngelCua",
+    email: "angelcuadra@gmail.com",
+    password: "123",
+    pesoActual: 82,
+    altura: 181,
+  },
+  {
+    id: "b3a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
+    username: "MariaCas",
+    email: "maria@gmail.com",
+    password: "123",
+    pesoActual: 61,
+    altura: 172,
+  },
 ];
 
 export const findUserById = (id) => {

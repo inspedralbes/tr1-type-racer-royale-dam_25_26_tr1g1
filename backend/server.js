@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-import { setupWebsocketHandlers } from "./websocket.js";
+import { setupWebsocketHandlers, setWssInstance } from "./websocket.js";
 import { findUserById, registerUser, loginUser, updateUser } from "./users.js";
 import {
   getAllSessions,
@@ -14,7 +14,6 @@ import {
   getSessionById,
   updateSession,
   deleteSession,
-  setWssInstance,
   joinSession,
 } from "./sessions.js";
 
@@ -37,78 +36,78 @@ app.get("/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
 });
 
-app.get("/sessions", (req, res) => {
-  res.json(getAllSessions());
-});
+// app.get("/sessions", (req, res) => {
+//   res.json(getAllSessions());
+// });
 
-app.post("/sessions", async (req, res) => {
-  try {
-    const newSession = await createSession(req.body);
-    res.status(201).json(newSession);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error creating session", error: error.message });
-  }
-});
+// app.post("/sessions", async (req, res) => {
+//   try {
+//     const newSession = await createSession(req.body);
+//     res.status(201).json(newSession);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Error creating session", error: error.message });
+//   }
+// });
 
-app.get("/sessions/:id", (req, res) => {
-  const session = getSessionById(req.params.id);
-  if (session) {
-    res.json(session);
-  } else {
-    res.status(404).json({ message: "Session not found" });
-  }
-});
+// app.get("/sessions/:id", (req, res) => {
+//   const session = getSessionById(req.params.id);
+//   if (session) {
+//     res.json(session);
+//   } else {
+//     res.status(404).json({ message: "Session not found" });
+//   }
+// });
 
-app.put("/sessions/:id", async (req, res) => {
-  try {
-    const updatedSession = await updateSession(req.params.id, req.body);
-    if (updatedSession) {
-      res.json(updatedSession);
-    } else {
-      res.status(404).json({ message: "Session not found" });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error updating session", error: error.message });
-  }
-});
+// app.put("/sessions/:id", async (req, res) => {
+//   try {
+//     const updatedSession = await updateSession(req.params.id, req.body);
+//     if (updatedSession) {
+//       res.json(updatedSession);
+//     } else {
+//       res.status(404).json({ message: "Session not found" });
+//     }
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Error updating session", error: error.message });
+//   }
+// });
 
-app.delete("/sessions/:id", async (req, res) => {
-  try {
-    const success = await deleteSession(req.params.id);
-    if (success) {
-      res.status(204).send();
-    } else {
-      res.status(404).json({ message: "Session not found" });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error deleting session", error: error.message });
-  }
-});
+// app.delete("/sessions/:id", async (req, res) => {
+//   try {
+//     const success = await deleteSession(req.params.id);
+//     if (success) {
+//       res.status(204).send();
+//     } else {
+//       res.status(404).json({ message: "Session not found" });
+//     }
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Error deleting session", error: error.message });
+//   }
+// });
 
-app.post("/sessions/:id/join", async (req, res) => {
-  const { userId } = req.body;
-  if (!userId) {
-    return res.status(400).json({ message: "User ID is required" });
-  }
-  try {
-    const updatedSession = await joinSession(req.params.id, userId);
-    if (updatedSession) {
-      res.json(updatedSession);
-    } else {
-      res.status(404).json({ message: "Session not found" });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error joining session", error: error.message });
-  }
-});
+// app.post("/sessions/:id/join", async (req, res) => {
+//   const { userId } = req.body;
+//   if (!userId) {
+//     return res.status(400).json({ message: "User ID is required" });
+//   }
+//   try {
+//     const updatedSession = await joinSession(req.params.id, userId);
+//     if (updatedSession) {
+//       res.json(updatedSession);
+//     } else {
+//       res.status(404).json({ message: "Session not found" });
+//     }
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "Error joining session", error: error.message });
+//   }
+// });
 
 app.get("/users/:id", (req, res) => {
   const user = findUserById(req.params.id);
@@ -139,7 +138,7 @@ app.put("/users/:id", async (req, res) => {
 
 app.post("/users/register", async (req, res) => {
   const { username, email, password, pesoActual, altura } = req.body;
-  if (!username || !email || !password)
+  if (!username || !email || !password || !pesoActual || !altura)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
   try {

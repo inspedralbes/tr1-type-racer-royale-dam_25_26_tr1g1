@@ -5,7 +5,8 @@ export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
-    sessions: [], // New state property for sessions
+    sessions: [],
+    currentSession: null,
   }),
 
   actions: {
@@ -30,9 +31,24 @@ export const useWebSocketStore = defineStore("websocket", {
 
           switch (data.type) {
             case "SESSIONS_UPDATE":
-              this.sessions = data.payload; // Update sessions state
-              console.log("Sessions updated via WebSocket:", this.sessions);
+              this.sessions = data.payload;
               break;
+
+            case "CREATE_SUCCESS":
+              this.currentSession = data.payload;
+              router.push(`/session/${data.payload.id}`);
+              break;
+
+            case "JOIN_SUCCESS":
+              this.currentSession = data.payload;
+              router.push(`/session/${data.payload.id}`);
+              break;
+
+
+            case "ERROR":
+              console.error("Error from server:", data.payload.message);
+              break;
+
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
           }

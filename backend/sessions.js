@@ -1,56 +1,24 @@
 import { v4 as uuidv4 } from "uuid";
+import { broadcastSessionsUpdate } from "./websocket.js";
 
-let sessions = [
-  {
-    id: "session_001",
-    users: [],
-    type: "Full Body",
-    time: 30,
-    isPublic: true,
-    maxUsers: 8,
-    state: {
-      status: "IN_PROGRESS",
-      startTime: "2025-10-30T18:00:00Z",
-      currentExerciseIndex: 1,
-      progress: 0.5,
-    },
-  },
-];
+let sessions = [];
 
-let wssInstance = null;
-
-export const setWssInstance = (wss) => {
-  wssInstance = wss;
-};
-
-const broadcastSessionsUpdate = () => {
-  if (wssInstance) {
-    wssInstance.clients.forEach((client) => {
-      if (client.readyState === client.OPEN) {
-        try {
-          client.send(
-            JSON.stringify({ type: "SESSIONS_UPDATE", payload: sessions })
-          );
-        } catch (error) {
-          console.error("Error sending WebSocket message to client:", error);
-        }
-      }
-    });
-  }
+export const getSessionById = (id) => {
+  return sessions.find((session) => session.id === id);
 };
 
 export const getAllSessions = () => {
   return sessions;
 };
 
-export const createSession = async (sessionData) => {
+export const createSession = async (sessionData, creatorId) => {
   const newSession = {
     id: uuidv4(),
     ...sessionData,
-    users: [],
+    users: [creatorId],
     state: {
       status: "WAITING",
-      startTime: null,
+      startTime: Date.now(),
       currentExerciseIndex: 0,
       progress: 0,
     },
@@ -58,10 +26,6 @@ export const createSession = async (sessionData) => {
   sessions.push(newSession);
   broadcastSessionsUpdate();
   return newSession;
-};
-
-export const getSessionById = (id) => {
-  return sessions.find((session) => session.id === id);
 };
 
 export const updateSession = async (id, updateData) => {
@@ -76,15 +40,16 @@ export const updateSession = async (id, updateData) => {
 
 export const joinSession = async (sessionId, userId) => {
   const session = sessions.find((s) => s.id === sessionId);
-  if (session) {
-    if (!session.users.includes(userId)) {
-      session.users.push(userId);
-      broadcastSessionsUpdate();
-      return session;
-    }
-    return session;
-  }
-  return null;
+  if (!session) return null;
+
+  if (session.users.includes(userId)) return session;
+  if (session.users.length >= session.maxUsers) throw new Error("Session full");
+  if (session.state.status !== "WAITING")
+    throw new Error("Session already started");
+
+  session.users.push(userId);
+  broadcastSessionsUpdate();
+  return session;
 };
 
 export const deleteSession = async (id) => {
@@ -95,4 +60,19 @@ export const deleteSession = async (id) => {
     return true;
   }
   return false;
+};
+
+export const leaveSession = async (sessionId, userId) => {
+  const session = getSessionById(sessionId);
+  if (!session) return;
+
+  const userIndex = session.users.indexOf(userId);
+  if (userIndex > -1) {
+    session.users.splice(userIndex, 1);
+    if (session.users.length === 0) {
+      deleteSession(sessionId);
+    } else {
+      broadcastSessionsUpdate();
+    }
+  }
 };

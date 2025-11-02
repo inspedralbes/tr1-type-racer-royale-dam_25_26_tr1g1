@@ -6,17 +6,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
-const sessionId = ref('');
+const sessionId = ref("");
 const route = useRoute();
 
 onMounted(() => {
   sessionId.value = route.params.id;
 });
 </script>
-
-<style scoped>
-/* Add any specific styles for the game component here */
-</style>

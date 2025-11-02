@@ -7,10 +7,17 @@
 <script setup>
 import { onMounted } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
+import { useAppStore } from "@/stores/app";
 
-const wsStore = useWebSocketStore();
+const webSocketSotre = useWebSocketStore();
+const appStore = useAppStore();
 
 onMounted(() => {
-  wsStore.connect("ws://localhost:5000");
+  const user = appStore.user;
+  if (user) {
+    webSocketSotre.connect("ws://localhost:5000", user.id);
+  } else {
+    webSocketSotre.connect("ws://localhost:5000");
+  }
 });
 </script>

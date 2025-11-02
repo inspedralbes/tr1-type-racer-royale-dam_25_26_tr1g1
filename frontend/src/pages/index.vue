@@ -42,13 +42,17 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useAppStore } from "@/stores/app";
 
 import FormLogin from "@/components/Forms/FormLogin.vue";
 import FormRegister from "@/components/Forms/FormRegister.vue";
 
 const appStore = useAppStore();
+
+onMounted(() => {
+  appStore.clearUser();
+});
 
 const tab = ref("login");
 </script>
