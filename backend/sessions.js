@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import { broadcastSessionsUpdate } from "./websocket.js";
+import { findUserById } from "./users.js";
 
 let sessions = [];
 
@@ -12,10 +13,14 @@ export const getAllSessions = () => {
 };
 
 export const createSession = async (sessionData, creatorId) => {
+  const creator = findUserById(creatorId);
+  if (!creator) {
+    throw new Error("Creator user not found");
+  }
   const newSession = {
     id: uuidv4(),
     ...sessionData,
-    users: [creatorId],
+    users: [{ id: creator.id, username: creator.username, puntos: 0 }],
     state: {
       status: "WAITING",
       startTime: Date.now(),
@@ -42,12 +47,21 @@ export const joinSession = async (sessionId, userId) => {
   const session = sessions.find((s) => s.id === sessionId);
   if (!session) return null;
 
-  if (session.users.includes(userId)) return session;
+  const joiningUser = findUserById(userId);
+  if (!joiningUser) {
+    throw new Error("Joining user not found");
+  }
+
+  if (session.users.some((user) => user.id === userId)) return session;
   if (session.users.length >= session.maxUsers) throw new Error("Session full");
   if (session.state.status !== "WAITING")
     throw new Error("Session already started");
 
-  session.users.push(userId);
+  session.users.push({
+    id: joiningUser.id,
+    username: joiningUser.username,
+    puntos: 0,
+  });
   broadcastSessionsUpdate();
   return session;
 };
@@ -66,7 +80,7 @@ export const leaveSession = async (sessionId, userId) => {
   const session = getSessionById(sessionId);
   if (!session) return;
 
-  const userIndex = session.users.indexOf(userId);
+  const userIndex = session.users.findIndex((user) => user.id === userId);
   if (userIndex > -1) {
     session.users.splice(userIndex, 1);
     if (session.users.length === 0) {

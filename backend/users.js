@@ -8,7 +8,7 @@ let usuaris = [
     password: "123",
     pesoActual: 72,
     altura: 179,
-    puntos: 1.3,
+    nivel: 1.3,
   },
   {
     id: "b2a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
@@ -17,7 +17,7 @@ let usuaris = [
     password: "123",
     pesoActual: 82,
     altura: 181,
-    puntos: 2.5,
+    nivel: 2.5,
   },
   {
     id: "b3a0e634-dc43-4ee8-9c4e-9f9188e11b8e",
@@ -26,7 +26,7 @@ let usuaris = [
     password: "123",
     pesoActual: 61,
     altura: 172,
-    puntos: 0,
+    nivel: 0,
   },
   {
     id: "fa4ba09d-d074-4824-9b81-e3d2e42f0ed7",
@@ -35,7 +35,7 @@ let usuaris = [
     password: "123",
     pesoActual: "67",
     altura: 179,
-    puntos: 0,
+    nivel: 0,
   },
 ];
 
@@ -70,7 +70,7 @@ export const registerUser = async (
     pesoActual,
     altura,
     date_created: new Date(),
-    puntos: 0,
+    nivel: 0,
   };
   usuaris.push(newUser);
 

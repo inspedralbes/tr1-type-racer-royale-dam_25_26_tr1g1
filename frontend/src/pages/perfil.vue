@@ -16,10 +16,10 @@
             </v-avatar>
             <h2 class="text-h5 font-weight-bold">{{ userData.username }}</h2>
             <p class="text-subtitle-1 text-grey-darken-1">
-              Nivell: {{ Math.floor(userData.puntos) }}
+              Nivell: {{ Math.floor(userData.nivel) }}
             </p>
             <v-progress-linear
-              :model-value="(userData.puntos % 1) * 100"
+              :model-value="(userData.nivel % 1) * 100"
               color="primary"
               height="10"
               rounded
