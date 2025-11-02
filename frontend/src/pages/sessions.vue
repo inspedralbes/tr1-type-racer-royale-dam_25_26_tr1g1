@@ -1,33 +1,39 @@
 <template>
   <NavBar />
   <v-container>
-    <v-btn @click="showForm = !showForm" color="primary" class="mb-4">
-      {{ showForm ? 'Cancelar' : 'Crear Sessió' }}
-    </v-btn>
-    <FormCrearSessio v-if="showForm" @session-created="onSessionCreated" />
+    <v-dialog v-model="showForm" fullscreen :scrim="false" transition="dialog-bottom-transition">
+      <template v-slot:activator="{ props }">
+        <v-btn color="primary" v-bind="props">
+          Crear Sessió
+        </v-btn>
+      </template>
+
+      <v-card>
+        <v-toolbar dark color="primary">
+          <v-btn icon dark @click="showForm = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Crear Nova Sessió</v-toolbar-title>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+        <FormCrearSessio @session-created="onSessionCreated" />
+      </v-card>
+    </v-dialog>
     <ListSessions :key="componentKey" />
   </v-container>
 </template>
 
-<script>
-import FormCrearSessio from '@/components/Forms/FormCrearSessio.vue';
+<script setup>
+import { ref } from 'vue';
+import FormCrearSessio from "@/components/Forms/FormCrearSessio.vue";
+import ListSessions from "@/components/ListSessions.vue";
+import NavBar from "@/components/NavBar.vue";
 
-export default {
-  components: {
-    FormCrearSessio,
-  },
-  data() {
-    return {
-      showForm: false,
-      componentKey: 0,
-    };
-  },
-  methods: {
-    onSessionCreated() {
-      this.showForm = false; // Ocultar el formulario
-      this.componentKey += 1; // Forzar la recarga de ListSessions
-    },
-  },
+const showForm = ref(false);
+const componentKey = ref(0);
+
+const onSessionCreated = () => {
+  showForm.value = false; // Ocultar el formulario
+  componentKey.value += 1; // Forzar la recarga de ListSessions
 };
 </script>
-

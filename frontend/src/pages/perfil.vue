@@ -9,12 +9,22 @@
           </v-toolbar>
           <v-card-text class="text-center">
             <v-avatar size="120" class="my-4">
-              <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Avatar" />
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                alt="Avatar"
+              />
             </v-avatar>
             <h2 class="text-h5 font-weight-bold">{{ userData.username }}</h2>
             <p class="text-subtitle-1 text-grey-darken-1">
-              Punts: {{ userData.puntos }}
+              Nivell: {{ Math.floor(userData.puntos) }}
             </p>
+            <v-progress-linear
+              :model-value="(userData.puntos % 1) * 100"
+              color="primary"
+              height="10"
+              rounded
+              class="mt-2"
+            ></v-progress-linear>
           </v-card-text>
 
           <v-list lines="two">
@@ -30,7 +40,9 @@
               <template v-slot:prepend>
                 <v-icon>mdi-calendar</v-icon>
               </template>
-              <v-list-item-title>{{ new Date(userData.date_created).toLocaleDateString() }}</v-list-item-title>
+              <v-list-item-title>{{
+                new Date(userData.date_created).toLocaleDateString()
+              }}</v-list-item-title>
               <v-list-item-subtitle>Membre des de</v-list-item-subtitle>
             </v-list-item>
           </v-list>
@@ -55,7 +67,9 @@
           </v-card-text>
 
           <v-card-actions class="pa-4">
-            <v-btn @click="handleLogout" color="red" block variant="tonal">Tancar Sessió</v-btn>
+            <v-btn @click="handleLogout" color="red" block variant="tonal"
+              >Tancar Sessió</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-col>

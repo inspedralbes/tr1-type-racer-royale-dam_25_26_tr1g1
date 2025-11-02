@@ -171,6 +171,7 @@ app.post("/users/login", (req, res) => {
         date_created: user.date_created || null,
         pesoActual: user.pesoActual || null,
         altura: user.altura || null,
+        puntos: user.puntos || 0,
       },
     });
   } catch (err) {

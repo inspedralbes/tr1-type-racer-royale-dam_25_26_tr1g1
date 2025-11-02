@@ -1,9 +1,11 @@
 <template>
   <div>
-    <h1>Session {{ sessionId }}</h1>
+    <h1>Session {{ currentSession.type }}</h1>
     <div v-if="currentSession">
       <h2>Time Elapsed: {{ formattedTime }}</h2>
     </div>
+
+    <Camera />
   </div>
 </template>
 

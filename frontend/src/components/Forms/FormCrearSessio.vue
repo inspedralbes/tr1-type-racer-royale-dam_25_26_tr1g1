@@ -23,8 +23,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
+
+const emit = defineEmits(["session-created"]);
 
 const websocketStore = useWebSocketStore();
 
@@ -36,12 +38,11 @@ const session = ref({
 });
 
 const submitForm = () => {
-  // Send a message via WebSocket to create the session.
-  // The server will handle creation and broadcast the update to all clients.
   websocketStore.sendMessage({
     type: "CREATE_SESSION",
     payload: session.value,
   });
   console.log("CREATE_SESSION message sent with payload:", session.value);
+  emit("session-created");
 };
 </script>
