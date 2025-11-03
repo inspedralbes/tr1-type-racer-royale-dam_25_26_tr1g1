@@ -155,13 +155,16 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.wrap {
+  width: 100%;
+  height: 100%;
+}
 /* Marc del vídeo */
 .stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   background: #000;
-  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -172,6 +175,6 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover; /* Default to cover */
 }
 </style>

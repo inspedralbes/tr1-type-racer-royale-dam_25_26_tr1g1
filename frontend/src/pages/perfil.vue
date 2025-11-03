@@ -59,15 +59,11 @@
                 <p class="text-subtitle-2 text-grey">ALTURA</p>
                 <p class="text-h6">{{ userData.altura || "-" }} cm</p>
               </v-col>
-              <v-col class="text-center">
-                <p class="text-subtitle-2 text-grey">PES OBJECTIU</p>
-                <p class="text-h6">{{ userData.pesoMeta || "-" }} kg</p>
-              </v-col>
             </v-row>
           </v-card-text>
 
           <v-card-actions class="pa-4">
-            <v-btn @click="handleLogout" color="red" block variant="tonal"
+            <v-btn @click="handleLogout" color="secondary" block variant="tonal"
               >Tancar Sessió</v-btn
             >
           </v-card-actions>

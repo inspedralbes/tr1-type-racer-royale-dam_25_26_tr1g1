@@ -1,70 +1,68 @@
 <template>
-  <v-container fluid class="pa-4 bg-gradient-primary fill-height">
-    <v-row class="justify-center align-center">
-      <v-col cols="12" md="8">
-        <v-card class="pa-6 mb-6 text-center" elevation="8" rounded="lg">
-          <h1 class="text-h3 mb-4 text-primary">
-            Sessió: {{ currentSession?.type }}
-          </h1>
-          <v-divider class="my-4"></v-divider>
-          <div v-if="currentSession" class="mb-4">
-            <h2 class="text-h4 font-weight-bold text-secondary">
-              Temps Transcorregut:
-            </h2>
-            <p class="text-h2 font-weight-black text-primary">
+  <div class="session-wrapper">
+    <PoseSkeleton @features="onFeatures" class="pose-skeleton-background" />
+    <v-container fluid class="overlay-content pa-4">
+      <v-row class="justify-center">
+        <v-col cols="12" md="auto">
+          <div class="pa-2 text-center">
+            <h1 class="text-h5 mb-2 text-white">
+              Sessió: {{ currentSession?.type }}
+            </h1>
+            <p class="text-h4 font-weight-black text-white">
               {{ formattedTime }}
             </p>
           </div>
-        </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
 
-        <v-card class="pa-2" elevation="8" rounded="lg">
-          <PoseSkeleton @features="onFeatures" />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="4">
-        <v-card elevation="8" rounded="lg">
-          <v-card-title
-            class="text-h5 bg-primary white--text py-3 d-flex justify-center align-center"
+    <div class="scoreboard-wrapper">
+      <v-card elevation="8" rounded="lg" color="rgba(0, 0, 0, 0.5)">
+        <v-card-title
+          class="text-h6 text-white py-2 d-flex justify-center align-center"
+        >
+          <v-icon left class="mr-2">mdi-trophy</v-icon>
+          Marcador
+        </v-card-title>
+        <v-list dense bg-color="transparent">
+          <v-list-item
+            v-for="(participant, index) in sortedParticipants"
+            :key="participant.id"
+            class="py-1"
           >
-            <v-icon left class="mr-2">mdi-trophy</v-icon>
-            Marcador
-          </v-card-title>
-          <v-list dense>
-            <v-list-item
-              v-for="(participant, index) in sortedParticipants"
-              :key="participant.id"
-              :class="{
-                'bg-light-blue-lighten-5': index === 0,
-                'bg-white': index !== 0,
-              }"
-              class="my-2 rounded-lg mx-2"
-            >
-              <template v-slot:prepend>
-                <v-avatar :color="index === 0 ? 'amber' : 'grey-lighten-1'">
-                  <v-icon v-if="index === 0" color="white">mdi-crown</v-icon>
-                  <v-icon v-else color="white">mdi-account-circle</v-icon>
-                </v-avatar>
-              </template>
-              <v-list-item-content class="ml-2">
-                <v-list-item-title class="font-weight-bold text-body-1">{{
-                  participant.username
-                }}</v-list-item-title>
-                <v-list-item-subtitle>
-                  <v-chip
-                    :color="index === 0 ? 'amber' : 'primary'"
-                    size="small"
-                    class="font-weight-bold"
-                  >
-                    Punts: {{ participant.puntos }}
-                  </v-chip>
-                </v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+            <template v-slot:prepend>
+              <v-avatar
+                size="32"
+                :color="index === 0 ? 'amber' : 'grey-lighten-1'"
+              >
+                <v-icon v-if="index === 0" color="white" size="small"
+                  >mdi-crown</v-icon
+                >
+                <v-icon v-else color="white" size="small"
+                  >mdi-account-circle</v-icon
+                >
+              </v-avatar>
+            </template>
+            <v-list-item-content class="ml-2">
+              <v-list-item-title
+                class="font-weight-bold text-body-2 text-white"
+                >{{ participant.username }}</v-list-item-title
+              >
+            </v-list-item-content>
+            <template v-slot:append>
+              <v-chip
+                :color="index === 0 ? 'amber' : 'primary'"
+                size="small"
+                class="font-weight-bold"
+              >
+                {{ participant.puntos }}
+              </v-chip>
+            </template>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -126,3 +124,27 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.pose-skeleton-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.overlay-content {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+}
+
+.scoreboard-wrapper {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+}
+</style>

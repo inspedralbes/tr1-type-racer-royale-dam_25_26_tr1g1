@@ -1,0 +1,112 @@
+{
+  "routine": {
+    "upper": [
+      {
+        "name": "Push-ups",
+        "description": "Desde posición de plancha, baja el cuerpo doblando los codos y vuelve a subir.",
+        "keypoints_detected": ["hombros", "codos", "muñecas", "pecho"],
+        "repetitions": 10
+      },
+      {
+        "name": "Triceps Dips",
+        "description": "Con las manos apoyadas en una superficie baja detrás de ti, baja y sube el cuerpo flexionando los codos.",
+        "keypoints_detected": ["hombros", "codos", "muñecas"],
+        "repetitions": 12
+      },
+      {
+        "name": "Arm Circles",
+        "description": "De pie, con los brazos extendidos en cruz, realiza círculos pequeños hacia adelante y atrás.",
+        "keypoints_detected": ["hombros", "codos"],
+        "duration_seconds": 30
+      },
+      {
+        "name": "Plank Shoulder Taps",
+        "description": "Desde plancha alta, toca con una mano el hombro contrario alternando sin balancear el cuerpo.",
+        "keypoints_detected": ["hombros", "codos", "muñecas", "caderas"],
+        "repetitions": 20
+      },
+      {
+        "name": "Wall Push-ups",
+        "description": "Apóyate en una pared y realiza flexiones inclinadas hacia ella.",
+        "keypoints_detected": ["hombros", "codos", "muñecas"],
+        "repetitions": 15
+      }
+    ],
+    "lower": [
+      {
+        "name": "Squats",
+        "description": "De pie, pies al ancho de los hombros, baja el cuerpo flexionando rodillas y vuelve a subir.",
+        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "repetitions": 15
+      },
+      {
+        "name": "Lunges",
+        "description": "Da un paso adelante, baja hasta que ambas rodillas formen 90° y vuelve a la posición inicial.",
+        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "repetitions": 10
+      },
+      {
+        "name": "Calf Raises",
+        "description": "De pie, eleva los talones y mantén la posición un segundo antes de bajar.",
+        "keypoints_detected": ["rodillas", "tobillos"],
+        "repetitions": 20
+      },
+      {
+        "name": "Side Leg Raises",
+        "description": "De pie o recostado de lado, levanta una pierna lateralmente y bájala sin tocar la otra.",
+        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "repetitions": 15
+      },
+      {
+        "name": "Glute Bridge",
+        "description": "Acostado boca arriba, eleva las caderas hasta formar una línea recta hombros-rodillas.",
+        "keypoints_detected": ["hombros", "caderas", "rodillas"],
+        "repetitions": 12
+      }
+    ],
+    "fullbody": [
+      {
+        "name": "Jumping Jacks",
+        "description": "Salta abriendo piernas y brazos a los lados y vuelve a la posición inicial.",
+        "keypoints_detected": [
+          "hombros",
+          "codos",
+          "caderas",
+          "rodillas",
+          "tobillos"
+        ],
+        "duration_seconds": 30
+      },
+      {
+        "name": "Mountain Climbers",
+        "description": "En posición de plancha, lleva una rodilla al pecho y alterna rápidamente las piernas.",
+        "keypoints_detected": ["hombros", "caderas", "rodillas", "tobillos"],
+        "duration_seconds": 30
+      },
+      {
+        "name": "Burpees",
+        "description": "Desde posición de pie, baja a plancha, realiza una flexión, salta y vuelve a empezar.",
+        "keypoints_detected": [
+          "hombros",
+          "codos",
+          "caderas",
+          "rodillas",
+          "tobillos"
+        ],
+        "repetitions": 10
+      },
+      {
+        "name": "Plank",
+        "description": "Mantén el cuerpo recto en posición de plancha sobre antebrazos o manos.",
+        "keypoints_detected": ["hombros", "caderas", "rodillas", "tobillos"],
+        "duration_seconds": 30
+      },
+      {
+        "name": "High Knees",
+        "description": "Corre en el sitio levantando las rodillas lo más alto posible.",
+        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "duration_seconds": 30
+      }
+    ]
+  }
+}

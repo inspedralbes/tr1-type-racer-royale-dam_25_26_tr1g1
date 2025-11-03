@@ -1,75 +1,82 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col cols="12">
-        <h2 class="text-h4 mb-4">Active Sessions</h2>
-      </v-col>
-      <v-col
+    <v-list lines="two" class="bg-transparent">
+      <v-list-item
         v-for="session in sessions"
         :key="session.id"
-        cols="12"
-        sm="6"
-        md="4"
-        lg="3"
+        class="mb-4 pa-4"
+        @click="joinSession(session.id)"
+        :disabled="
+          session.users.length >= session.maxUsers ||
+          session.state.status !== 'WAITING'
+        "
+        elevation="4"
+        rounded="lg"
+        style="
+          background-color: rgba(var(--v-theme-surface), 0.8);
+          backdrop-filter: blur(4px);
+        "
       >
-        <v-card class="mx-auto" hover elevation="8" rounded="lg">
-          <v-card-item>
-            <v-card-title class="d-flex align-center">
-              <v-icon icon="mdi-dumbbell" class="mr-2" />
-              <span>{{ session.type }}</span>
-            </v-card-title>
-            <v-card-subtitle
-              >ID: {{ session.id.substring(0, 8) }}</v-card-subtitle
-            >
-          </v-card-item>
-
-          <v-divider />
-
-          <v-card-text class="d-flex justify-space-between align-center">
-            <div class="d-flex align-center">
-              <v-icon icon="mdi-account-group" class="mr-2" />
-              <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
+        <div class="d-flex flex-wrap align-center justify-space-between">
+          <div class="d-flex align-center">
+            <v-avatar color="primary" size="56" class="mr-4">
+              <v-icon size="32">mdi-dumbbell</v-icon>
+            </v-avatar>
+            <div>
+              <v-list-item-title class="text-h5 font-weight-bold">{{
+                session.type
+              }}</v-list-item-title>
+              <v-list-item-subtitle class="text-body-1"
+                >ID: {{ session.id.substring(0, 8) }}</v-list-item-subtitle
+              >
             </div>
-            <div class="d-flex align-center">
+          </div>
+
+          <div class="d-flex align-center text-h6 mt-4 mt-md-0">
+            <div class="d-flex align-center mr-4">
+              <v-icon icon="mdi-account-group" class="mr-2" />
+              <span
+                >{{ session.users.length }} / {{ session.maxUsers }}</span
+              >
+            </div>
+            <div class="d-flex align-center mr-4">
               <v-icon icon="mdi-clock-outline" class="mr-2" />
               <span>{{ session.time }} min</span>
             </div>
-            <div class="d-flex align-center">
+            <div class="d-flex align-center mr-4">
               <v-icon
                 :icon="session.isPublic ? 'mdi-earth' : 'mdi-lock'"
                 class="mr-2"
               />
-              <span>{{ session.isPublic ? "Public" : "Private" }}</span>
+              <span v-if="smAndUp">{{ session.isPublic ? "Public" : "Private" }}</span>
             </div>
-          </v-card-text>
-
-          <v-divider />
-
-          <v-card-actions class="justify-center">
             <v-btn
               color="primary"
               variant="elevated"
-              @click="joinSession(session.id)"
+              :size="smAndUp ? 'large' : 'default'"
               :disabled="
                 session.users.length >= session.maxUsers ||
                 session.state.status !== 'WAITING'
               "
+              @click.stop="joinSession(session.id)"
             >
-              <v-icon left>mdi-play-circle-outline</v-icon>
-              Join Session
+              <v-icon left :class="{'mr-2': smAndUp}">mdi-play-circle-outline</v-icon>
+              <span v-if="smAndUp">Join</span>
             </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+          </div>
+        </div>
+      </v-list-item>
+    </v-list>
   </v-container>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { computed } from "vue";
+import { useDisplay } from "vuetify";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useAppStore } from "@/stores/app";
 
+const { smAndUp } = useDisplay();
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
 const userId = appStore.user.id;
