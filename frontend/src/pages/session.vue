@@ -1,66 +1,46 @@
 <template>
-  <div class="session-wrapper">
-    <PoseSkeleton @features="onFeatures" class="pose-skeleton-background" />
-    <v-container fluid class="overlay-content pa-4">
-      <v-row class="justify-center">
-        <v-col cols="12" md="auto">
-          <div class="pa-2 text-center">
-            <h1 class="text-h5 mb-2 text-white">
-              Sessió: {{ currentSession?.type }}
-            </h1>
-            <p class="text-h4 font-weight-black text-white">
-              {{ formattedTime }}
-            </p>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+  <div class="relative min-h-screen bg-gray-900 text-white">
+    <PoseSkeleton @features="onFeatures" class="absolute inset-0 w-full h-full object-cover z-0" />
 
-    <div class="scoreboard-wrapper">
-      <v-card elevation="8" rounded="lg" color="rgba(0, 0, 0, 0.5)">
-        <v-card-title
-          class="text-h6 text-white py-2 d-flex justify-center align-center"
-        >
-          <v-icon left class="mr-2">mdi-trophy</v-icon>
-          Marcador
-        </v-card-title>
-        <v-list dense bg-color="transparent">
-          <v-list-item
-            v-for="(participant, index) in sortedParticipants"
-            :key="participant.id"
-            class="py-1"
-          >
-            <template v-slot:prepend>
-              <v-avatar
-                size="32"
-                :color="index === 0 ? 'amber' : 'grey-lighten-1'"
+    <div class="relative z-10 p-4 flex flex-col items-center justify-start h-full">
+      <!-- Session Info and Timer -->
+      <div class="text-center mb-8 bg-gray-800 bg-opacity-70 rounded-lg p-4 shadow-lg">
+        <h1 class="text-3xl font-bold mb-2">Sessió: {{ currentSession?.type }}</h1>
+        <p class="text-5xl font-extrabold text-blue-400">{{ formattedTime }}</p>
+      </div>
+
+      <!-- Scoreboard -->
+      <div class="absolute top-4 right-4 z-20">
+        <div class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-4 w-72">
+          <h2 class="text-xl font-semibold mb-4 flex items-center justify-center">
+            <span class="mdi mdi-trophy text-amber-400 text-2xl mr-2"></span>
+            Marcador
+          </h2>
+          <ul class="space-y-2">
+            <li
+              v-for="(participant, index) in sortedParticipants"
+              :key="participant.id"
+              class="flex items-center py-1 px-2 rounded-md"
+              :class="{ 'bg-gray-700': index % 2 === 0, 'bg-gray-600': index % 2 !== 0 }"
+            >
+              <div
+                class="w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                :class="index === 0 ? 'bg-amber-400' : 'bg-gray-400'"
               >
-                <v-icon v-if="index === 0" color="white" size="small"
-                  >mdi-crown</v-icon
-                >
-                <v-icon v-else color="white" size="small"
-                  >mdi-account-circle</v-icon
-                >
-              </v-avatar>
-            </template>
-            <v-list-item-content class="ml-2">
-              <v-list-item-title
-                class="font-weight-bold text-body-2 text-white"
-                >{{ participant.username }}</v-list-item-title
-              >
-            </v-list-item-content>
-            <template v-slot:append>
-              <v-chip
-                :color="index === 0 ? 'amber' : 'primary'"
-                size="small"
-                class="font-weight-bold"
+                <span v-if="index === 0" class="mdi mdi-crown text-white text-lg"></span>
+                <span v-else class="mdi mdi-account-circle text-white text-lg"></span>
+              </div>
+              <span class="font-medium text-sm flex-grow">{{ participant.username }}</span>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-bold"
+                :class="index === 0 ? 'bg-amber-400 text-gray-900' : 'bg-blue-500 text-white'"
               >
                 {{ participant.puntos }}
-              </v-chip>
-            </template>
-          </v-list-item>
-        </v-list>
-      </v-card>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -131,27 +111,3 @@ onUnmounted(() => {
   }
 });
 </script>
-
-<style scoped>
-.pose-skeleton-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.overlay-content {
-  position: relative;
-  z-index: 2;
-  background: transparent;
-}
-
-.scoreboard-wrapper {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  z-index: 3;
-}
-</style>

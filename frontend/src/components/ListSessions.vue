@@ -1,99 +1,114 @@
 <template>
-  <v-container>
-    <v-list lines="two" class="bg-transparent">
-      <v-list-item
+  <div class="container mx-auto p-4">
+    <ul class="space-y-4">
+      <li
         v-for="session in sessions"
         :key="session.id"
-        class="mb-4 pa-4"
+        class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-lg shadow-lg p-4 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
+        :class="{
+          'opacity-50 cursor-not-allowed':
+            session.users.length >= session.maxUsers ||
+            session.state.status !== 'WAITING',
+        }"
         @click="handleSessionClick(session)"
-        :disabled="
-          session.users.length >= session.maxUsers ||
-          session.state.status !== 'WAITING'
-        "
-        elevation="4"
-        rounded="lg"
-        style="
-          background-color: rgba(var(--v-theme-surface), 0.8);
-          backdrop-filter: blur(4px);
-        "
       >
-        <div class="d-flex flex-wrap align-center justify-space-between">
-          <div class="d-flex align-center">
-            <v-avatar color="primary" size="56" class="mr-4">
-              <v-icon size="32">mdi-dumbbell</v-icon>
-            </v-avatar>
+        <div class="flex flex-wrap items-center justify-between text-white">
+          <div class="flex items-center">
+            <div
+              class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mr-4"
+            >
+              <span class="mdi mdi-dumbbell text-white text-3xl"></span>
+            </div>
             <div>
-              <v-list-item-title class="text-h5 font-weight-bold">{{
-                session.type
-              }}</v-list-item-title>
-              <v-list-item-subtitle class="text-body-1"
-                >ID: {{ session.id.substring(0, 8) }}</v-list-item-subtitle
-              >
+              <h3 class="text-xl font-bold">{{ session.type }}</h3>
+              <p class="text-sm text-gray-300">
+                ID: {{ session.id.substring(0, 8) }}
+              </p>
             </div>
           </div>
 
-          <div class="d-flex align-center text-h6 mt-4 mt-md-0">
-            <div class="d-flex align-center mr-4">
-              <v-icon icon="mdi-account-group" class="mr-2" />
+          <div class="flex items-center text-lg mt-4 md:mt-0">
+            <div class="flex items-center mr-4">
+              <span class="mdi mdi-account-group text-gray-400 mr-2"></span>
+              <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
+            </div>
+            <div class="flex items-center mr-4">
+              <span class="mdi mdi-clock-outline text-gray-400 mr-2"></span>
               <span
-                >{{ session.users.length }} / {{ session.maxUsers }}</span
-              >
+                class="mdi mr-2"
+                :class="
+                  !session.password
+                    ? 'mdi-earth text-green-400'
+                    : 'mdi-lock text-red-400'
+                "
+              ></span>
+              <span class="hidden sm:inline">{{
+                !session.password ? "Public" : "Private"
+              }}</span>
             </div>
-            <div class="d-flex align-center mr-4">
-              <v-icon icon="mdi-clock-outline" class="mr-2" />
-              <v-icon
-                :icon="!session.password ? 'mdi-earth' : 'mdi-lock'"
-                class="mr-2"
-              />
-              <span v-if="smAndUp">{{ !session.password ? "Public" : "Private" }}</span>
-            </div>
-            <v-btn
-              color="primary"
-              variant="elevated"
-              :size="smAndUp ? 'large' : 'default'"
+            <button
+              class="px-6 py-2 rounded-lg font-bold transition duration-300 ease-in-out"
+              :class="{
+                'bg-blue-600 hover:bg-blue-700 text-white': !(
+                  session.users.length >= session.maxUsers ||
+                  session.state.status !== 'WAITING'
+                ),
+                'bg-gray-500 text-gray-300 cursor-not-allowed':
+                  session.users.length >= session.maxUsers ||
+                  session.state.status !== 'WAITING',
+              }"
               :disabled="
                 session.users.length >= session.maxUsers ||
                 session.state.status !== 'WAITING'
               "
               @click.stop="handleSessionClick(session)"
             >
-              <v-icon left :class="{'mr-2': smAndUp}">mdi-play-circle-outline</v-icon>
-              <span v-if="smAndUp">Join</span>
-            </v-btn>
+              <span class="mdi mdi-play-circle-outline mr-2"></span>
+              <span class="hidden sm:inline">Join</span>
+            </button>
           </div>
         </div>
-      </v-list-item>
-    </v-list>
+      </li>
+    </ul>
 
-    <v-dialog v-model="showPasswordDialog" max-width="400">
-      <v-card>
-        <v-card-title class="headline">Enter Password</v-card-title>
-        <v-card-text>
-          <v-text-field
-            v-model="passwordInput"
-            label="Password"
-            type="password"
-            outlined
-            dense
-          ></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click="showPasswordDialog = false">Cancel</v-btn>
-          <v-btn color="green darken-1" text @click="confirmJoinSession">Join</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-container>
+    <div
+      v-if="showPasswordDialog"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-sm text-white"
+      >
+        <h3 class="text-xl font-semibold mb-4">Enter Password</h3>
+        <input
+          type="password"
+          v-model="passwordInput"
+          placeholder="Password"
+          class="w-full px-4 py-2 mb-4 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div class="flex justify-end space-x-4">
+          <button
+            @click="showPasswordDialog = false"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md transition duration-300"
+          >
+            Cancel
+          </button>
+          <button
+            @click="confirmJoinSession"
+            class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md transition duration-300"
+          >
+            Join
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed, ref } from "vue";
-import { useDisplay } from "vuetify";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useAppStore } from "@/stores/app";
 
-const { smAndUp } = useDisplay();
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
 const userId = appStore.user.id;
@@ -101,7 +116,7 @@ const userId = appStore.user.id;
 const sessions = computed(() => websocketStore.sessions);
 
 const showPasswordDialog = ref(false);
-const passwordInput = ref('');
+const passwordInput = ref("");
 const selectedSession = ref(null);
 
 const handleSessionClick = (session) => {
@@ -109,7 +124,7 @@ const handleSessionClick = (session) => {
     selectedSession.value = session;
     showPasswordDialog.value = true;
   } else {
-    joinSession(session.id, '');
+    joinSession(session.id, "");
   }
 };
 
@@ -117,7 +132,7 @@ const confirmJoinSession = () => {
   if (selectedSession.value) {
     joinSession(selectedSession.value.id, passwordInput.value);
     showPasswordDialog.value = false;
-    passwordInput.value = '';
+    passwordInput.value = "";
   }
 };
 

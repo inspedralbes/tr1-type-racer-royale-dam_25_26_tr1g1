@@ -1,23 +1,42 @@
 <template>
-  <h2 class="py-4">Inici de sessió</h2>
-  <v-form @submit.prevent="login">
-    <v-text-field
-      v-model="username"
-      label="Username"
-      prepend-icon="mdi-account"
-      required
-    ></v-text-field>
-    <v-text-field
-      v-model="password"
-      label="Password"
-      type="password"
-      prepend-icon="mdi-lock"
-      required
-    ></v-text-field>
-    <v-btn type="submit" color="primary" :loading="loading" :disabled="loading"
-      >Login</v-btn
-    >
-  </v-form>
+  <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-white">Inici de sessió</h2>
+    <form @submit.prevent="login" class="space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-300" for="username"
+          >Username</label
+        >
+        <input
+          type="text"
+          placeholder="Username"
+          class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          v-model="username"
+          required
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-300" for="password"
+          >Password</label
+        >
+        <input
+          type="password"
+          placeholder="Password"
+          class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          v-model="password"
+          required
+        />
+      </div>
+      <div>
+        <button
+          type="submit"
+          class="w-full px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 transition-colors duration-300"
+          :disabled="loading"
+        >
+          {{ loading ? "Iniciant sessió..." : "Login" }}
+        </button>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup>

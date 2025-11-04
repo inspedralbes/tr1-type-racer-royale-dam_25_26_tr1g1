@@ -1,86 +1,65 @@
 <template>
-  <NavBar />
-  <!-- Diàleg per editar el perfil -->
-  <v-container>
-    <v-row justify="center">
-      <v-col cols="12" sm="10" md="8" lg="6">
-        <v-card v-if="userData">
-          <v-toolbar color="primary" dark>
-            <v-toolbar-title>Perfil d'Usuari</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text class="text-center">
-            <v-avatar size="120" class="my-4">
-              <img
-                src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
-                alt="Avatar"
-              />
-            </v-avatar>
-            <h2 class="text-h5 font-weight-bold">{{ userData.username }}</h2>
-            <p class="text-subtitle-1 text-grey-darken-1">
-              Nivell: {{ Math.floor(userData.nivel) }}
-            </p>
-            <v-progress-linear
-              :model-value="(userData.nivel % 1) * 100"
-              color="primary"
-              height="10"
-              rounded
-              class="mt-2"
-            ></v-progress-linear>
-          </v-card-text>
+  <div class="min-h-screen bg-gray-900 text-white">
+    <NavBar />
+    <div class="container mx-auto p-4">
+      <div class="max-w-2xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div v-if="userData">
+          <div class="p-6">
+            <div class="text-center mb-6">
+              <v-avatar size="120" class="mb-4">
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                  alt="Avatar"
+                />
+              </v-avatar>
+              <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
+              <p class="text-md text-gray-400">
+                Nivell: {{ Math.floor(userData.nivel) }}
+              </p>
+              <v-progress-linear
+                :model-value="(userData.nivel % 1) * 100"
+                color="primary"
+                height="10"
+                rounded
+                class="mt-2"
+              ></v-progress-linear>
+            </div>
 
-          <v-list lines="two">
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-icon>mdi-email</v-icon>
-              </template>
-              <v-list-item-title>{{ userData.email }}</v-list-item-title>
-              <v-list-item-subtitle>Email</v-list-item-subtitle>
-            </v-list-item>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-400">Email</h3>
+                <p class="text-lg">{{ userData.email }}</p>
+              </div>
+              <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-400">Membre des de</h3>
+                <p class="text-lg">
+                  {{ new Date(userData.date_created).toLocaleDateString() }}
+                </p>
+              </div>
+              <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-400">Pes actual</h3>
+                <p class="text-lg">{{ userData.pesoActual || "-" }} kg</p>
+              </div>
+              <div class="bg-gray-700 p-4 rounded-lg">
+                <h3 class="text-sm font-medium text-gray-400">Altura</h3>
+                <p class="text-lg">{{ userData.altura || "-" }} cm</p>
+              </div>
+            </div>
 
-            <v-list-item>
-              <template v-slot:prepend>
-                <v-icon>mdi-calendar</v-icon>
-              </template>
-              <v-list-item-title>{{
-                new Date(userData.date_created).toLocaleDateString()
-              }}</v-list-item-title>
-              <v-list-item-subtitle>Membre des de</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-
-          <v-divider></v-divider>
-
-          <v-card-text>
-            <v-row>
-              <v-col class="text-center">
-                <p class="text-subtitle-2 text-grey">PES ACTUAL</p>
-                <p class="text-h6">{{ userData.pesoActual || "-" }} kg</p>
-              </v-col>
-              <v-col class="text-center">
-                <p class="text-subtitle-2 text-grey">ALTURA</p>
-                <p class="text-h6">{{ userData.altura || "-" }} cm</p>
-              </v-col>
-            </v-row>
-          </v-card-text>
-
-          <v-card-actions class="pa-4">
-            <v-btn @click="openEditDialog" color="primary" block variant="tonal"
-              >Editar perfil</v-btn
-            >
-          </v-card-actions>
-
-          <v-card-actions class="pa-4">
-            <v-btn @click="handleLogout" color="red" block variant="tonal"
-              >Tancar Sessió</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
+            <div class="flex flex-col space-y-4">
+              <v-btn @click="openEditDialog" color="primary" block
+                >Editar perfil</v-btn
+              >
+              <v-btn @click="handleLogout" color="red" block>Tancar Sessió</v-btn>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- EDICIÓ PERFIL -->
     <v-dialog v-model="isEditDialogOpen" persistent max-width="600px">
-      <v-card>
+      <v-card class="bg-gray-800 text-white">
         <v-card-title>
           <span class="text-h5">Editar Perfil</span>
         </v-card-title>
@@ -92,6 +71,7 @@
                   label="Nom d'usuari"
                   v-model="editableUserData.username"
                   required
+                  dark
                 ></v-text-field>
               </v-col>
               <v-col cols="12">
@@ -99,6 +79,7 @@
                   label="Email"
                   v-model="editableUserData.email"
                   required
+                  dark
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -107,6 +88,7 @@
                   v-model="editableUserData.pesoActual"
                   type="number"
                   required
+                  dark
                 ></v-text-field>
               </v-col>
               <v-col cols="12" sm="6">
@@ -115,6 +97,7 @@
                   v-model="editableUserData.altura"
                   type="number"
                   required
+                  dark
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -122,18 +105,13 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue-darken-1" text @click="isEditDialogOpen = false"
-            >Cancel·lar</v-btn
-          >
-          <v-btn color="blue-darken-1" text @click="handleUpdateProfile"
-            >Guardar</v-btn
-          >
+          <v-btn text @click="isEditDialogOpen = false">Cancel·lar</v-btn>
+          <v-btn color="primary" text @click="handleUpdateProfile">Guardar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
-
 <script setup>
 import { computed, onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";

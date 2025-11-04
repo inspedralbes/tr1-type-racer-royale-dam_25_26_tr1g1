@@ -1,16 +1,22 @@
 <template>
-  <v-bottom-navigation v-model="value" color="primary" grow location="bottom">
-    <v-btn value="/social">
+  <v-bottom-navigation
+    v-model="value"
+    color="primary"
+    grow
+    location="bottom"
+    class="bg-gray-800 text-white"
+  >
+    <v-btn value="/social" class="text-white">
       <v-icon>mdi-account-group</v-icon>
       Social
     </v-btn>
 
-    <v-btn value="/sessions">
+    <v-btn value="/sessions" class="text-white">
       <v-icon>mdi-dumbbell</v-icon>
       Sessions
     </v-btn>
 
-    <v-btn value="/perfil">
+    <v-btn value="/perfil" class="text-white">
       <v-icon>mdi-account</v-icon>
       Perfil
     </v-btn>

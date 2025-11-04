@@ -11,11 +11,9 @@ import router from "./router";
 // Components
 import App from "./App.vue";
 
-// Composables
-import { createApp } from "vue";
-
 // Styles
-import "unfonts.css";
+import "./styles/tailwind.css";import { createApp } from "vue";
+
 
 const app = createApp(App);
 

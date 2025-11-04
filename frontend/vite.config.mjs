@@ -6,7 +6,6 @@ import Layouts from "vite-plugin-vue-layouts-next";
 import Vue from "@vitejs/plugin-vue";
 import VueRouter from "unplugin-vue-router/vite";
 import { VueRouterAutoImports } from "unplugin-vue-router";
-import Vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
 // Utilities
 import { defineConfig } from "vite";
@@ -17,16 +16,7 @@ export default defineConfig({
   plugins: [
     VueRouter(),
     Layouts(),
-    Vue({
-      template: { transformAssetUrls },
-    }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin#readme
-    Vuetify({
-      autoImport: true,
-      styles: {
-        configFile: "src/styles/settings.scss",
-      },
-    }),
+    Vue(),
     Components(),
     Fonts({
       google: {
@@ -52,15 +42,6 @@ export default defineConfig({
       vueTemplate: true,
     }),
   ],
-  optimizeDeps: {
-    exclude: [
-      "vuetify",
-      "vue-router",
-      "unplugin-vue-router/runtime",
-      "unplugin-vue-router/data-loaders",
-      "unplugin-vue-router/data-loaders/basic",
-    ],
-  },
   define: { "process.env": {} },
   resolve: {
     alias: {
