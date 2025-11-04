@@ -1,7 +1,7 @@
 <template>
-  <v-app>
+  <div class="h-screen bg-gray-100">
     <router-view />
-  </v-app>
+  </div>
 </template>
 
 <script setup>

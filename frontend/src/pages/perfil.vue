@@ -6,23 +6,20 @@
         <div v-if="userData">
           <div class="p-6">
             <div class="text-center mb-6">
-              <v-avatar size="120" class="mb-4">
+              <div class="w-32 h-32 rounded-full overflow-hidden mx-auto mb-4">
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
                   alt="Avatar"
+                  class="w-full h-full object-cover"
                 />
-              </v-avatar>
+              </div>
               <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
               <p class="text-md text-gray-400">
                 Nivell: {{ Math.floor(userData.nivel) }}
               </p>
-              <v-progress-linear
-                :model-value="(userData.nivel % 1) * 100"
-                color="primary"
-                height="10"
-                rounded
-                class="mt-2"
-              ></v-progress-linear>
+              <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+                <div class="bg-blue-500 h-2.5 rounded-full" :style="{ width: (userData.nivel % 1) * 100 + '%' }"></div>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -47,10 +44,8 @@
             </div>
 
             <div class="flex flex-col space-y-4">
-              <v-btn @click="openEditDialog" color="primary" block
-                >Editar perfil</v-btn
-              >
-              <v-btn @click="handleLogout" color="red" block>Tancar Sessió</v-btn>
+              <button @click="openEditDialog" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Editar perfil</button>
+              <button @click="handleLogout" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Tancar Sessió</button>
             </div>
           </div>
         </div>
@@ -58,58 +53,37 @@
     </div>
 
     <!-- EDICIÓ PERFIL -->
-    <v-dialog v-model="isEditDialogOpen" persistent max-width="600px">
-      <v-card class="bg-gray-800 text-white">
-        <v-card-title>
-          <span class="text-h5">Editar Perfil</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  label="Nom d'usuari"
-                  v-model="editableUserData.username"
-                  required
-                  dark
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Email"
-                  v-model="editableUserData.email"
-                  required
-                  dark
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  label="Pes (kg)"
-                  v-model="editableUserData.pesoActual"
-                  type="number"
-                  required
-                  dark
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" sm="6">
-                <v-text-field
-                  label="Altura (cm)"
-                  v-model="editableUserData.altura"
-                  type="number"
-                  required
-                  dark
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="isEditDialogOpen = false">Cancel·lar</v-btn>
-          <v-btn color="primary" text @click="handleUpdateProfile">Guardar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <div v-if="isEditDialogOpen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+      <div class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+        <h2 class="text-2xl font-bold mb-4">Editar Perfil</h2>
+        
+        <div class="space-y-4">
+          <div>
+            <label for="username" class="block text-sm font-medium text-gray-400">Nom d'usuari</label>
+            <input type="text" id="username" v-model="editableUserData.username" required class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-400">Email</label>
+            <input type="email" id="email" v-model="editableUserData.email" required class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="peso" class="block text-sm font-medium text-gray-400">Pes (kg)</label>
+              <input type="number" id="peso" v-model="editableUserData.pesoActual" required class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+              <label for="altura" class="block text-sm font-medium text-gray-400">Altura (cm)</label>
+              <input type="number" id="altura" v-model="editableUserData.altura" required class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6 flex justify-end space-x-4">
+          <button @click="isEditDialogOpen = false" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Cancel·lar</button>
+          <button @click="handleUpdateProfile" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
