@@ -88,6 +88,13 @@ const onFeatures = (payload) => {
     typeof structuredClone === "function"
       ? structuredClone(payload)
       : JSON.parse(JSON.stringify(payload));
+
+  const score = 1;
+
+  websocketStore.sendMessage({
+    type: "UPDATE_SCORE",
+    payload: { score: score },
+  });
 };
 
 const sortedParticipants = computed(() => {

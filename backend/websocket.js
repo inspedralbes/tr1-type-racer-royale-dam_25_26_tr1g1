@@ -4,6 +4,7 @@ import {
   joinSession,
   deleteSession,
   leaveSession,
+  updateUserScore,
 } from "./sessions.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
@@ -28,6 +29,29 @@ export const broadcastSessionsUpdate = () => {
         client.send(message);
       } catch (error) {
         console.error("Error enviando mensaje WebSocket:", error);
+      }
+    }
+  });
+};
+
+export const broadcastSessionUpdate = (session) => {
+  if (!wssInstance) return;
+  const message = JSON.stringify({
+    type: MESSAGE_TYPES.SESSION_UPDATE,
+    payload: session,
+  });
+
+  const userIdsInSession = new Set(session.users.map((u) => u.id));
+
+  wssInstance.clients.forEach((client) => {
+    if (
+      client.readyState === client.OPEN &&
+      userIdsInSession.has(client.userId)
+    ) {
+      try {
+        client.send(message);
+      } catch (error) {
+        console.error("Error sending WebSocket message:", error);
       }
     }
   });
@@ -135,6 +159,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
             if (session) {
               ws.currentSession = session.id;
               sendMessage(ws, MESSAGE_TYPES.JOIN_SUCCESS, session);
+              broadcastSessionUpdate(session);
             }
           } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
@@ -154,9 +179,31 @@ export const setupWebsocketHandlers = (ws, wss) => {
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
               message: "User not logged in.",
             });
-          leaveSession(payload.sessionId, ws.userId);
+          const updatedSession = await leaveSession(payload.sessionId, ws.userId);
+          if (updatedSession) {
+            broadcastSessionUpdate(updatedSession);
+          }
           ws.currentSession = null;
           sendMessage(ws, MESSAGE_TYPES.LEAVE_SUCCESS, {});
+          break;
+
+        case MESSAGE_TYPES.UPDATE_SCORE:
+          if (!ws.userId || !ws.currentSession)
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in or not in a session.",
+            });
+          try {
+            const updatedSession = updateUserScore(
+              ws.currentSession,
+              ws.userId,
+              payload.score
+            );
+            if (updatedSession) {
+              broadcastSessionUpdate(updatedSession);
+            }
+          } catch (error) {
+            sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
+          }
           break;
 
         default:
@@ -173,11 +220,17 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 
-  ws.on("close", () => {
+  ws.on("close", async () => {
     if (ws.userId) {
       console.log(`User ${ws.userId} disconnected.`);
       if (ws.currentSession) {
-        leaveSession(ws.currentSession, ws.userId);
+        const updatedSession = await leaveSession(
+          ws.currentSession,
+          ws.userId
+        );
+        if (updatedSession) {
+          broadcastSessionUpdate(updatedSession);
+        }
       }
     }
   });

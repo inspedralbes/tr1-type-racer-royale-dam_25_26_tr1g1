@@ -66,7 +66,6 @@ export const joinSession = async (sessionId, userId, password) => {
     username: joiningUser.username,
     puntos: 0,
   });
-  broadcastSessionsUpdate();
   return session;
 };
 
@@ -82,15 +81,34 @@ export const deleteSession = async (id) => {
 
 export const leaveSession = async (sessionId, userId) => {
   const session = getSessionById(sessionId);
-  if (!session) return;
+  if (!session) return null;
 
-  const userIndex = session.users.findIndex((user) => user.id === userId);
-  if (userIndex > -1) {
-    session.users.splice(userIndex, 1);
+  const initialUserCount = session.users.length;
+  session.users = session.users.filter((user) => user.id !== userId);
+
+  if (session.users.length < initialUserCount) {
     if (session.users.length === 0) {
       deleteSession(sessionId);
+      return null; // Session deleted
     } else {
-      broadcastSessionsUpdate();
+      return session; // Return updated session
     }
   }
+  return session; // User not found, return original session
+};
+
+export const updateUserScore = (sessionId, userId, score) => {
+  const session = getSessionById(sessionId);
+  if (!session) {
+    return null;
+  }
+
+  const userInSession = session.users.find((user) => user.id === userId);
+  if (!userInSession) {
+    return null;
+  }
+
+  userInSession.puntos += score;
+
+  return session;
 };

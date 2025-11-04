@@ -34,6 +34,12 @@ export const useWebSocketStore = defineStore("websocket", {
               this.sessions = data.payload;
               break;
 
+            case "SESSION_UPDATE":
+              if (this.currentSession && this.currentSession.id === data.payload.id) {
+                this.currentSession = data.payload;
+              }
+              break;
+
             case "CREATE_SUCCESS":
               this.currentSession = data.payload;
               router.push(`/session/${data.payload.id}`);
