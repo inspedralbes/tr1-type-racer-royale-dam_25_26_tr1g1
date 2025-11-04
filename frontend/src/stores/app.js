@@ -78,6 +78,27 @@ export const useAppStore = defineStore("app", {
       localStorage.setItem("user", JSON.stringify(user));
     },
 
+    async updateUser(userData) {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/users/${this.user.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(userData),
+          }
+        );
+        const updatedUser = await res.json();
+        if (!res.ok) throw new Error(updatedUser.message);
+
+        this.user = { ...this.user, ...updatedUser }; // Fusiona les dades actuals amb les noves
+        localStorage.setItem("user", JSON.stringify(this.user));
+        this.setNotification("Perfil actualitzat correctament", "success");
+      } catch (err) {
+        this.setNotification(err.message, "error");
+      }
+    },
+
     clearUser() {
       this.isAuthenticated = false;
       this.user = null;

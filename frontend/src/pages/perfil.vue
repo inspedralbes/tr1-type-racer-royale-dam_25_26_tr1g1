@@ -1,5 +1,6 @@
 <template>
   <NavBar />
+  <!-- Diàleg per editar el perfil -->
   <v-container>
     <v-row justify="center">
       <v-col cols="12" sm="10" md="8" lg="6">
@@ -63,18 +64,78 @@
           </v-card-text>
 
           <v-card-actions class="pa-4">
-            <v-btn @click="handleLogout" color="secondary" block variant="tonal"
+            <v-btn @click="openEditDialog" color="primary" block variant="tonal"
+              >Editar perfil</v-btn
+            >
+          </v-card-actions>
+
+          <v-card-actions class="pa-4">
+            <v-btn @click="handleLogout" color="red" block variant="tonal"
               >Tancar Sessió</v-btn
             >
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- EDICIÓ PERFIL -->
+    <v-dialog v-model="isEditDialogOpen" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Editar Perfil</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="Nom d'usuari"
+                  v-model="editableUserData.username"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  label="Email"
+                  v-model="editableUserData.email"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  label="Pes (kg)"
+                  v-model="editableUserData.pesoActual"
+                  type="number"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6">
+                <v-text-field
+                  label="Altura (cm)"
+                  v-model="editableUserData.altura"
+                  type="number"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue-darken-1" text @click="isEditDialogOpen = false"
+            >Cancel·lar</v-btn
+          >
+          <v-btn color="blue-darken-1" text @click="handleUpdateProfile"
+            >Guardar</v-btn
+          >
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import NavBar from "@/components/NavBar.vue";
@@ -83,12 +144,39 @@ const router = useRouter();
 const appStore = useAppStore();
 
 const userData = computed(() => appStore.user);
+const isEditDialogOpen = ref(false);
+const editableUserData = reactive({
+  username: null,
+  email: null,
+  pesoActual: null,
+  altura: null,
+});
 
 onMounted(() => {
   if (!appStore.isAuthenticated) {
     router.push("/");
   }
 });
+
+const openEditDialog = () => {
+  if (userData.value) {
+    editableUserData.username = userData.value.username;
+    editableUserData.email = userData.value.email;
+    editableUserData.pesoActual = userData.value.pesoActual;
+    editableUserData.altura = userData.value.altura;
+  }
+  isEditDialogOpen.value = true;
+};
+
+const handleUpdateProfile = async () => {
+  try {
+    await appStore.updateUser(editableUserData);
+    isEditDialogOpen.value = false;
+  } catch (error) {
+    console.error("Error en actualitzar el perfil:", error);
+    // Aquí podries mostrar un missatge d'error a l'usuari
+  }
+};
 
 const handleLogout = () => {
   appStore.setLoggedOut();
