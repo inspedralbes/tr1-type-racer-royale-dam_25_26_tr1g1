@@ -43,9 +43,13 @@ export const updateSession = async (id, updateData) => {
   return null;
 };
 
-export const joinSession = async (sessionId, userId) => {
+export const joinSession = async (sessionId, userId, password) => {
   const session = sessions.find((s) => s.id === sessionId);
   if (!session) return null;
+
+  if (session.password && session.password !== password) {
+    throw new Error("Incorrect password");
+  }
 
   const joiningUser = findUserById(userId);
   if (!joiningUser) {

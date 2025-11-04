@@ -11,7 +11,11 @@
       type="number"
       required
     ></v-text-field>
-    <v-switch v-model="session.isPublic" label="Sessió pública"></v-switch>
+    <v-text-field
+      v-model="session.password"
+      label="Contrasenya (deixar buit per a sessió pública)"
+      type="password"
+    ></v-text-field>
     <v-text-field
       v-model.number="session.maxUsers"
       label="Màxim d'usuaris"
@@ -33,7 +37,7 @@ const websocketStore = useWebSocketStore();
 const session = ref({
   type: "Full Body",
   time: 30,
-  isPublic: true,
+  password: "", // Changed from isPublic
   maxUsers: 8,
 });
 

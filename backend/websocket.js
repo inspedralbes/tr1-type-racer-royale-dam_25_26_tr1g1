@@ -127,7 +127,11 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in.",
             });
           try {
-            const session = await joinSession(payload.sessionId, ws.userId);
+            const session = await joinSession(
+              payload.sessionId,
+              ws.userId,
+              payload.password
+            );
             if (session) {
               ws.currentSession = session.id;
               sendMessage(ws, MESSAGE_TYPES.JOIN_SUCCESS, session);
