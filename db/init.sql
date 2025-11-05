@@ -9,7 +9,8 @@ CREATE TABLE Usuari (
     data_registre DATETIME DEFAULT CURRENT_TIMESTAMP,
     pes_actual DECIMAL(5,2) DEFAULT NULL,
     pes_objectiu DECIMAL(5,2) DEFAULT NULL,
-    altura DECIMAL(5,2) DEFAULT NULL
+    altura DECIMAL(5,2) DEFAULT NULL,
+    biografia TEXT DEFAULT NULL
 );
 
 -- 🧭 Tabla: SESSIONS

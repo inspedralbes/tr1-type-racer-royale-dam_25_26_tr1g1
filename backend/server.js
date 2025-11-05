@@ -121,6 +121,7 @@ app.get("/users/:id", (req, res) => {
     date_created: user.date_created || null,
     pesoActual: user.pesoActual || null,
     altura: user.altura || null,
+    biografia: user.biografia || null,
   });
 });
 
@@ -137,7 +138,7 @@ app.put("/users/:id", async (req, res) => {
 });
 
 app.post("/users/register", async (req, res) => {
-  const { username, email, password, pesoActual, altura } = req.body;
+  const { username, email, password, pesoActual, altura, biografia } = req.body;
   if (!username || !email || !password || !pesoActual || !altura)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
@@ -147,7 +148,8 @@ app.post("/users/register", async (req, res) => {
       email,
       password,
       pesoActual,
-      altura
+      altura,
+      biografia
     );
     res.json(newUser);
   } catch (err) {
@@ -172,6 +174,7 @@ app.post("/users/login", (req, res) => {
         pesoActual: user.pesoActual || null,
         altura: user.altura || null,
         nivel: user.nivel || 0,
+        biografia: user.biografia || null,
       },
     });
   } catch (err) {

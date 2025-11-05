@@ -62,6 +62,12 @@
             </div>
           </div>
 
+          <!-- User Biography -->
+          <div class="mt-6 text-center">
+            <h3 class="text-lg font-medium text-gray-400">Biografía</h3>
+            <p class="mt-2 text-gray-300">{{ userData.biografia || "No has afegit cap biografia." }}</p>
+          </div>
+
           <div
             class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
           >
@@ -143,9 +149,12 @@
                 id="altura"
                 v-model="editableUserData.altura"
                 required
-                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
+          </div>
+          <div>
+            <label for="biografia" class="block text-sm font-medium text-gray-400">Biografia</label>
+            <textarea id="biografia" v-model="editableUserData.biografia" rows="3" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
           </div>
         </div>
 
@@ -183,6 +192,7 @@ const editableUserData = reactive({
   email: null,
   pesoActual: null,
   altura: null,
+  biografia: null,
 });
 
 onMounted(() => {
@@ -197,6 +207,7 @@ const openEditDialog = () => {
     editableUserData.email = userData.value.email;
     editableUserData.pesoActual = userData.value.pesoActual;
     editableUserData.altura = userData.value.altura;
+    editableUserData.biografia = userData.value.biografia;
   }
   isEditDialogOpen.value = true;
 };

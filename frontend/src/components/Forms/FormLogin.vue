@@ -4,11 +4,11 @@
     <form @submit.prevent="login" class="space-y-6">
       <div>
         <label class="block text-sm font-medium text-gray-300" for="username"
-          >Username</label
+          >Nom d'usuari</label
         >
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Nom d'usuari"
           class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           v-model="username"
           required
@@ -16,11 +16,11 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-300" for="password"
-          >Password</label
+          >Contrasenya</label
         >
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Contrasenya"
           class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           v-model="password"
           required

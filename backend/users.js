@@ -6,6 +6,7 @@ let usuaris = [
     username: "MartiCas",
     email: "marticastano@gmail.com",
     password: "123",
+    biografia: "",
     pesoActual: 72,
     altura: 179,
     nivel: 1.3,
@@ -15,6 +16,7 @@ let usuaris = [
     username: "AngelCua",
     email: "angelcuadra@gmail.com",
     password: "123",
+    biografia: "",
     pesoActual: 82,
     altura: 181,
     nivel: 2.5,
@@ -24,6 +26,7 @@ let usuaris = [
     username: "MariaCas",
     email: "maria@gmail.com",
     password: "123",
+    biografia: "",
     pesoActual: 61,
     altura: 172,
     nivel: 0,
@@ -33,6 +36,7 @@ let usuaris = [
     username: "PabloRod",
     email: "pablo@gmai.com",
     password: "123",
+    biografia: "",
     pesoActual: "67",
     altura: 179,
     nivel: 0,
@@ -52,7 +56,8 @@ export const registerUser = async (
   email,
   password,
   pesoActual,
-  altura
+  altura,
+  biografia
 ) => {
   if (findUserByUsername(username)) {
     throw new Error("USERNAME_EXISTS");
@@ -71,6 +76,7 @@ export const registerUser = async (
     altura,
     date_created: new Date(),
     nivel: 0,
+    biografia,
   };
   usuaris.push(newUser);
 
