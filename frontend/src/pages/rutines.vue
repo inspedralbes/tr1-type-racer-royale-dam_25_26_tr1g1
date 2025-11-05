@@ -9,12 +9,11 @@
           Explora les nostres rutines d'entrenament personalitzades
         </p>
       </div>
-      
+
       <!-- Loading / Error -->
       <div v-if="loading" class="mt-6 p-4 bg-gray-800 rounded-lg text-center">
         <p class="text-gray-300">Carregant rutines...</p>
       </div>
-
       <div v-if="error" class="mt-6 p-4 bg-red-700 rounded-lg text-center">
         <p class="text-white">Error en carregar rutines: {{ error }}</p>
       </div>
@@ -30,6 +29,7 @@
           <div class="p-4">
             <ul class="space-y-4">
               <li v-for="exercise in routine.upper" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
+                <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
                 <h4 class="text-lg font-semibold text-blue-400">{{ exercise.name }}</h4>
                 <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                 <div class="mt-2 flex justify-between items-center text-sm">
@@ -59,6 +59,7 @@
           <div class="p-4">
             <ul class="space-y-4">
               <li v-for="exercise in routine.lower" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
+                <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
                 <h4 class="text-lg font-semibold text-green-400">{{ exercise.name }}</h4>
                 <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                 <div class="mt-2 flex justify-between items-center text-sm">
@@ -88,6 +89,7 @@
           <div class="p-4">
             <ul class="space-y-4">
               <li v-for="exercise in routine.fullbody" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
+                <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
                 <h4 class="text-lg font-semibold text-purple-400">{{ exercise.name }}</h4>
                 <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                 <div class="mt-2 flex justify-between items-center text-sm">
@@ -140,5 +142,4 @@ const fetchExercises = async () => {
 onMounted(() => {
   fetchExercises();
 });
-
 </script>

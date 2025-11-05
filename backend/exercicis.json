@@ -2,66 +2,76 @@
   "routine": {
     "upper": [
       {
-        "name": "Push-ups",
+        "name": "Push-Up",
         "description": "Des de posició de planxa, baixa el cos doblegant els colzes i torna a pujar.",
         "keypoints_detected": ["espatlles", "colzes", "canyells", "pit"],
-        "repetitions": 10
+        "repetitions": 10,
+        "gif": "/exercicis_gif/Push-Up.gif"
       },
       {
         "name": "Triceps Dips",
         "description": "Amb les mans recolzades en una superfície baixa darrere de tu, baixa i puja el cos flexionant els colzes.",
         "keypoints_detected": ["espatlles", "colzes", "canyells"],
-        "repetitions": 12
+        "repetitions": 12,
+        "gif": "/exercicis_gif/Triceps-Dips.gif"
       },
       {
-        "name": "Arm Circles",
-        "description": "Dempeus, amb els braços estesos en creu, realitza cercles petits cap endavant i enrere.",
-        "keypoints_detected": ["espatlles", "colzes"],
-        "duration_seconds": 30
+        "name": "Diamond Push-ups",
+        "description": "Fes flexions amb les mans juntes formant un diamant sota el pit per treballar més els tríceps.",
+        "keypoints_detected": ["espatlles", "colzes", "pit"],
+        "repetitions": 8,
+        "gif": "/exercicis_gif/Diamond-Push-up.gif"
       },
       {
-        "name": "Plank Shoulder Taps",
-        "description": "Des de planxa alta, toca amb una mà l'espatlla contrària alternant sense balancejar el cos.",
-        "keypoints_detected": ["espatlles", "colzes", "canyelles", "malucs"],
-        "repetitions": 20
+        "name": "Superman Hold",
+        "description": "Estirat boca avall, aixeca simultàniament braços i cames del terra mantenint la posició.",
+        "keypoints_detected": ["espatlles", "colzes", "malucs", "genolls"],
+        "duration_seconds": 20,
+        "gif": "/exercicis_gif/Superman.gif"
       },
       {
         "name": "Wall Push-ups",
         "description": "Dona't suport en una paret i realitza flexions inclinades cap a ella.",
         "keypoints_detected": ["espatlles", "colzes", "canyelles"],
-        "repetitions": 15
+        "repetitions": 15,
+        "gif": "/exercicis_gif/Wall-Push-ups.gif"
       }
     ],
     "lower": [
       {
-        "name": "Squats",
+        "name": "Squat",
         "description": "Dempeus, peus a l'ample de les espatlles, baixa el cos flexionant genolls i torna a pujar.",
         "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "repetitions": 15
+        "repetitions": 15,
+        "gif": "/exercicis_gif/Squat.gif"
       },
       {
         "name": "Lunges",
         "description": "Fa un pas endavant, baixa fins que tots dos genolls formin 90° i torna a la posició inicial.",
-        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
-        "repetitions": 10
-      },
-      {
-        "name": "Calf Raises",
-        "description": "Dempeus, eleva els talons i mantingues la posició un segon abans de baixar.",
-        "keypoints_detected": ["genolls", "turmells"],
-        "repetitions": 20
-      },
-      {
-        "name": "Side Leg Raises",
-        "description": "Dempeus o recolzat de costat, aixeca una cama lateralment i baixa-la sense tocar l'altra.",
         "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "repetitions": 15
+        "repetitions": 10,
+        "gif": "/exercicis_gif/Lunges.gif"
+      },
+      {
+        "name": "Jump Squats",
+        "description": "Realitza una gatzoneta i en pujar salta explosivament cap amunt, aterra suaument i repeteix.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
+        "repetitions": 12,
+        "gif": "/exercicis_gif/Jump-Squat.gif"
+      },
+      {
+        "name": "Fire Hydrants",
+        "description": "A quatre grapes, aixeca una cama lateralment mantenint el genoll flexionat a 90 graus, com un gos en un hidrant.",
+        "keypoints_detected": ["malucs", "genolls", "esquena"],
+        "repetitions": 12,
+        "gif": "/exercicis_gif/Fire-Hydrant.gif"
       },
       {
         "name": "Glute Bridge",
         "description": "Tombat boca amunt, eleva els malucs fins a formar una línia recta espatlles-genolls.",
         "keypoints_detected": ["espatlles", "malucs", "genolls"],
-        "repetitions": 12
+        "repetitions": 12,
+        "gif": "/exercicis_gif/Glute-Bridges.gif"
       }
     ],
     "fullbody": [
@@ -75,13 +85,15 @@
           "genolls",
           "turmells"
         ],
-        "duration_seconds": 30
+        "duration_seconds": 30,
+        "gif": "/exercicis_gif/Jumping-Jacks.gif"
       },
       {
         "name": "Mountain Climbers",
         "description": "En posició de planxa, porta un genoll al pit i alterna ràpidament les cames. ",
         "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
-        "duration_seconds": 30
+        "duration_seconds": 30,
+        "gif": "/exercicis_gif/Mountain-Climbers.gif"
       },
       {
         "name": "Burpees",
@@ -93,19 +105,22 @@
           "genolls",
           "turmells"
         ],
-        "repetitions": 10
+        "repetitions": 10,
+        "gif": "/exercicis_gif/Burpees.gif"
       },
       {
         "name": "Plank",
         "description": "Mantingues el cos recte en posició de planxa sobre avantbraços o mans.",
         "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
-        "duration_seconds": 30
+        "duration_seconds": 30,
+        "gif": "/exercicis_gif/Plank.gif"
       },
       {
         "name": "High Knees",
         "description": "Corre en el lloc aixecant els genolls el més alt possible.",
         "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "duration_seconds": 30
+        "duration_seconds": 30,
+        "gif": "/exercicis_gif/High-Knees.gif"
       }
     ]
   }
