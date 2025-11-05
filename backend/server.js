@@ -23,6 +23,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
@@ -34,6 +41,24 @@ setWssInstance(wss);
 
 app.get("/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
+});
+
+// Serve exercises JSON
+app.get("/exercicis", (req, res) => {
+  const filePath = path.join(__dirname, "exercicis.json");
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error llegint exercicis.json:", err);
+      return res.status(500).json({ message: "Error llegint exercicis" });
+    }
+    try {
+      const json = JSON.parse(data);
+      return res.json(json);
+    } catch (e) {
+      console.error("JSON invàlid a exercicis.json:", e);
+      return res.status(500).json({ message: "JSON invàlid" });
+    }
+  });
 });
 
 // app.get("/sessions", (req, res) => {

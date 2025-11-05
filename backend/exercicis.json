@@ -3,108 +3,108 @@
     "upper": [
       {
         "name": "Push-ups",
-        "description": "Desde posición de plancha, baja el cuerpo doblando los codos y vuelve a subir.",
-        "keypoints_detected": ["hombros", "codos", "muñecas", "pecho"],
+        "description": "Des de posició de planxa, baixa el cos doblegant els colzes i torna a pujar.",
+        "keypoints_detected": ["espatlles", "colzes", "canyells", "pit"],
         "repetitions": 10
       },
       {
         "name": "Triceps Dips",
-        "description": "Con las manos apoyadas en una superficie baja detrás de ti, baja y sube el cuerpo flexionando los codos.",
-        "keypoints_detected": ["hombros", "codos", "muñecas"],
+        "description": "Amb les mans recolzades en una superfície baixa darrere de tu, baixa i puja el cos flexionant els colzes.",
+        "keypoints_detected": ["espatlles", "colzes", "canyells"],
         "repetitions": 12
       },
       {
         "name": "Arm Circles",
-        "description": "De pie, con los brazos extendidos en cruz, realiza círculos pequeños hacia adelante y atrás.",
-        "keypoints_detected": ["hombros", "codos"],
+        "description": "Dempeus, amb els braços estesos en creu, realitza cercles petits cap endavant i enrere.",
+        "keypoints_detected": ["espatlles", "colzes"],
         "duration_seconds": 30
       },
       {
         "name": "Plank Shoulder Taps",
-        "description": "Desde plancha alta, toca con una mano el hombro contrario alternando sin balancear el cuerpo.",
-        "keypoints_detected": ["hombros", "codos", "muñecas", "caderas"],
+        "description": "Des de planxa alta, toca amb una mà l'espatlla contrària alternant sense balancejar el cos.",
+        "keypoints_detected": ["espatlles", "colzes", "canyelles", "malucs"],
         "repetitions": 20
       },
       {
         "name": "Wall Push-ups",
-        "description": "Apóyate en una pared y realiza flexiones inclinadas hacia ella.",
-        "keypoints_detected": ["hombros", "codos", "muñecas"],
+        "description": "Dona't suport en una paret i realitza flexions inclinades cap a ella.",
+        "keypoints_detected": ["espatlles", "colzes", "canyelles"],
         "repetitions": 15
       }
     ],
     "lower": [
       {
         "name": "Squats",
-        "description": "De pie, pies al ancho de los hombros, baja el cuerpo flexionando rodillas y vuelve a subir.",
-        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "description": "Dempeus, peus a l'ample de les espatlles, baixa el cos flexionant genolls i torna a pujar.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
         "repetitions": 15
       },
       {
         "name": "Lunges",
-        "description": "Da un paso adelante, baja hasta que ambas rodillas formen 90° y vuelve a la posición inicial.",
+        "description": "Fa un pas endavant, baixa fins que tots dos genolls formin 90° i torna a la posició inicial.",
         "keypoints_detected": ["caderas", "rodillas", "tobillos"],
         "repetitions": 10
       },
       {
         "name": "Calf Raises",
-        "description": "De pie, eleva los talones y mantén la posición un segundo antes de bajar.",
-        "keypoints_detected": ["rodillas", "tobillos"],
+        "description": "Dempeus, eleva els talons i mantingues la posició un segon abans de baixar.",
+        "keypoints_detected": ["genolls", "turmells"],
         "repetitions": 20
       },
       {
         "name": "Side Leg Raises",
-        "description": "De pie o recostado de lado, levanta una pierna lateralmente y bájala sin tocar la otra.",
-        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "description": "Dempeus o recolzat de costat, aixeca una cama lateralment i baixa-la sense tocar l'altra.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
         "repetitions": 15
       },
       {
         "name": "Glute Bridge",
-        "description": "Acostado boca arriba, eleva las caderas hasta formar una línea recta hombros-rodillas.",
-        "keypoints_detected": ["hombros", "caderas", "rodillas"],
+        "description": "Tombat boca amunt, eleva els malucs fins a formar una línia recta espatlles-genolls.",
+        "keypoints_detected": ["espatlles", "malucs", "genolls"],
         "repetitions": 12
       }
     ],
     "fullbody": [
       {
         "name": "Jumping Jacks",
-        "description": "Salta abriendo piernas y brazos a los lados y vuelve a la posición inicial.",
+        "description": "Salta obrint cames i braços als costats i torna a la posició inicial.",
         "keypoints_detected": [
-          "hombros",
-          "codos",
-          "caderas",
-          "rodillas",
-          "tobillos"
+          "espatlles",
+          "colzes",
+          "malucs",
+          "genolls",
+          "turmells"
         ],
         "duration_seconds": 30
       },
       {
         "name": "Mountain Climbers",
-        "description": "En posición de plancha, lleva una rodilla al pecho y alterna rápidamente las piernas.",
-        "keypoints_detected": ["hombros", "caderas", "rodillas", "tobillos"],
+        "description": "En posició de planxa, porta un genoll al pit i alterna ràpidament les cames. ",
+        "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
         "duration_seconds": 30
       },
       {
         "name": "Burpees",
-        "description": "Desde posición de pie, baja a plancha, realiza una flexión, salta y vuelve a empezar.",
+        "description": "Des de posició dempeus, baixa a planxa, realitza una flexió, salta i torna a començar.",
         "keypoints_detected": [
-          "hombros",
-          "codos",
-          "caderas",
-          "rodillas",
-          "tobillos"
+          "espatlles",
+          "colzes",
+          "malucs",
+          "genolls",
+          "turmells"
         ],
         "repetitions": 10
       },
       {
         "name": "Plank",
-        "description": "Mantén el cuerpo recto en posición de plancha sobre antebrazos o manos.",
-        "keypoints_detected": ["hombros", "caderas", "rodillas", "tobillos"],
+        "description": "Mantingues el cos recte en posició de planxa sobre avantbraços o mans.",
+        "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
         "duration_seconds": 30
       },
       {
         "name": "High Knees",
-        "description": "Corre en el sitio levantando las rodillas lo más alto posible.",
-        "keypoints_detected": ["caderas", "rodillas", "tobillos"],
+        "description": "Corre en el lloc aixecant els genolls el més alt possible.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
         "duration_seconds": 30
       }
     ]

@@ -22,6 +22,15 @@
       </router-link>
 
       <router-link
+        to="/rutines"
+        class="p-4 flex flex-col items-center"
+        active-class="text-blue-400"
+      >
+        <i class="mdi mdi-run text-xl"></i>
+        <span class="text-xs mt-1 hidden sm:block">Rutines</span>
+      </router-link>
+
+      <router-link
         to="/perfil"
         class="p-4 flex flex-col items-center"
         active-class="text-blue-400"
