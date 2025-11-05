@@ -99,7 +99,9 @@ export const setupWebsocketHandlers = (ws, wss) => {
               payload.email,
               payload.password,
               payload.pesoActual,
-              payload.altura
+              payload.altura,
+              null,
+              null
             );
             sendMessage(ws, MESSAGE_TYPES.REGISTER_SUCCESS, {
               userId: user.id,

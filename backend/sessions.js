@@ -20,7 +20,7 @@ export const createSession = async (sessionData, creatorId) => {
   const newSession = {
     id: uuidv4(),
     ...sessionData,
-    users: [{ id: creator.id, username: creator.username, puntos: 0 }],
+    users: [{ id: creator.id, username: creator.username, puntos: 0, foto_perfil: creator.foto_perfil }],
     state: {
       status: "WAITING",
       startTime: Date.now(),
@@ -65,6 +65,7 @@ export const joinSession = async (sessionId, userId, password) => {
     id: joiningUser.id,
     username: joiningUser.username,
     puntos: 0,
+    foto_perfil: joiningUser.foto_perfil,
   });
   return session;
 };

@@ -13,7 +13,7 @@
               class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-800"
             >
               <img
-                src="https://cdn-icons-png.flaticon.com/512/847/847969.png"
+                :src="userData.foto_perfil || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'"
                 alt="Avatar"
                 class="w-full h-full object-cover"
               />
@@ -65,7 +65,9 @@
           <!-- User Biography -->
           <div class="mt-6 text-center">
             <h3 class="text-lg font-medium text-gray-400">Biografía</h3>
-            <p class="mt-2 text-gray-300">{{ userData.biografia || "No has afegit cap biografia." }}</p>
+            <p class="mt-2 text-gray-300">
+              {{ userData.biografia || "No has afegit cap biografia." }}
+            </p>
           </div>
 
           <div
@@ -153,8 +155,30 @@
             </div>
           </div>
           <div>
-            <label for="biografia" class="block text-sm font-medium text-gray-400">Biografia</label>
-            <textarea id="biografia" v-model="editableUserData.biografia" rows="3" class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <label
+              for="biografia"
+              class="block text-sm font-medium text-gray-400"
+              >Biografia</label
+            >
+            <textarea
+              id="biografia"
+              v-model="editableUserData.biografia"
+              rows="3"
+              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            ></textarea>
+          </div>
+          <div>
+            <label
+              for="foto_perfil"
+              class="block text-sm font-medium text-gray-400"
+              >Foto de perfil (URL)</label
+            >
+            <input
+              type="text"
+              id="foto_perfil"
+              v-model="editableUserData.foto_perfil"
+              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
         </div>
 
@@ -193,6 +217,7 @@ const editableUserData = reactive({
   pesoActual: null,
   altura: null,
   biografia: null,
+  foto_perfil: null,
 });
 
 onMounted(() => {
@@ -208,6 +233,7 @@ const openEditDialog = () => {
     editableUserData.pesoActual = userData.value.pesoActual;
     editableUserData.altura = userData.value.altura;
     editableUserData.biografia = userData.value.biografia;
+    editableUserData.foto_perfil = userData.value.foto_perfil;
   }
   isEditDialogOpen.value = true;
 };

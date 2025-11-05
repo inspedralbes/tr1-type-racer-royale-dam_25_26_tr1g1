@@ -18,7 +18,7 @@
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-300" for="email"
-            >Emaivvvl</label
+            >Email</label
           >
           <input
             type="email"
@@ -74,6 +74,23 @@
         </div>
       </div>
 
+      <!-- Step 4: Profile Picture -->
+      <div v-if="step === 4" class="space-y-4">
+        <div>
+          <label
+            class="block text-sm font-medium text-gray-300"
+            for="foto_perfil"
+            >Foto de perfil (URL)</label
+          >
+          <input
+            type="text"
+            placeholder="URL de la teva foto de perfil"
+            class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            v-model="foto_perfil"
+          />
+        </div>
+      </div>
+
       <!-- Navigation and Submit Buttons -->
       <div class="flex justify-between mt-4">
         <button
@@ -86,7 +103,7 @@
         </button>
         <button
           type="button"
-          v-if="step < 3"
+          v-if="step < 4"
           @click="nextStep"
           class="px-6 py-2 ml-auto text-white bg-blue-600 rounded-lg hover:bg-blue-700"
         >
@@ -94,7 +111,7 @@
         </button>
         <button
           type="submit"
-          v-if="step === 3"
+          v-if="step === 4"
           class="px-6 py-2 ml-auto text-white bg-blue-600 rounded-lg hover:bg-blue-700"
           :disabled="loading"
         >
@@ -115,12 +132,13 @@ const email = ref("");
 const password = ref("");
 const pesoActual = ref(null);
 const altura = ref(null);
+const foto_perfil = ref("");
 const loading = ref(false);
 
 const appStore = useAppStore();
 
 const nextStep = () => {
-  if (step.value < 3) {
+  if (step.value < 4) {
     step.value++;
   }
 };
@@ -138,7 +156,9 @@ const register = async () => {
     email.value,
     password.value,
     pesoActual.value,
-    altura.value
+    altura.value,
+    null,
+    foto_perfil.value
   );
   loading.value = false;
 };

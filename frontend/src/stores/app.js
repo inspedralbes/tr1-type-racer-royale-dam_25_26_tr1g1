@@ -34,7 +34,7 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async register(username, email, password, pesoActual, altura) {
+    async register(username, email, password, pesoActual, altura, biografia, foto_perfil) {
       try {
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/users/register`,
@@ -47,7 +47,8 @@ export const useAppStore = defineStore("app", {
               password,
               pesoActual,
               altura,
-              biografia: "",
+              biografia: biografia || "",
+              foto_perfil: foto_perfil || "",
             }),
           }
         );
@@ -92,7 +93,7 @@ export const useAppStore = defineStore("app", {
         const updatedUser = await res.json();
         if (!res.ok) throw new Error(updatedUser.message);
 
-        this.user = { ...this.user, ...updatedUser }; // Fusiona les dades actuals amb les noves
+        this.user = updatedUser;
         localStorage.setItem("user", JSON.stringify(this.user));
         this.setNotification("Perfil actualitzat correctament", "success");
       } catch (err) {

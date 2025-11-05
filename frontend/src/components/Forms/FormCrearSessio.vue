@@ -6,13 +6,16 @@
         <label for="type" class="block text-sm font-medium text-gray-300"
           >Tipus d'exercici</label
         >
-        <input
-          type="text"
+        <select
           id="type"
           v-model="session.type"
           class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
-        />
+        >
+          <option value="upper">Upper Body</option>
+          <option value="lower">Lower Body</option>
+          <option value="fullbody">Full Body</option>
+        </select>
       </div>
       <div>
         <label for="time" class="block text-sm font-medium text-gray-300"
@@ -70,7 +73,7 @@ const emit = defineEmits(["session-created"]);
 const websocketStore = useWebSocketStore();
 
 const session = ref({
-  type: "Full Body",
+  type: "fullbody",
   time: 30,
   password: "", // Changed from isPublic
   maxUsers: 8,

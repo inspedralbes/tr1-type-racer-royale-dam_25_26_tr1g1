@@ -43,7 +43,90 @@ app.get("/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
 });
 
-// Serve exercises JSON
+app.get("/users/:id", (req, res) => {
+  const user = findUserById(req.params.id);
+
+  if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+  res.json({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    date_created: user.date_created || null,
+    pesoActual: user.pesoActual || null,
+    altura: user.altura || null,
+    biografia: user.biografia || null,
+    foto_perfil: user.foto_perfil || null,
+  });
+});
+
+app.put("/users/:id", async (req, res) => {
+  try {
+    const updatedUser = await updateUser(req.params.id, req.body);
+    res.json(updatedUser);
+  } catch (err) {
+    if (err.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.status(500).json({ message: "Error al actualizar" });
+  }
+});
+
+app.post("/users/register", async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    pesoActual,
+    altura,
+    biografia,
+    foto_perfil,
+  } = req.body;
+  if (!username || !email || !password || !pesoActual || !altura)
+    return res.status(400).json({ message: "Falten camps obligatoris" });
+
+  try {
+    const newUser = await registerUser(
+      username,
+      email,
+      password,
+      pesoActual,
+      altura,
+      biografia,
+      foto_perfil
+    );
+    res.json(newUser);
+  } catch (err) {
+    if (err.message === "USERNAME_EXISTS") {
+      res.status(400).json({ message: "El nom d'usuari ja existeix" });
+    } else {
+      res.status(500).json({ message: "Error intern al registrar" });
+    }
+  }
+});
+
+app.post("/users/login", (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const { user } = loginUser(username, password);
+    res.json({
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        date_created: user.date_created || null,
+        pesoActual: user.pesoActual || null,
+        altura: user.altura || null,
+        nivel: user.nivel || 0,
+        biografia: user.biografia || null,
+        foto_perfil: user.foto_perfil || null,
+      },
+    });
+  } catch (err) {
+    res.status(401).json({ message: "Credencials incorrectes" });
+  }
+});
+
 app.get("/exercicis", (req, res) => {
   const filePath = path.join(__dirname, "exercicis.json");
   fs.readFile(filePath, "utf8", (err, data) => {
@@ -60,21 +143,6 @@ app.get("/exercicis", (req, res) => {
     }
   });
 });
-
-// app.get("/sessions", (req, res) => {
-//   res.json(getAllSessions());
-// });
-
-// app.post("/sessions", async (req, res) => {
-//   try {
-//     const newSession = await createSession(req.body);
-//     res.status(201).json(newSession);
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error creating session", error: error.message });
-//   }
-// });
 
 // app.get("/sessions/:id", (req, res) => {
 //   const session = getSessionById(req.params.id);
@@ -133,79 +201,6 @@ app.get("/exercicis", (req, res) => {
 //       .json({ message: "Error joining session", error: error.message });
 //   }
 // });
-
-app.get("/users/:id", (req, res) => {
-  const user = findUserById(req.params.id);
-
-  if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-
-  res.json({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    date_created: user.date_created || null,
-    pesoActual: user.pesoActual || null,
-    altura: user.altura || null,
-    biografia: user.biografia || null,
-  });
-});
-
-app.put("/users/:id", async (req, res) => {
-  try {
-    const updatedUser = await updateUser(req.params.id, req.body);
-    res.json(updatedUser);
-  } catch (err) {
-    if (err.message === "USER_NOT_FOUND") {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    res.status(500).json({ message: "Error al actualizar" });
-  }
-});
-
-app.post("/users/register", async (req, res) => {
-  const { username, email, password, pesoActual, altura, biografia } = req.body;
-  if (!username || !email || !password || !pesoActual || !altura)
-    return res.status(400).json({ message: "Falten camps obligatoris" });
-
-  try {
-    const newUser = await registerUser(
-      username,
-      email,
-      password,
-      pesoActual,
-      altura,
-      biografia
-    );
-    res.json(newUser);
-  } catch (err) {
-    if (err.message === "USERNAME_EXISTS") {
-      res.status(400).json({ message: "El nom d'usuari ja existeix" });
-    } else {
-      res.status(500).json({ message: "Error intern al registrar" });
-    }
-  }
-});
-
-app.post("/users/login", (req, res) => {
-  const { username, password } = req.body;
-  try {
-    const { user } = loginUser(username, password);
-    res.json({
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        date_created: user.date_created || null,
-        pesoActual: user.pesoActual || null,
-        altura: user.altura || null,
-        nivel: user.nivel || 0,
-        biografia: user.biografia || null,
-      },
-    });
-  } catch (err) {
-    res.status(401).json({ message: "Credencials incorrectes" });
-  }
-});
 
 const startServer = async () => {
   server.listen(PORT, () =>
