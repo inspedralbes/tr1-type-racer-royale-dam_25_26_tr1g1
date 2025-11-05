@@ -16,6 +16,7 @@ import {
   deleteSession,
   joinSession,
 } from "./sessions.js";
+import { getAllPosts, createPost } from "./posts.js";
 
 const PORT = 5000;
 
@@ -205,6 +206,19 @@ app.post("/users/login", (req, res) => {
   } catch (err) {
     res.status(401).json({ message: "Credencials incorrectes" });
   }
+});
+
+app.get("/posts", (req, res) => {
+  res.json(getAllPosts());
+});
+
+app.post("/posts", (req, res) => {
+  const { username, content } = req.body;
+  if (!username || !content) {
+    return res.status(400).json({ message: "Username and content are required" });
+  }
+  const newPost = createPost(username, content);
+  res.status(201).json(newPost);
 });
 
 const startServer = async () => {
