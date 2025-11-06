@@ -100,6 +100,64 @@ export function countSquats(keypoints, exerciseState) {
   return { newState, repDone };
 }
 
+export function countPushups(keypoints, exerciseState) {
+  if (!keypoints) return { newState: exerciseState, repDone: false };
+
+  const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+  const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+  const leftElbow = keypoints[KEYPOINTS.left_elbow];
+  const rightElbow = keypoints[KEYPOINTS.right_elbow];
+  const leftWrist = keypoints[KEYPOINTS.left_wrist];
+  const rightWrist = keypoints[KEYPOINTS.right_wrist];
+
+  if (
+    !leftShoulder ||
+    !rightShoulder ||
+    !leftElbow ||
+    !rightElbow ||
+    !leftWrist ||
+    !rightWrist
+  ) {
+    return { newState: exerciseState, repDone: false };
+  }
+
+  if (
+    leftShoulder.score < 0.3 ||
+    rightShoulder.score < 0.3 ||
+    leftElbow.score < 0.3 ||
+    rightElbow.score < 0.3 ||
+    leftWrist.score < 0.3 ||
+    rightWrist.score < 0.3
+  ) {
+    return { newState: exerciseState, repDone: false };
+  }
+
+  const leftElbowAngle = calculateAngle(leftShoulder, leftElbow, leftWrist);
+  const rightElbowAngle = calculateAngle(rightShoulder, rightElbow, rightWrist);
+
+  const downThreshold = 100;
+  const upThreshold = 160;
+
+  let newState = exerciseState;
+  let repDone = false;
+
+  if (
+    exerciseState === "up" &&
+    leftElbowAngle < downThreshold &&
+    rightElbowAngle < downThreshold
+  ) {
+    newState = "down";
+  } else if (
+    exerciseState === "down" &&
+    leftElbowAngle > upThreshold &&
+    rightElbowAngle > upThreshold
+  ) {
+    newState = "up";
+    repDone = true;
+  }
+  return { newState, repDone };
+}
+
 export async function estimatePose(detector, video) {
   if (!detector || !video) return null;
 
@@ -139,4 +197,238 @@ export function drawSkeleton(ctx, keypoints) {
     ctx.arc(kp.x, kp.y, 3.5, 0, Math.PI * 2);
     ctx.fill();
   }
+}
+
+export function countJumpingJacks(keypoints, exerciseState) {
+  if (!keypoints) return { newState: exerciseState, repDone: false };
+
+  const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+  const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+  const leftHip = keypoints[KEYPOINTS.left_hip];
+  const rightHip = keypoints[KEYPOINTS.right_hip];
+  const leftWrist = keypoints[KEYPOINTS.left_wrist];
+  const rightWrist = keypoints[KEYPOINTS.right_wrist];
+
+  if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftWrist || !rightWrist) {
+    return { newState: exerciseState, repDone: false };
+  }
+
+  if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftWrist.score < 0.3 || rightWrist.score < 0.3) {
+    return { newState: exerciseState, repDone: false };
+  }
+
+  const leftShoulderAngle = calculateAngle(leftHip, leftShoulder, leftWrist);
+  const rightShoulderAngle = calculateAngle(rightHip, rightShoulder, rightWrist);
+
+  const downThreshold = 60; // Arms up
+  const upThreshold = 140; // Arms down
+
+  let newState = exerciseState;
+  let repDone = false;
+
+  if (exerciseState === 'up' && leftShoulderAngle < downThreshold && rightShoulderAngle < downThreshold) {
+    newState = 'down';
+  } else if (exerciseState === 'down' && leftShoulderAngle > upThreshold && rightShoulderAngle > upThreshold) {
+    newState = 'up';
+    repDone = true;
+  }
+
+  return { newState, repDone };
+}
+
+export function countGluteBridges(keypoints, exerciseState) {
+    if (!keypoints) return { newState: exerciseState, repDone: false };
+
+    const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+    const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftKnee = keypoints[KEYPOINTS.left_knee];
+    const rightKnee = keypoints[KEYPOINTS.right_knee];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftKnee || !rightKnee) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftKnee.score < 0.3 || rightKnee.score < 0.3) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
+    const rightAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
+
+    const downThreshold = 140;
+    const upThreshold = 160;
+
+    let newState = exerciseState;
+    let repDone = false;
+
+    if (exerciseState === 'up' && (leftAngle < downThreshold && rightAngle < downThreshold)) {
+        newState = 'down';
+    } else if (exerciseState === 'down' && (leftAngle > upThreshold && rightAngle > upThreshold)) {
+        newState = 'up';
+        repDone = true;
+    }
+    return { newState, repDone };
+}
+
+export function countMountainClimbers(keypoints, exerciseState) {
+    if (!keypoints) return { newState: exerciseState, repDone: false };
+
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftKnee = keypoints[KEYPOINTS.left_knee];
+    const rightKnee = keypoints[KEYPOINTS.right_knee];
+    const leftAnkle = keypoints[KEYPOINTS.left_ankle];
+    const rightAnkle = keypoints[KEYPOINTS.right_ankle];
+
+    if (!leftHip || !rightHip || !leftKnee || !rightKnee || !leftAnkle || !rightAnkle) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    if (leftHip.score < 0.3 || rightHip.score < 0.3 || leftKnee.score < 0.3 || rightKnee.score < 0.3 || leftAnkle.score < 0.3 || rightAnkle.score < 0.3) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    const leftKneeAngle = calculateAngle(leftHip, leftKnee, leftAnkle);
+    const rightKneeAngle = calculateAngle(rightHip, rightKnee, rightAnkle);
+
+    const downThreshold = 90;
+    const upThreshold = 150;
+
+    let newState = exerciseState;
+    let repDone = false;
+
+    if (exerciseState === 'up' && (leftKneeAngle < downThreshold || rightKneeAngle < downThreshold)) {
+        newState = 'down';
+    } else if (exerciseState === 'down' && (leftKneeAngle > upThreshold && rightKneeAngle > upThreshold)) {
+        newState = 'up';
+        repDone = true;
+    }
+    return { newState, repDone };
+}
+
+export function countHighKnees(keypoints, exerciseState) {
+    if (!keypoints) return { newState: exerciseState, repDone: false };
+
+    const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+    const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftKnee = keypoints[KEYPOINTS.left_knee];
+    const rightKnee = keypoints[KEYPOINTS.right_knee];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftKnee || !rightKnee) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftKnee.score < 0.3 || rightKnee.score < 0.3) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
+    const rightAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
+
+    const downThreshold = 100; // Knee up
+    const upThreshold = 150;   // Knee down
+
+    let newState = exerciseState;
+    let repDone = false;
+
+    if (exerciseState === 'up' && (leftAngle < downThreshold || rightAngle < downThreshold)) {
+        newState = 'down';
+    } else if (exerciseState === 'down' && (leftAngle > upThreshold && rightAngle > upThreshold)) {
+        newState = 'up';
+        repDone = true;
+    }
+    return { newState, repDone };
+}
+
+export function countFireHydrants(keypoints, exerciseState) {
+    if (!keypoints) return { newState: exerciseState, repDone: false };
+
+    const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+    const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftKnee = keypoints[KEYPOINTS.left_knee];
+    const rightKnee = keypoints[KEYPOINTS.right_knee];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftKnee || !rightKnee) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftKnee.score < 0.3 || rightKnee.score < 0.3) {
+        return { newState: exerciseState, repDone: false };
+    }
+
+    const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
+    const rightAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
+
+    const downThreshold = 120; // leg lifted
+    const upThreshold = 100;   // leg down
+
+    let newState = exerciseState;
+    let repDone = false;
+
+    if (exerciseState === 'up' && (leftAngle > downThreshold || rightAngle > downThreshold)) {
+        newState = 'down';
+    } else if (exerciseState === 'down' && (leftAngle < upThreshold && rightAngle < upThreshold)) {
+        newState = 'up';
+        repDone = true;
+    }
+    return { newState, repDone };
+}
+
+export function checkPlank(keypoints) {
+    if (!keypoints) return false;
+
+    const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+    const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftAnkle = keypoints[KEYPOINTS.left_ankle];
+    const rightAnkle = keypoints[KEYPOINTS.right_ankle];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftAnkle || !rightAnkle) {
+        return false;
+    }
+
+    if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftAnkle.score < 0.3 || rightAnkle.score < 0.3) {
+        return false;
+    }
+
+    const leftBodyAngle = calculateAngle(leftShoulder, leftHip, leftAnkle);
+    const rightBodyAngle = calculateAngle(rightShoulder, rightHip, rightAnkle);
+
+    const plankThreshold = 160;
+
+    return leftBodyAngle > plankThreshold && rightBodyAngle > plankThreshold;
+}
+
+export function checkSupermanHold(keypoints) {
+    if (!keypoints) return false;
+
+    const leftShoulder = keypoints[KEYPOINTS.left_shoulder];
+    const rightShoulder = keypoints[KEYPOINTS.right_shoulder];
+    const leftHip = keypoints[KEYPOINTS.left_hip];
+    const rightHip = keypoints[KEYPOINTS.right_hip];
+    const leftWrist = keypoints[KEYPOINTS.left_wrist];
+    const rightWrist = keypoints[KEYPOINTS.right_wrist];
+    const leftAnkle = keypoints[KEYPOINTS.left_ankle];
+    const rightAnkle = keypoints[KEYPOINTS.right_ankle];
+
+    if (!leftShoulder || !rightShoulder || !leftHip || !rightHip || !leftWrist || !rightWrist || !leftAnkle || !rightAnkle) {
+        return false;
+    }
+
+    if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftWrist.score < 0.3 || rightWrist.score < 0.3 || leftAnkle.score < 0.3 || rightAnkle.score < 0.3) {
+        return false;
+    }
+
+    // Check if wrists are above shoulders and ankles are above hips
+    const armsUp = leftWrist.y < leftShoulder.y && rightWrist.y < rightShoulder.y;
+    const legsUp = leftAnkle.y < leftHip.y && rightAnkle.y < rightHip.y;
+
+    return armsUp && legsUp;
 }

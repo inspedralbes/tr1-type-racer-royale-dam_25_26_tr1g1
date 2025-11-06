@@ -1,12 +1,12 @@
 import { defineStore } from "pinia";
 import router from "@/router"; // Importa el router
+import { useAppStore } from "./app";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
     sessions: [],
-    currentSession: null,
   }),
 
   actions: {
@@ -28,6 +28,7 @@ export const useWebSocketStore = defineStore("websocket", {
 
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
+          const appStore = useAppStore();
 
           switch (data.type) {
             case "SESSIONS_UPDATE":
@@ -35,23 +36,23 @@ export const useWebSocketStore = defineStore("websocket", {
               break;
 
             case "SESSION_UPDATE":
-              if (this.currentSession && this.currentSession.id === data.payload.id) {
-                this.currentSession = data.payload;
+              if (appStore.currentSession && appStore.currentSession.id === data.payload.id) {
+                appStore.setCurrentSession(data.payload);
               }
               break;
 
             case "CREATE_SUCCESS":
-              this.currentSession = data.payload;
+              appStore.setCurrentSession(data.payload);
               router.push(`/session/${data.payload.id}`);
               break;
 
             case "JOIN_SUCCESS":
-              this.currentSession = data.payload;
+              appStore.setCurrentSession(data.payload);
               router.push(`/session/${data.payload.id}`);
               break;
 
             case "LEAVE_SUCCESS":
-              this.currentSession = null;
+              appStore.clearCurrentSession();
               break;
 
             case "ERROR":
@@ -94,10 +95,6 @@ export const useWebSocketStore = defineStore("websocket", {
 
     registerWebSocket(userId) {
       this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
-    },
-
-    setCurrentSession(session) {
-      this.currentSession = session;
     },
   },
 });

@@ -10,6 +10,7 @@ export const useAppStore = defineStore("app", {
       isAuthenticated,
       user,
       notification: { message: null, type: null },
+      currentSession: null,
     };
   },
   actions: {
@@ -120,6 +121,49 @@ export const useAppStore = defineStore("app", {
       setTimeout(() => {
         this.notification = { message: null, type: null };
       }, 5000);
+    },
+
+    setCurrentSession(session) {
+      this.currentSession = session;
+    },
+
+    clearCurrentSession() {
+      this.currentSession = null;
+    },
+
+    setRepetitions(count) {
+      if (this.currentSession?.state) {
+        this.currentSession.state.repetitions = count;
+      }
+    },
+
+    incrementRepetitions() {
+      if (this.currentSession?.state) {
+        if (!this.currentSession.state.repetitions) {
+          this.currentSession.state.repetitions = 0;
+        }
+        this.currentSession.state.repetitions++;
+      }
+    },
+
+    resetRepetitions() {
+      if (this.currentSession?.state) {
+        this.currentSession.state.repetitions = 0;
+      }
+    },
+
+    setCurrentSerie(serie) {
+      if (this.currentSession?.state) {
+        this.currentSession.state.currentSeries = serie;
+      }
+    },
+
+    nextExercise() {
+      if (this.currentSession?.state) {
+        this.currentSession.state.currentExerciseIndex++;
+        this.currentSession.state.currentSeries = 1;
+        this.currentSession.state.repetitions = 0;
+      }
     },
   },
 });

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { countSquats, estimatePose, drawSkeleton } from "./analysis.js";
+import { countSquats, estimatePose, drawSkeleton, countPushups, countJumpingJacks, countGluteBridges, countMountainClimbers, countHighKnees, countFireHydrants, checkPlank, checkSupermanHold } from "./analysis.js";
 import { useWebSocketStore } from "@/stores/websocket";
 import FloatingNumber from "../FloatingNumber.vue";
 
@@ -8,13 +8,28 @@ import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
+const emit = defineEmits(["rep", "cameras", "in-pose"]);
+
+const props = defineProps({
+  currentExercise: {
+    type: Object,
+    required: true,
+  },
+});
+
 const videoRef = ref(null);
 const canvasRef = ref(null);
 
-const currentExercise = ref({ name: "Squats", description: "" }); // TODO: Fer dinàmic
 const repCount = ref(0);
 const exerciseState = ref("up"); // 'up' or 'down'
 const floatingNumbers = ref([]);
+const cameras = ref([]);
+
+const getCameras = async () => {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  cameras.value = devices.filter((device) => device.kind === "videoinput");
+  emit("cameras", cameras.value);
+};
 
 const websocketStore = useWebSocketStore();
 
@@ -22,22 +37,26 @@ let currentStream = null;
 let detector = null;
 let rafId = null;
 
-// 1) Obrir la càmera
-async function startCamera() {
+async function startCamera(deviceId = null) {
   try {
     if (currentStream) {
       currentStream.getTracks().forEach((t) => t.stop());
       currentStream = null;
     }
 
-    const stream = await navigator.mediaDevices.getUserMedia({
+    const constraints = {
       video: {
         facingMode: "user",
         width: { ideal: 640 },
         height: { ideal: 480 },
       },
       audio: false,
-    });
+    };
+    if (deviceId) {
+      constraints.video.deviceId = { exact: deviceId };
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
     currentStream = stream;
     if (videoRef.value) {
@@ -57,10 +76,74 @@ function removeFloatingNumber(id) {
 }
 
 function detectExercise(keypoints) {
-  // if (currentExercise.value.name === "Squats") { // Comentat per provar
-  const { newState, repDone } = countSquats(keypoints, exerciseState.value);
+  if (!props.currentExercise) return;
+
+  let repDone = false;
+  let newState = exerciseState.value;
+  let inPose = keypoints && keypoints.length > 0; // Default to true if keypoints are detected
+
+  switch (props.currentExercise.name) {
+    case "Squat":
+    case "Jump Squats":
+    case "Lunges":
+      ({
+        newState,
+        repDone
+      } = countSquats(keypoints, exerciseState.value));
+      break;
+    case "Push-Up":
+    case "Triceps Dips":
+    case "Wall Push-ups":
+    case "Burpees":
+    case "Diamond Push-ups":
+      ({
+        newState,
+        repDone
+      } = countPushups(keypoints, exerciseState.value));
+      break;
+    case "Jumping Jacks":
+      ({
+        newState,
+        repDone
+      } = countJumpingJacks(keypoints, exerciseState.value));
+      break;
+    case "Glute Bridge":
+      ({
+        newState,
+        repDone
+      } = countGluteBridges(keypoints, exerciseState.value));
+      break;
+    case "Mountain Climbers":
+      ({
+        newState,
+        repDone
+      } = countMountainClimbers(keypoints, exerciseState.value));
+      break;
+    case "High Knees":
+      ({
+        newState,
+        repDone
+      } = countHighKnees(keypoints, exerciseState.value));
+      break;
+    case "Fire Hydrants":
+      ({
+        newState,
+        repDone
+      } = countFireHydrants(keypoints, exerciseState.value));
+      break;
+    case "Plank":
+      inPose = checkPlank(keypoints);
+      break;
+    case "Superman Hold":
+      inPose = checkSupermanHold(keypoints);
+      break;
+  }
+
+  emit("in-pose", inPose);
+
   exerciseState.value = newState;
   if (repDone) {
+    emit("rep");
     repCount.value++;
     const pointsPerRep = 100; // Points for each repetition
     websocketStore.sendMessage({
@@ -69,11 +152,11 @@ function detectExercise(keypoints) {
         score: pointsPerRep,
       },
     });
-    floatingNumbers.value.push({ id: Date.now(), value: pointsPerRep });
+    floatingNumbers.value.push({
+      id: Date.now(),
+      value: pointsPerRep
+    });
   }
-  // }
-  // Aquí es podrien afegir més crides a altres funcions de recompte
-  // else if (currentExercise.value.name === "Push-ups") { ... }
 }
 
 // 3) Bucle principal: estima la pose i dibuixa
@@ -108,6 +191,7 @@ onMounted(async () => {
   await tf.setBackend("webgl");
   await tf.ready();
 
+  await getCameras();
   await startCamera();
 
   detector = await poseDetection.createDetector(
@@ -120,6 +204,8 @@ onMounted(async () => {
 
   loop();
 });
+
+defineExpose({ startCamera, getCameras });
 
 onBeforeUnmount(() => {
   if (rafId) cancelAnimationFrame(rafId);
