@@ -14,7 +14,7 @@
       >
         <h1 class="text-xl font-bold">Sessió: {{ currentSession?.type }}</h1>
         <div class="flex items-center space-x-4">
-          <div class="text-center">
+          <div v-if="currentExercise?.duration_seconds" class="text-center">
             <p class="text-xs text-gray-400">Temps restant</p>
             <p class="text-3xl font-bold text-amber-400">{{ exerciseTime }}</p>
           </div>
@@ -59,13 +59,17 @@
           </transition>
 
           <div
-            v-if="!currentExercise?.duration_seconds"
             class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-4 w-72 text-center"
           >
             <h2 class="text-xl font-semibold mb-2">Repeticions</h2>
             <p class="text-4xl font-bold text-blue-400">
               {{ repetitions }}
             </p>
+            <div class="mt-2">
+              <p class="text-lg font-semibold text-gray-300">
+                Sèrie: {{ currentSerie }} / {{ numberOfSeries }}
+              </p>
+            </div>
           </div>
 
           <!-- 🏆 Scoreboard -->
@@ -152,6 +156,7 @@ const currentSession = computed(() => websocketStore.currentSession);
 const features = shallowRef(null);
 const repetitions = ref(0);
 const exerciseState = ref("up"); // 'up' or 'down'
+const exerciseTime = ref(0);
 
 const timeElapsed = ref(0);
 let timerInterval = null;
@@ -159,9 +164,27 @@ let timerInterval = null;
 const showScoreboard = ref(true);
 const showInfoExercices = ref(true);
 
-const exercises = ref([]);
-const currentExerciseIndex = ref(0);
-const exerciseTime = ref(0);
+const exercises = computed(() => currentSession.value?.exercicis || []);
+const currentExerciseIndex = computed(
+  () => currentSession.value?.state.currentExerciseIndex || 0
+);
+const currentSerie = computed(
+  () => currentSession.value?.state.currentSeries || 1
+);
+
+const numberOfSeries = computed(() => {
+  if (!currentSession.value) return 1;
+  switch (currentSession.value.duration) {
+    case "Ràpida":
+      return 2;
+    case "Intermitja":
+      return 3;
+    case "Extensa":
+      return 4;
+    default:
+      return 1;
+  }
+});
 
 const toggleScoreboard = () => {
   showScoreboard.value = !showScoreboard.value;
@@ -302,10 +325,7 @@ const onFeatures = (payload) => {
       currentExercise.value.repetitions &&
       repetitions.value >= currentExercise.value.repetitions
     ) {
-      if (currentExerciseIndex.value < exercises.value.length - 1) {
-        currentExerciseIndex.value++;
-        startNextExercise();
-      }
+      handleExerciseCompletion();
     }
   }
 
@@ -335,68 +355,49 @@ const currentExercise = computed(() => {
   return null;
 });
 
-const startNextExercise = () => {
-  if (currentExerciseIndex.value < exercises.value.length) {
-    repetitions.value = 0;
-    exerciseState.value = "up";
-    const nextExercise = currentExercise.value;
-    if (nextExercise.duration_seconds) {
-      exerciseTime.value = nextExercise.duration_seconds;
-    } else {
-      exerciseTime.value = 60; // Default 60 seconds for repetition-based exercises
-    }
-  } else {
-    // End of session
-    console.log("Session finished!");
-    // Here you could navigate away or show a summary
-  }
+const handleExerciseCompletion = () => {
+  websocketStore.sendMessage({
+    type: "NEXT_EXERCISE",
+  });
 };
+
+watch(currentExercise, (newExercise) => {
+  repetitions.value = 0;
+  exerciseState.value = "up";
+  if (newExercise?.duration_seconds) {
+    exerciseTime.value = newExercise.duration_seconds;
+  } else {
+    exerciseTime.value = 0;
+  }
+}, { immediate: true });
 
 watch(
   currentSession,
-  async (newSession) => {
-    if (newSession) {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/exercicis`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const exercisesData = await response.json();
-        const sessionType = newSession.type.toLowerCase();
-        if (exercisesData.routine[sessionType]) {
-          exercises.value = exercisesData.routine[sessionType];
-          currentExerciseIndex.value = 0;
-          startNextExercise();
-        }
-      } catch (error) {
-        console.error(
-          "There has been a problem with your fetch operation:",
-          error
-        );
-      }
-
-      if (newSession.state.startTime) {
+  (newSession) => {
+    if (newSession && newSession.state.startTime) {
+      if (!timerInterval) {
         timerInterval = setInterval(() => {
           const now = Date.now();
           const startTime = newSession.state.startTime;
           timeElapsed.value = Math.floor((now - startTime) / 1000);
 
-          if (exerciseTime.value > 0) {
+          if (
+            currentExercise.value?.duration_seconds &&
+            exerciseTime.value > 0
+          ) {
             exerciseTime.value--;
             if (exerciseTime.value === 0) {
-              if (currentExerciseIndex.value < exercises.value.length - 1) {
-                currentExerciseIndex.value++;
-                startNextExercise();
-              }
+              handleExerciseCompletion();
             }
           }
         }, 1000);
       }
+    } else {
+      clearInterval(timerInterval);
+      timerInterval = null;
     }
   },
-  { immediate: true }
+  { immediate: true, deep: true }
 );
 
 onUnmounted(() => {

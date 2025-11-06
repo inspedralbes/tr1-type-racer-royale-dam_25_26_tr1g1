@@ -5,6 +5,7 @@ import {
   deleteSession,
   leaveSession,
   updateUserScore,
+  nextExercise,
 } from "./sessions.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
@@ -200,6 +201,21 @@ export const setupWebsocketHandlers = (ws, wss) => {
               ws.userId,
               payload.score
             );
+            if (updatedSession) {
+              broadcastSessionUpdate(updatedSession);
+            }
+          } catch (error) {
+            sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
+          }
+          break;
+
+        case MESSAGE_TYPES.NEXT_EXERCISE:
+          if (!ws.userId || !ws.currentSession)
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in or not in a session.",
+            });
+          try {
+            const updatedSession = nextExercise(ws.currentSession);
             if (updatedSession) {
               broadcastSessionUpdate(updatedSession);
             }

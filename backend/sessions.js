@@ -1,6 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { broadcastSessionsUpdate } from "./websocket.js";
 import { findUserById } from "./users.js";
+import fs from "fs";
+import path from "path";
+
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const exercicisPath = path.join(__dirname, "exercicis.json");
+const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
 let sessions = [];
 
@@ -17,15 +23,30 @@ export const createSession = async (sessionData, creatorId) => {
   if (!creator) {
     throw new Error("Creator user not found");
   }
+
+  const { type, duration, password, maxUsers } = sessionData;
+  const allExercises = exercicisData.routine[type];
+
   const newSession = {
     id: uuidv4(),
-    ...sessionData,
-    users: [{ id: creator.id, username: creator.username, puntos: 0, foto_perfil: creator.foto_perfil }],
+    type,
+    duration,
+    password,
+    maxUsers,
+    exercicis: allExercises,
+    users: [
+      {
+        id: creator.id,
+        username: creator.username,
+        puntos: 0,
+        foto_perfil: creator.foto_perfil,
+      },
+    ],
     state: {
       status: "WAITING",
       startTime: Date.now(),
       currentExerciseIndex: 0,
-      progress: 0,
+      currentSeries: 1,
     },
   };
   sessions.push(newSession);
@@ -110,6 +131,40 @@ export const updateUserScore = (sessionId, userId, score) => {
   }
 
   userInSession.puntos += score;
+
+  return session;
+};
+
+export const nextExercise = (sessionId) => {
+  const session = getSessionById(sessionId);
+  if (!session) {
+    return null;
+  }
+
+  const numberOfSeries = () => {
+    if (!session) return 1;
+    switch (session.duration) {
+      case "Ràpida":
+        return 2;
+      case "Intermitja":
+        return 3;
+      case "Extensa":
+        return 4;
+      default:
+        return 1;
+    }
+  };
+
+  if (session.state.currentSeries < numberOfSeries()) {
+    session.state.currentSeries++;
+  } else {
+    if (session.state.currentExerciseIndex < session.exercicis.length - 1) {
+      session.state.currentExerciseIndex++;
+      session.state.currentSeries = 1;
+    } else {
+      session.state.status = "FINISHED";
+    }
+  }
 
   return session;
 };

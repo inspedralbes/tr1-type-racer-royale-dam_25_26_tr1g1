@@ -18,16 +18,19 @@
         </select>
       </div>
       <div>
-        <label for="time" class="block text-sm font-medium text-gray-300"
-          >Temps (minuts)</label
+        <label for="duration" class="block text-sm font-medium text-gray-300"
+          >Duración</label
         >
-        <input
-          type="number"
-          id="time"
-          v-model.number="session.time"
+        <select
+          id="duration"
+          v-model="session.duration"
           class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
-        />
+        >
+          <option value="Ràpida">Ràpida</option>
+          <option value="Intermitja">Intermitja</option>
+          <option value="Extensa">Extensa</option>
+        </select>
       </div>
       <div>
         <label for="password" class="block text-sm font-medium text-gray-300"
@@ -74,7 +77,7 @@ const websocketStore = useWebSocketStore();
 
 const session = ref({
   type: "fullbody",
-  time: 30,
+  duration: "Ràpida",
   password: "", // Changed from isPublic
   maxUsers: 8,
 });
