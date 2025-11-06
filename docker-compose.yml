@@ -1,0 +1,19 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      # Mapeamos el puerto 3000 del host al puerto 80 del contenedor (donde escucha Nginx)
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
