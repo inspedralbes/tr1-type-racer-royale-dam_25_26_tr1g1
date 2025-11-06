@@ -126,7 +126,7 @@ const fetchExercises = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const res = await fetch("http://localhost:5000/exercicis");
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/exercicis`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     // backend file has a top-level `routine` object

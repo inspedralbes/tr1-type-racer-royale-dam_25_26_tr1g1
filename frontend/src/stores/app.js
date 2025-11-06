@@ -16,7 +16,7 @@ export const useAppStore = defineStore("app", {
   actions: {
     async login(username, password) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/users/login`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/users/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username, password }),
@@ -38,8 +38,7 @@ export const useAppStore = defineStore("app", {
     async register(username, email, password, pesoActual, altura, biografia, foto_perfil) {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/register`,
-          {
+                    `${import.meta.env.VITE_API_URL || ''}/api/users/register`,          {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -83,8 +82,8 @@ export const useAppStore = defineStore("app", {
 
     async updateUser(userData) {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/users/${this.user.id}`,
+const res = await fetch(
+            `${import.meta.env.VITE_API_URL || ''}/api/users/${userId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },

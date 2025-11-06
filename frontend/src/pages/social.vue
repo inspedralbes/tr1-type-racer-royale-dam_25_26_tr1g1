@@ -57,7 +57,7 @@ const posts = ref([]);
 
 const fetchPosts = async () => {
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/posts`);
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/posts`);
     const data = await res.json();
     posts.value = data;
   } catch (error) {
@@ -69,7 +69,7 @@ const addPost = async () => {
   if (newPost.value.trim() === '' || !appStore.user) return;
 
   try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/posts`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/posts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

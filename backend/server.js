@@ -40,11 +40,11 @@ wss.on("connection", (ws) => {
 
 setWssInstance(wss);
 
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
 });
 
-app.get("/users/:id", (req, res) => {
+app.get("/api/users/:id", (req, res) => {
   const user = findUserById(req.params.id);
 
   if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
@@ -61,7 +61,7 @@ app.get("/users/:id", (req, res) => {
   });
 });
 
-app.put("/users/:id", async (req, res) => {
+app.put("/api/users/:id", async (req, res) => {
   try {
     const updatedUser = await updateUser(req.params.id, req.body);
     res.json(updatedUser);
@@ -73,7 +73,7 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
-app.post("/users/register", async (req, res) => {
+app.post("/api/users/register", async (req, res) => {
   const {
     username,
     email,
@@ -106,7 +106,7 @@ app.post("/users/register", async (req, res) => {
   }
 });
 
-app.post("/users/login", (req, res) => {
+app.post("/api/users/login", (req, res) => {
   const { username, password } = req.body;
   try {
     const { user } = loginUser(username, password);
@@ -128,7 +128,7 @@ app.post("/users/login", (req, res) => {
   }
 });
 
-app.get("/exercicis", (req, res) => {
+app.get("/api/exercicis", (req, res) => {
   const filePath = path.join(__dirname, "exercicis.json");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
@@ -145,7 +145,7 @@ app.get("/exercicis", (req, res) => {
   });
 });
 
-// app.get("/sessions/:id", (req, res) => {
+// app.get("/api/sessions/:id", (req, res) => {
 //   const session = getSessionById(req.params.id);
 //   if (session) {
 //     res.json(session);
@@ -154,7 +154,7 @@ app.get("/exercicis", (req, res) => {
 //   }
 // });
 
-// app.put("/sessions/:id", async (req, res) => {
+// app.put("/api/sessions/:id", async (req, res) => {
 //   try {
 //     const updatedSession = await updateSession(req.params.id, req.body);
 //     if (updatedSession) {
@@ -169,7 +169,7 @@ app.get("/exercicis", (req, res) => {
 //   }
 // });
 
-// app.delete("/sessions/:id", async (req, res) => {
+// app.delete("/api/sessions/:id", async (req, res) => {
 //   try {
 //     const success = await deleteSession(req.params.id);
 //     if (success) {
@@ -184,7 +184,7 @@ app.get("/exercicis", (req, res) => {
 //   }
 // });
 
-// app.post("/sessions/:id/join", async (req, res) => {
+// app.post("/api/sessions/:id/join", async (req, res) => {
 //   const { userId } = req.body;
 //   if (!userId) {
 //     return res.status(400).json({ message: "User ID is required" });
@@ -203,7 +203,7 @@ app.get("/exercicis", (req, res) => {
 //   }
 // });
 
-app.get("/users/:id", (req, res) => {
+app.get("/api/users/:id", (req, res) => {
   const user = findUserById(req.params.id);
 
   if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
@@ -219,7 +219,7 @@ app.get("/users/:id", (req, res) => {
   });
 });
 
-app.put("/users/:id", async (req, res) => {
+app.put("/api/users/:id", async (req, res) => {
   try {
     const updatedUser = await updateUser(req.params.id, req.body);
     res.json(updatedUser);
@@ -231,7 +231,7 @@ app.put("/users/:id", async (req, res) => {
   }
 });
 
-app.post("/users/register", async (req, res) => {
+app.post("/api/users/register", async (req, res) => {
   const { username, email, password, pesoActual, altura, biografia } = req.body;
   if (!username || !email || !password || !pesoActual || !altura)
     return res.status(400).json({ message: "Falten camps obligatoris" });
@@ -255,7 +255,7 @@ app.post("/users/register", async (req, res) => {
   }
 });
 
-app.post("/users/login", (req, res) => {
+app.post("/api/users/login", (req, res) => {
   const { username, password } = req.body;
   try {
     const { user } = loginUser(username, password);
@@ -276,11 +276,11 @@ app.post("/users/login", (req, res) => {
   }
 });
 
-app.get("/posts", (req, res) => {
+app.get("/api/posts", (req, res) => {
   res.json(getAllPosts());
 });
 
-app.post("/posts", (req, res) => {
+app.post("/api/posts", (req, res) => {
   const { username, content } = req.body;
   if (!username || !content) {
     return res

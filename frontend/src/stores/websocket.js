@@ -14,7 +14,7 @@ export const useWebSocketStore = defineStore("websocket", {
       return new Promise((resolve, reject) => {
         if (this.socket && this.isConnected) return resolve();
 
-        this.socket = new WebSocket(import.meta.env.VITE_WS_URL);
+        this.socket = new WebSocket(import.meta.env.VITE_WS_BASE_URL || `${window.location.protocol === 'https:' ? 'wss://' : 'ws://'}${window.location.host}/ws/`);
 
         this.socket.onopen = () => {
           this.isConnected = true;
