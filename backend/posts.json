@@ -6,6 +6,14 @@
     "content": "prova",
     "timestamp": "2025-11-07T10:48:47.983Z",
     "likes": [],
-    "comments": []
+    "comments": [
+      {
+        "id": "89c1372a-42a7-47a2-8da7-2826f0d74e6f",
+        "username": "MartiCas",
+        "foto_perfil": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmo8qa7GyzEds7vEgBzYWrlEKxeIz2xJXVXOYwGMsixIx7zPBgus1_DOxmGt0HDSCEAQrixKNtEJLfQ0qPeu3BlLqkOUVeA1u17kC5torfZw&s=10",
+        "text": "123",
+        "timestamp": "2025-11-07T10:50:20.827Z"
+      }
+    ]
   }
 ]
