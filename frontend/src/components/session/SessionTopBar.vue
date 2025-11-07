@@ -32,10 +32,6 @@ defineProps({
     type: Object,
     default: () => ({}),
   },
-  currentExercise: {
-    type: Object,
-    default: () => ({}),
-  },
   exerciseTime: {
     type: Number,
     default: 0,

@@ -151,6 +151,7 @@
                 id="altura"
                 v-model="editableUserData.altura"
                 required
+                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
