@@ -56,7 +56,7 @@
             <div v-show="upperOpen" class="p-4">
               <ul class="space-y-4">
                 <li v-for="exercise in routine.upper" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
-                  <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
+                  <img v-if="upperOpen && exercise.gif" :src="exercise.gif" loading="lazy" :alt="exercise.name + ' gif'" width="480" height="270" class="w-full max-w-xs mx-auto rounded mb-2" />
                   <h4 class="text-lg font-semibold text-blue-400">{{ exercise.name }}</h4>
                   <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                   <div class="mt-2 flex justify-between items-center text-sm">
@@ -100,7 +100,7 @@
             <div v-show="lowerOpen" class="p-4">
               <ul class="space-y-4">
                 <li v-for="exercise in routine.lower" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
-                  <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
+                  <img v-if="lowerOpen && exercise.gif" :src="exercise.gif" loading="lazy" :alt="exercise.name + ' gif'" width="480" height="270" class="w-full max-w-xs mx-auto rounded mb-2" />
                   <h4 class="text-lg font-semibold text-blue-400">{{ exercise.name }}</h4>
                   <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                   <div class="mt-2 flex justify-between items-center text-sm">
@@ -144,7 +144,7 @@
             <div v-show="fullOpen" class="p-4">
               <ul class="space-y-4">
                 <li v-for="exercise in routine.fullbody" :key="exercise.name" class="bg-gray-700 rounded-lg p-4">
-                  <img v-if="exercise.gif" :src="exercise.gif" :alt="exercise.name + ' gif'" class="w-full max-w-xs mx-auto rounded mb-2" />
+                  <img v-if="fullOpen && exercise.gif" :src="exercise.gif" loading="lazy" :alt="exercise.name + ' gif'" width="480" height="270" class="w-full max-w-xs mx-auto rounded mb-2" />
                   <h4 class="text-lg font-semibold text-blue-400">{{ exercise.name }}</h4>
                   <p class="text-gray-300 mt-1">{{ exercise.description }}</p>
                   <div class="mt-2 flex justify-between items-center text-sm">
