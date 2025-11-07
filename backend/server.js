@@ -19,11 +19,11 @@ import {
 import {
   getAllPosts,
   createPost,
-  likePost,
-  dislikePost,
-  addCommentToPost,
+  toggleLike,
+  addComment,
+  deletePost,
+  deleteComment,
 } from "./posts.js";
-import { deletePost, deleteComment } from "./posts.js";
 
 const PORT = 5000;
 
