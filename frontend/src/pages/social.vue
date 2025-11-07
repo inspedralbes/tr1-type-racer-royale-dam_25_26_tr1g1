@@ -30,9 +30,9 @@
         >
           <div class="flex items-center mb-4">
             <img
-              :src="`https://randomuser.me/api/portraits/men/${post.username.length}.jpg`"
+              :src="post.foto_perfil || '/default-avatar.png'"
               alt="Avatar"
-              class="w-12 h-12 rounded-full mr-4"
+              class="w-12 h-12 rounded-full mr-4 object-cover"
             />
             <div>
               <h3 class="text-lg font-semibold">{{ post.username }}</h3>
