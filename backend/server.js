@@ -16,7 +16,14 @@ import {
   deleteSession,
   joinSession,
 } from "./sessions.js";
-import { getAllPosts, createPost } from "./posts.js";
+import {
+  getAllPosts,
+  createPost,
+  likePost,
+  dislikePost,
+  addCommentToPost,
+} from "./posts.js";
+import { deletePost, deleteComment } from "./posts.js";
 
 const PORT = 5000;
 
@@ -289,6 +296,53 @@ app.post("/api/posts", (req, res) => {
   }
   const newPost = createPost(username, content);
   res.status(201).json(newPost);
+});
+
+// Like
+app.post("/api/posts/:id/like", (req, res) => {
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ message: "Username required" });
+
+  const updatedPost = toggleLike(req.params.id, username);
+  if (!updatedPost) return res.status(404).json({ message: "Post not found" });
+
+  res.json(updatedPost);
+});
+
+// Comentari post
+app.post("/api/posts/:id/comment", (req, res) => {
+  const { username, text } = req.body;
+  if (!username || !text)
+    return res.status(400).json({ message: "Username and text required" });
+
+  const comment = addComment(req.params.id, username, text);
+  if (!comment) return res.status(404).json({ message: "Post not found" });
+
+  res.status(201).json(comment);
+});
+
+// Eliminar post
+app.delete("/api/posts/:id", (req, res) => {
+  const { id } = req.params;
+  const { username } = req.body;
+  const success = deletePost(id, username);
+  if (!success)
+    return res
+      .status(403)
+      .json({ message: "No autorizado o post no encontrado" });
+  res.json({ message: "Post eliminado correctamente" });
+});
+
+// Eliminar comentari
+app.delete("/api/posts/:postId/comments/:commentId", (req, res) => {
+  const { postId, commentId } = req.params;
+  const { username } = req.body;
+  const success = deleteComment(postId, commentId, username);
+  if (!success)
+    return res
+      .status(403)
+      .json({ message: "No autorizado o comentario no encontrado" });
+  res.json({ message: "Comentario eliminado correctamente" });
 });
 
 const startServer = async () => {
