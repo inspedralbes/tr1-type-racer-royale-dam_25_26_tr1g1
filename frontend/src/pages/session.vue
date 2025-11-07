@@ -8,7 +8,7 @@
     <PoseSkeleton
       ref="poseSkeletonRef"
       :current-exercise="currentExercise"
-      @rep="appStore.incrementRepetitions()"
+      @rep="handleRep"
       @cameras="handleCameras"
       @in-pose="handleInPose"
       class="absolute inset-0 w-full h-full object-cover z-0"
@@ -63,6 +63,14 @@
           @camera-selected="handleCameraSelected"
         />
       </transition>
+
+      <!-- Ready Card -->
+      <div
+        v-if="currentSession && currentSession.state.status === 'WAITING'"
+        class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
+      >
+        <ReadyCard :users="currentSession.users" @ready="setReady" />
+      </div>
     </div>
   </div>
 </template>
@@ -80,6 +88,7 @@ import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
 import SessionProgressInfo from "@/components/session/SessionProgressInfo.vue";
+import ReadyCard from "@/components/session/ReadyCard.vue";
 
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
@@ -103,47 +112,26 @@ const currentExercise = computed(
   () => currentSession.value?.exercicis[currentExerciseIndex.value]
 );
 
-const timer = ref(0);
-const isResting = ref(false);
-const currentTimerType = ref("exercici");
-let timerInterval = null;
+const timer = computed(() => appStore.currentSession?.state.timer || 0);
+const isResting = computed(() => appStore.currentSession?.state.isResting || false);
+const currentTimerType = computed(() =>
+  isResting.value ? "descans" : "exercici"
+);
 
-watch(currentExercise, (newExercise) => {
-  if (newExercise) {
-    resetTimer();
+const handleRep = () => {
+  if (currentSession.value.state.status === "IN_PROGRESS") {
+    websocketStore.sendMessage({
+      type: "UPDATE_REPETITIONS",
+    });
   }
-});
+};
+
+const setReady = () => {
+  websocketStore.sendMessage({ type: "SET_READY" });
+};
 
 const handleInPose = () => {
   // Logic for when the user is in pose
-};
-
-const resetTimer = () => {
-  stopTimer();
-  if (currentExercise.value) {
-    timer.value = currentExercise.value.duration || 0;
-    isResting.value = false;
-    currentTimerType.value = "exercici";
-    startTimer();
-  }
-};
-
-const startTimer = () => {
-  if (timerInterval) return;
-  timerInterval = setInterval(() => {
-    if (timer.value > 0) {
-      timer.value--;
-    } else {
-      // Timer finished, what happens next?
-      // Maybe switch to rest, or next exercise
-      stopTimer();
-    }
-  }, 1000);
-};
-
-const stopTimer = () => {
-  clearInterval(timerInterval);
-  timerInterval = null;
 };
 
 const leaveSession = () => {
@@ -156,13 +144,9 @@ const leaveSession = () => {
   }
 };
 
-onMounted(() => {
-  resetTimer();
-});
+onMounted(() => {});
 
-onUnmounted(() => {
-  stopTimer();
-});
+onUnmounted(() => {});
 
 const showScoreboard = ref(true);
 const showInfoExercices = ref(true);

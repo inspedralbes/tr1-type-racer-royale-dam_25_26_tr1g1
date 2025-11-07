@@ -5,7 +5,17 @@
     "foto_perfil": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmo8qa7GyzEds7vEgBzYWrlEKxeIz2xJXVXOYwGMsixIx7zPBgus1_DOxmGt0HDSCEAQrixKNtEJLfQ0qPeu3BlLqkOUVeA1u17kC5torfZw&s=10",
     "content": "prova",
     "timestamp": "2025-11-07T10:48:47.983Z",
-    "likes": [],
-    "comments": []
+    "likes": [
+      "MartiCas"
+    ],
+    "comments": [
+      {
+        "id": "dc459e96-ad4e-45e8-8dc5-5b46232045df",
+        "username": "MartiCas",
+        "foto_perfil": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmo8qa7GyzEds7vEgBzYWrlEKxeIz2xJXVXOYwGMsixIx7zPBgus1_DOxmGt0HDSCEAQrixKNtEJLfQ0qPeu3BlLqkOUVeA1u17kC5torfZw&s=10",
+        "text": "QUe guapo nen",
+        "timestamp": "2025-11-07T10:51:43.026Z"
+      }
+    ]
   }
 ]

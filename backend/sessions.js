@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { broadcastSessionsUpdate } from "./websocket.js";
+import { broadcastSessionsUpdate, broadcastSessionUpdate } from "./websocket.js";
 import { findUserById } from "./users.js";
 import fs from "fs";
 import path from "path";
@@ -9,6 +9,7 @@ const exercicisPath = path.join(__dirname, "exercicis.json");
 const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
 let sessions = [];
+let timers = {};
 
 export const getSessionById = (id) => {
   return sessions.find((session) => session.id === id);
@@ -52,6 +53,7 @@ export const createSession = async (sessionData, creatorId) => {
         username: creator.username,
         puntos: 0,
         foto_perfil: creator.foto_perfil,
+        ready: false,
       },
     ],
     state: {
@@ -60,6 +62,8 @@ export const createSession = async (sessionData, creatorId) => {
       currentExercise: 0,
       repetitions: 0,
       currentSeries: 1,
+      timer: 0,
+      isResting: false,
     },
   };
 
@@ -93,14 +97,13 @@ export const joinSession = async (sessionId, userId, password) => {
 
   if (session.users.some((user) => user.id === userId)) return session;
   if (session.users.length >= session.maxUsers) throw new Error("Session full");
-  if (session.state.status !== "WAITING")
-    throw new Error("Session already started");
 
   session.users.push({
     id: joiningUser.id,
     username: joiningUser.username,
     puntos: 0,
     foto_perfil: joiningUser.foto_perfil,
+    ready: false,
   });
   return session;
 };
@@ -155,7 +158,98 @@ export const nextExercise = (sessionId) => {
     return null;
   }
 
-  session.state.currentExercise++;
-  broadcastSessionsUpdate(session);
+  if (session.state.currentExercise < session.exercicis.length - 1) {
+    session.state.currentExercise++;
+    session.state.currentSeries = 1;
+    session.state.repetitions = 0;
+    broadcastSessionUpdate(session);
+  } else {
+    // Last exercise finished, end session
+    session.state.status = "FINISHED";
+    broadcastSessionUpdate(session);
+  }
+
   return session;
+};
+
+export const updateRepetitions = (sessionId, userId) => {
+  const session = getSessionById(sessionId);
+  if (!session) {
+    return null;
+  }
+
+  const userInSession = session.users.find((user) => user.id === userId);
+  if (!userInSession) {
+    return null;
+  }
+
+  session.state.repetitions++;
+
+  const currentExercise = session.exercicis[session.state.currentExercise];
+  if (session.state.repetitions >= currentExercise.reps) {
+    if (session.state.currentSeries >= currentExercise.series) {
+      nextExercise(sessionId);
+    } else {
+      session.state.currentSeries++;
+      session.state.repetitions = 0;
+    }
+  }
+
+  broadcastSessionUpdate(session);
+  return session;
+};
+
+export const setReady = (sessionId, userId) => {
+  const session = getSessionById(sessionId);
+  if (!session) {
+    return;
+  }
+
+  const userInSession = session.users.find((user) => user.id === userId);
+  if (userInSession) {
+    userInSession.ready = true;
+  }
+
+  const allReady = session.users.every((user) => user.ready);
+  if (allReady) {
+    startSession(sessionId);
+  }
+
+  broadcastSessionUpdate(session);
+};
+
+export const startSession = (sessionId) => {
+  const session = getSessionById(sessionId);
+  if (!session) {
+    return;
+  }
+
+  if (timers[sessionId]) {
+    clearInterval(timers[sessionId]);
+  }
+
+  session.state.status = "IN_PROGRESS";
+  const currentExercise = session.exercicis[session.state.currentExercise];
+  session.state.timer = currentExercise.duration;
+  session.state.isResting = false;
+
+  timers[sessionId] = setInterval(() => {
+    if (session.state.timer > 0) {
+      session.state.timer--;
+    } else {
+      if (!session.state.isResting) {
+        session.state.isResting = true;
+        session.state.timer = 15; // 15 seconds rest
+      } else {
+        if (session.state.currentSeries >= currentExercise.series) {
+          nextExercise(sessionId);
+        } else {
+          session.state.currentSeries++;
+          session.state.timer = currentExercise.duration;
+          session.state.isResting = false;
+        }
+      }
+    }
+    broadcastSessionUpdate(session);
+  }, 1000);
 };

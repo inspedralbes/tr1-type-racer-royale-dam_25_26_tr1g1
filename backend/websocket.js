@@ -6,6 +6,8 @@ import {
   leaveSession,
   updateUserScore,
   nextExercise,
+  updateRepetitions,
+  setReady,
 } from "./sessions.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
@@ -143,8 +145,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
             const newSession = await createSession(payload, ws.userId);
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
-          }
-          catch (error) {
+          } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
@@ -235,14 +236,29 @@ export const setupWebsocketHandlers = (ws, wss) => {
           }
           break;
 
+        case "SET_READY":
+          if (!ws.userId || !ws.currentSession)
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in or not in a session.",
+            });
+          setReady(ws.currentSession, ws.userId);
+          break;
+
+        case "UPDATE_REPETITIONS":
+          if (!ws.userId || !ws.currentSession)
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in or not in a session.",
+            });
+          updateRepetitions(ws.currentSession, ws.userId);
+          break;
+
         default:
           console.log("Unknown message type:", type);
           sendMessage(ws, MESSAGE_TYPES.ERROR, {
             message: `Unknown message type: ${type}`,
           });
       }
-    }
-    catch (err) {
+    } catch (err) {
       console.error("Error processing message:", err);
       sendMessage(ws, MESSAGE_TYPES.ERROR, {
         message: "Invalid message format",
@@ -262,4 +278,5 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 };
+
 
