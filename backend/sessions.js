@@ -27,13 +27,25 @@ export const createSession = async (sessionData, creatorId) => {
   const { type, duration, password, maxUsers } = sessionData;
   const allExercises = exercicisData.routine[type];
 
+  let series = 2;
+  if (duration === "Intermitja") {
+    series = 3;
+  } else if (duration === "Extensa") {
+    series = 4;
+  }
+
+  const exercisesWithSeries = allExercises.map(exercise => ({
+    ...exercise,
+    series,
+  }));
+
   const newSession = {
     id: uuidv4(),
     type,
     duration,
     password,
     maxUsers,
-    exercicis: allExercises,
+    exercicis: exercisesWithSeries,
     users: [
       {
         id: creator.id,
@@ -45,10 +57,10 @@ export const createSession = async (sessionData, creatorId) => {
     state: {
       status: "WAITING",
       startTime: Date.now(),
-      currentExerciseIndex: 0,
-      currentSeries: 1,
+      currentExercise: 0,
     },
   };
+
   sessions.push(newSession);
   broadcastSessionsUpdate();
   return newSession;
@@ -141,30 +153,7 @@ export const nextExercise = (sessionId) => {
     return null;
   }
 
-  const numberOfSeries = () => {
-    if (!session) return 1;
-    switch (session.duration) {
-      case "Ràpida":
-        return 2;
-      case "Intermitja":
-        return 3;
-      case "Extensa":
-        return 4;
-      default:
-        return 1;
-    }
-  };
-
-  if (session.state.currentSeries < numberOfSeries()) {
-    session.state.currentSeries++;
-  } else {
-    if (session.state.currentExerciseIndex < session.exercicis.length - 1) {
-      session.state.currentExerciseIndex++;
-      session.state.currentSeries = 1;
-    } else {
-      session.state.status = "FINISHED";
-    }
-  }
-
+  session.state.currentExercise++;
+  broadcastSessionsUpdate(session);
   return session;
 };

@@ -9,18 +9,21 @@ export const useAppStore = defineStore("app", {
     return {
       isAuthenticated,
       user,
-      notification: { message: null, type: null },
       currentSession: null,
+      notification: { message: null, type: null },
     };
   },
   actions: {
     async login(username, password) {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || ''}/api/users/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL || ""}/api/users/login`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          }
+        );
 
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
@@ -35,10 +38,19 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async register(username, email, password, pesoActual, altura, biografia, foto_perfil) {
+    async register(
+      username,
+      email,
+      password,
+      pesoActual,
+      altura,
+      biografia,
+      foto_perfil
+    ) {
       try {
         const res = await fetch(
-                    `${import.meta.env.VITE_API_URL || ''}/api/users/register`,          {
+          `${import.meta.env.VITE_API_URL || ""}/api/users/register`,
+          {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -82,8 +94,8 @@ export const useAppStore = defineStore("app", {
 
     async updateUser(userData) {
       try {
-const res = await fetch(
-            `${import.meta.env.VITE_API_URL || ''}/api/users/${userId}`,
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL || ""}/api/users/${userId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -130,37 +142,23 @@ const res = await fetch(
       this.currentSession = null;
     },
 
-    setRepetitions(count) {
+    nextExercise() {
       if (this.currentSession?.state) {
-        this.currentSession.state.repetitions = count;
+        this.currentSession.state.currentExercise++;
+        this.currentSession.state.repetitions = 0;
+        this.currentSession.state.currentSerie = 1;
       }
     },
 
     incrementRepetitions() {
       if (this.currentSession?.state) {
-        if (!this.currentSession.state.repetitions) {
-          this.currentSession.state.repetitions = 0;
-        }
         this.currentSession.state.repetitions++;
       }
     },
 
-    resetRepetitions() {
+    nextSerie() {
       if (this.currentSession?.state) {
-        this.currentSession.state.repetitions = 0;
-      }
-    },
-
-    setCurrentSerie(serie) {
-      if (this.currentSession?.state) {
-        this.currentSession.state.currentSeries = serie;
-      }
-    },
-
-    nextExercise() {
-      if (this.currentSession?.state) {
-        this.currentSession.state.currentExerciseIndex++;
-        this.currentSession.state.currentSeries = 1;
+        this.currentSession.state.currentSerie++;
         this.currentSession.state.repetitions = 0;
       }
     },

@@ -182,7 +182,10 @@ export const setupWebsocketHandlers = (ws, wss) => {
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
               message: "User not logged in.",
             });
-          const updatedSession = await leaveSession(payload.sessionId, ws.userId);
+          const updatedSession = await leaveSession(
+            payload.sessionId,
+            ws.userId
+          );
           if (updatedSession) {
             broadcastSessionUpdate(updatedSession);
           }
@@ -242,10 +245,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
     if (ws.userId) {
       console.log(`User ${ws.userId} disconnected.`);
       if (ws.currentSession) {
-        const updatedSession = await leaveSession(
-          ws.currentSession,
-          ws.userId
-        );
+        const updatedSession = await leaveSession(ws.currentSession, ws.userId);
         if (updatedSession) {
           broadcastSessionUpdate(updatedSession);
         }
