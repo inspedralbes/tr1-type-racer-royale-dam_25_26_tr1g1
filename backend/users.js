@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+/*import { v4 as uuidv4 } from "uuid";
 
 let usuaris = [
   {
@@ -109,4 +109,150 @@ export const updateUser = async (id, updateData) => {
 
   usuaris[userIndex] = { ...usuaris[userIndex], ...updateData };
   return usuaris[userIndex];
+};*/
+import pool from "./database/db.js";
+
+export const findUserById = async (id) => {
+  const [rows] = await pool.query(
+    'SELECT * FROM Usuaris WHERE id_sessio = ?',
+    [id]
+  );
+  return rows[0]; 
+};
+
+// --- Búsqueda de Usuario (por username) ---
+export const findUserByUsername = async (username) => {
+  const [rows] = await pool.query(
+    'SELECT * FROM Usuaris WHERE nom_usuari = ?',
+    [username]
+  );
+  return rows[0];
+};
+
+// --- Registro de Usuario ---
+export const registerUser = async (
+  username,
+  email,
+  password, 
+  pesoActual,
+  altura,
+  biografia,
+  nivell = 0
+) => {
+  // 1. Verificar si el usuario ya existe
+  const existingUser = await findUserByUsername(username);
+  if (existingUser) {
+    throw new Error("USERNAME_EXISTS");
+  }
+
+  // 2. Insertar nuevo usuario en la BD (Contraseña en texto plano)
+ try {
+    const result = await pool.query(
+      `INSERT INTO Usuaris (nom_usuari, contrasenya, correu, pes_actual, altura, biografia, nivell)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      // 🌟 CORRECCIÓN: El array de valores debe estar aquí, completo y bien formado.
+      [username, password, email, pesoActual, altura, biografia, nivell] // <--- ¡Añadir 'nivell' aquí!
+    );
+
+    // 3. Obtener el usuario recién creado (incluyendo el ID generado)
+    const newUser = await findUserByUsername(username);
+    
+    // Eliminamos 'contrasenya' del objeto antes de devolverlo
+    const { contrasenya, ...userWithoutPass } = newUser;
+    return { user: userWithoutPass }; 
+    
+  } catch (error) {
+    if (error.code === 'ER_DUP_ENTRY' && error.sqlMessage.includes('correu')) {
+      throw new Error("EMAIL_EXISTS");
+    }
+    console.error("Error al registrar usuario en BD:", error);
+    throw new Error("DB_ERROR");
+  }
+};
+
+// --- Inicio de Sesión de Usuario ---
+export const loginUser = async (username, password) => {
+  // 1. Buscar el usuario
+  const user = await findUserByUsername(username);
+
+  if (!user) {
+    throw new Error("INVALID_CREDENTIALS"); // Usuario no encontrado
+  }
+
+  // 2. Comparar la contraseña ingresada con la contraseña de la BD (Texto plano)
+  if (user.contrasenya !== password) {
+    throw new Error("INVALID_CREDENTIALS"); // Contraseña incorrecta
+  }
+
+  // 3. Devolver el usuario (sin la contraseña)
+  const { contrasenya, ...userWithoutPass } = user;
+  return { user: userWithoutPass };
+};
+
+// --- Actualizar Usuario ---
+export const updateUser = async (id, updateData) => {
+    // Usamos el ID numérico (id_sessio) como identificador en esta función
+    
+    let setClauses = [];
+    let params = [];
+    
+    // Mapeo de camelCase a snake_case para la BD
+    if (updateData.email !== undefined) {
+        setClauses.push('correu = ?');
+        params.push(updateData.email);
+    }
+    if (updateData.password !== undefined) {
+        // Almacenar la nueva contraseña en texto plano
+        setClauses.push('contrasenya = ?');
+        params.push(updateData.password); 
+    }
+    if (updateData.pesoActual !== undefined) {
+        setClauses.push('pes_actual = ?');
+        params.push(updateData.pesoActual);
+    }
+    if (updateData.altura !== undefined) {
+        setClauses.push('altura = ?');
+        params.push(updateData.altura);
+    }
+    if (updateData.biografia !== undefined) {
+        setClauses.push('biografia = ?');
+        params.push(updateData.biografia);
+    }
+      if (updateData.nivell !== undefined) { 
+      setClauses.push('nivell = ?');
+      params.push(updateData.nivell);
+}
+
+    if (setClauses.length === 0) {
+        // No hay datos para actualizar, devolver el usuario actual
+        const currentUser = await findUserById(id);
+        const { contrasenya, ...userWithoutPass } = currentUser;
+        return userWithoutPass; 
+    }
+
+    const setQuery = setClauses.join(', ');
+    params.push(id); // Añadir el ID del usuario al final para la cláusula WHERE
+
+    try {
+        const [result] = await pool.query(
+            `UPDATE Usuaris SET ${setQuery} WHERE id_sessio = ?`,
+            params
+        );
+        
+        if (result.affectedRows === 0) {
+            throw new Error("USER_NOT_FOUND");
+        }
+
+        // Devolver el usuario actualizado (sin la contraseña)
+        const updatedUser = await findUserById(id);
+        const { contrasenya, ...userWithoutPass } = updatedUser;
+        return userWithoutPass;
+        
+    } catch (error) {
+        if (error.message === "USER_NOT_FOUND") {
+            throw error;
+        }
+        console.error("Error al actualizar usuario en BD:", error);
+        throw new Error("DB_ERROR");
+    }
 };

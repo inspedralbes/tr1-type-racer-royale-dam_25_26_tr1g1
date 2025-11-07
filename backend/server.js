@@ -5,7 +5,7 @@ import { WebSocketServer } from "ws";
 import dotenv from "dotenv";
 
 dotenv.config();
-
+/*
 import { setupWebsocketHandlers, setWssInstance } from "./websocket.js";
 import { findUserById, registerUser, loginUser, updateUser } from "./users.js";
 import {
@@ -296,5 +296,161 @@ const startServer = async () => {
     console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
   );
 };
+
+startServer();
+*/
+import { setupWebsocketHandlers, setWssInstance } from "./websocket.js";
+// Las funciones importadas ahora son asíncronas
+import { findUserById, registerUser, loginUser, updateUser } from "./users.js"; 
+import {
+  getAllSessions,
+  createSession,
+// ... otras funciones de sessions ...
+} from "./sessions.js";
+import { getAllPosts, createPost } from "./posts.js";
+const PORT = 5000;
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", (ws) => {
+  setupWebsocketHandlers(ws, wss);
+});
+
+setWssInstance(wss);
+// MAPEAR DATOS DE LA BASE DE DATOS
+const mapUserToApiResponse = (user) => {
+    if (!user) return null;
+    
+    // 1. ✅ CORRECCIÓN: Definir nivelNumerico aquí
+    // Usamos 'user.nivell' y si es null/undefined, usamos 0.
+    const nivelNumerico = user.nivell || 0; 
+
+    return {
+        id: user.id_sessio, 
+        username: user.nom_usuari, 
+        email: user.correu,
+        date_created: user.data_registre, 
+        pesoActual: user.pes_actual,
+        altura: user.altura,
+        biografia: user.biografia,
+        nivel: Number(nivelNumerico)
+    };
+};
+
+
+app.get("/api/", (req, res) => {
+  res.send("Servidor HTTP i WebSocket funcionant!");
+});
+
+// Obtener Usuario por ID
+app.get("/api/users/:id", async (req, res) => { // ¡Marcar como async!
+  const id = req.params.id;
+  const user = await findUserById(id); // ¡Usar await!
+
+  if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+  res.json(mapUserToApiResponse(user)); // Usar el helper de mapeo
+});
+
+// Actualizar Usuario por ID
+app.put("/api/users/:id", async (req, res) => { 
+  try {
+    const updatedUser = await updateUser(req.params.id, req.body);
+  
+    res.json(mapUserToApiResponse(updatedUser)); 
+    
+  } catch (err) {
+    if (err.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    // Añadimos logging para ver el error real
+    console.error("Error al actualizar usuario:", err); 
+    res.status(500).json({ message: "Error al actualizar" });
+  }
+});
+
+// Registro de Usuario
+app.post("/api/users/register", async (req, res) => { // Ya es async, ¡ajustar campos y mapeo!
+  const {
+    username,
+    email,
+    password,
+    pesoActual,
+    altura,
+    biografia,
+    foto_perfil, // Quitar si no se usa, o ignorar
+  } = req.body;
+  // foto_perfil no está en la BD, se omite en el check de campos obligatorios
+  if (!username || !email || !password || !pesoActual || !altura)
+    return res.status(400).json({ message: "Falten camps obligatoris" });
+
+  try {
+    const { user } = await registerUser( // ¡Usar await y quitar foto_perfil!
+      username,
+      email,
+      password,
+      pesoActual,
+      altura,
+      biografia
+    );
+    res.status(201).json({ user: mapUserToApiResponse(user) }); 
+    
+  } catch (err) {
+    if (err.message === "USERNAME_EXISTS") {
+      res.status(400).json({ message: "El nom d'usuari ja existeix" });
+    } else if (err.message === "EMAIL_EXISTS") { // Manejo de duplicidad de correo desde users.js
+      res.status(400).json({ message: "El correu ja està registrat" });
+    } else {
+      console.error(err);
+      res.status(500).json({ message: "Error intern al registrar" });
+    }
+  }
+});
+app.post("/api/users/login", async (req, res) => { // ¡Marcar como async!
+  const { username, password } = req.body;
+  try {
+    const { user } = await loginUser(username, password); // ¡Usar await!
+    
+    // Devolver la respuesta mapeada
+    res.json({
+      user: mapUserToApiResponse(user),
+    });
+  } catch (err) {
+    res.status(401).json({ message: "Credencials incorrectes" });
+  }
+});
+const startServer = async () => {
+  server.listen(PORT, () =>
+    console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
+  );
+};
+app.get("/api/exercicis", (req, res) => {
+  const filePath = path.join(__dirname, "exercicis.json");
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error llegint exercicis.json:", err);
+      return res.status(500).json({ message: "Error llegint exercicis" });
+    }
+    try {
+      const json = JSON.parse(data);
+      return res.json(json);
+    } catch (e) {
+      console.error("JSON invàlid a exercicis.json:", e);
+      return res.status(500).json({ message: "JSON invàlid" });
+    }
+  });
+});
 
 startServer();
