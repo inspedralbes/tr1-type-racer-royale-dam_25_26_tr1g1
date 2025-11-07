@@ -2,36 +2,47 @@ import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { findUserByUsername } from "./users.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const POSTS_FILE = path.join(__dirname, "posts.json");
 
-// 📂 Cargar posts del archivo
+// 📂 Cargar posts desde archivo
 let posts = [];
 try {
   const data = fs.readFileSync(POSTS_FILE, "utf8");
   posts = JSON.parse(data);
 } catch (err) {
-  console.warn("⚠️ No se pudo cargar posts.json, se usará lista vacía");
+  console.warn("⚠️ No se pudo cargar posts.json, se iniciará vacío");
   posts = [];
 }
 
-// 💾 Guardar en el archivo
+// 💾 Guardar en archivo
 const savePosts = () => {
   fs.writeFileSync(POSTS_FILE, JSON.stringify(posts, null, 2), "utf8");
 };
 
 // 🔹 Obtener todos los posts
 export const getAllPosts = () => {
-  return posts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  return posts
+    .map((post) => {
+      const user = findUserByUsername(post.username);
+      return {
+        ...post,
+        foto_perfil: user?.foto_perfil || post.foto_perfil || "",
+      };
+    })
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 };
 
-// 🔹 Crear nuevo post
+// 🔹 Crear un nuevo post
 export const createPost = (username, content) => {
+  const user = findUserByUsername(username);
   const newPost = {
     id: uuidv4(),
     username,
+    foto_perfil: user?.foto_perfil || "",
     content,
     timestamp: new Date().toISOString(),
     likes: [],
@@ -42,12 +53,13 @@ export const createPost = (username, content) => {
   return newPost;
 };
 
-// 🔹 Dar o quitar “like”
+// 🔹 Dar o quitar like
 export const toggleLike = (postId, username) => {
   const post = posts.find((p) => p.id === postId);
   if (!post) return null;
 
-  if (post.likes.includes(username)) {
+  const alreadyLiked = post.likes.includes(username);
+  if (alreadyLiked) {
     post.likes = post.likes.filter((u) => u !== username);
   } else {
     post.likes.push(username);
@@ -62,9 +74,11 @@ export const addComment = (postId, username, text) => {
   const post = posts.find((p) => p.id === postId);
   if (!post) return null;
 
+  const user = findUserByUsername(username);
   const newComment = {
     id: uuidv4(),
     username,
+    foto_perfil: user?.foto_perfil || "",
     text,
     timestamp: new Date().toISOString(),
   };
@@ -76,12 +90,12 @@ export const addComment = (postId, username, text) => {
 
 // 🔹 Eliminar post (solo autor)
 export const deletePost = (postId, username) => {
-  const postIndex = posts.findIndex((p) => p.id === postId);
-  if (postIndex === -1) return false;
+  const index = posts.findIndex((p) => p.id === postId);
+  if (index === -1) return false;
 
-  if (posts[postIndex].username !== username) return false;
+  if (posts[index].username !== username) return false;
 
-  posts.splice(postIndex, 1);
+  posts.splice(index, 1);
   savePosts();
   return true;
 };
