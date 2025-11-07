@@ -94,16 +94,31 @@ export const useAppStore = defineStore("app", {
 
     async updateUser(userData) {
       try {
+        // Determine user id from currently logged in user or from payload
+        const userId = this.user?.id || userData.id;
+        if (!userId) throw new Error("User ID no disponible per actualitzar");
+
+        // Ensure numeric fields are numbers (v-model may provide strings)
+        const payload = { ...userData };
+        if (payload.pesoActual !== undefined && payload.pesoActual !== null) {
+          const n = Number(payload.pesoActual);
+          if (!Number.isNaN(n)) payload.pesoActual = n;
+        }
+        if (payload.altura !== undefined && payload.altura !== null) {
+          const n = Number(payload.altura);
+          if (!Number.isNaN(n)) payload.altura = n;
+        }
+
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || ""}/api/users/${userId}`,
+          `${import.meta.env.VITE_API_URL || ''}/api/users/${userId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
+            body: JSON.stringify(payload),
           }
         );
         const updatedUser = await res.json();
-        if (!res.ok) throw new Error(updatedUser.message);
+        if (!res.ok) throw new Error(updatedUser.message || "Error actualitzant usuari");
 
         this.user = updatedUser;
         localStorage.setItem("user", JSON.stringify(this.user));
