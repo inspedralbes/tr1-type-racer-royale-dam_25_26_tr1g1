@@ -2,11 +2,10 @@
   <div
     class="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black p-4"
   >
-    <div class="w-full max-w-md">
-      <div class="text-center mb-8">
-        <img src="@/assets/logo.png" alt="Logo" class="h-20 mx-auto" />
+    <div class="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
+      <div class="text-center mb-2">
+        <img src="@/assets/logo.png" alt="Logo" class="h-40 mx-auto" />
       </div>
-
       <div
         v-if="appStore.notification.message"
         :class="[
@@ -24,15 +23,12 @@
           &times;
         </button>
       </div>
-
       <div v-if="tab === 'login'">
         <FormLogin />
       </div>
-
       <div v-if="tab === 'register'">
         <FormRegister />
       </div>
-
       <div class="flex justify-center py-4">
         <button
           v-if="!appStore.isAuthenticated"
