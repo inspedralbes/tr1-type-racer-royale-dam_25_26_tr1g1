@@ -34,7 +34,7 @@ export const createSession = async (sessionData, creatorId) => {
     series = 4;
   }
 
-  const exercisesWithSeries = allExercises.map(exercise => ({
+  const exercisesWithSeries = allExercises.map((exercise) => ({
     ...exercise,
     series,
   }));
@@ -58,6 +58,8 @@ export const createSession = async (sessionData, creatorId) => {
       status: "WAITING",
       startTime: Date.now(),
       currentExercise: 0,
+      repetitions: 0,
+      currentSeries: 1,
     },
   };
 
@@ -78,10 +80,10 @@ export const updateSession = async (id, updateData) => {
 
 export const joinSession = async (sessionId, userId, password) => {
   const session = sessions.find((s) => s.id === sessionId);
-  if (!session) return null;
+  if (!session) throw new Error("SESSION_NOT_FOUND");
 
   if (session.password && session.password !== password) {
-    throw new Error("Incorrect password");
+    throw new Error("La contrasenya es incorrecta.");
   }
 
   const joiningUser = findUserById(userId);

@@ -35,7 +35,7 @@
 
           <transition name="slide-fade">
             <SessionProgressInfo
-              v-if="showInfoExercices"
+              v-if="showInfoExercices && currentExercise"
               :timer="timer"
               :is-resting="isResting"
               :current-timer-type="currentTimerType"
@@ -68,8 +68,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useAppStore } from "@/stores/app";
+import { useWebSocketStore } from "@/stores/websocket";
+import { useRouter } from "vue-router";
 import { calculateAngle, KEYPOINTS } from "@/components/Ai/analysis.js";
 import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
 
@@ -80,6 +82,8 @@ import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
 import SessionProgressInfo from "@/components/session/SessionProgressInfo.vue";
 
 const appStore = useAppStore();
+const websocketStore = useWebSocketStore();
+const router = useRouter();
 
 const currentSession = computed(() => appStore.currentSession);
 
@@ -99,18 +103,61 @@ const currentExercise = computed(
   () => currentSession.value?.exercicis[currentExerciseIndex.value]
 );
 
+const timer = ref(0);
+const isResting = ref(false);
+const currentTimerType = ref("exercici");
+let timerInterval = null;
+
+watch(currentExercise, (newExercise) => {
+  if (newExercise) {
+    resetTimer();
+  }
+});
+
 const handleInPose = () => {
   // Logic for when the user is in pose
 };
 
-const resetTimer = () => {};
+const resetTimer = () => {
+  stopTimer();
+  if (currentExercise.value) {
+    timer.value = currentExercise.value.duration || 0;
+    isResting.value = false;
+    currentTimerType.value = "exercici";
+    startTimer();
+  }
+};
 
-const startTimer = () => {};
+const startTimer = () => {
+  if (timerInterval) return;
+  timerInterval = setInterval(() => {
+    if (timer.value > 0) {
+      timer.value--;
+    } else {
+      // Timer finished, what happens next?
+      // Maybe switch to rest, or next exercise
+      stopTimer();
+    }
+  }, 1000);
+};
 
-const stopTimer = () => {};
+const stopTimer = () => {
+  clearInterval(timerInterval);
+  timerInterval = null;
+};
+
+const leaveSession = () => {
+  if (currentSession.value) {
+    websocketStore.sendMessage({
+      type: "LEAVE_SESSION",
+      payload: { sessionId: currentSession.value.id },
+    });
+    router.push("/sessions");
+  }
+};
 
 onMounted(() => {
-  startTimer();
+  resetTimer();
 });
 
 onUnmounted(() => {

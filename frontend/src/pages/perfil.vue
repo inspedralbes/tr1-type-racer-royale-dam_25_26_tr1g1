@@ -6,14 +6,20 @@
         class="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden"
       >
         <!-- Banner Area -->
-        <div class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600">
+        <div
+          v-if="userData"
+          class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600"
+        >
           <!-- Profile Picture (positioned absolutely to overlap) -->
           <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
             <div
               class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-800"
             >
               <img
-                :src="userData.foto_perfil || 'https://cdn-icons-png.flaticon.com/512/847/847969.png'"
+                :src="
+                  userData.foto_perfil ||
+                  'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+                "
                 alt="Avatar"
                 class="w-full h-full object-cover"
               />

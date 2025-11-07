@@ -143,16 +143,18 @@ export const setupWebsocketHandlers = (ws, wss) => {
             const newSession = await createSession(payload, ws.userId);
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
 
         case MESSAGE_TYPES.JOIN_SESSION:
-          if (!ws.userId)
+          if (!ws.userId) {
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
               message: "User not logged in.",
             });
+          }
           try {
             const session = await joinSession(
               payload.sessionId,
@@ -165,7 +167,13 @@ export const setupWebsocketHandlers = (ws, wss) => {
               broadcastSessionUpdate(session);
             }
           } catch (error) {
-            sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
+            if (error.message === "SESSION_NOT_FOUND") {
+              sendMessage(ws, MESSAGE_TYPES.ERROR, {
+                message: "La sessió no existeix o ha sigut eliminada.",
+              });
+            } else {
+              sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
+            }
           }
           break;
 
@@ -233,7 +241,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             message: `Unknown message type: ${type}`,
           });
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.error("Error processing message:", err);
       sendMessage(ws, MESSAGE_TYPES.ERROR, {
         message: "Invalid message format",
@@ -253,3 +262,4 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 };
+
