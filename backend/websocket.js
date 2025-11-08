@@ -9,6 +9,7 @@ import {
   updateRepetitions,
   setReady,
   startSession,
+  getSessionById,
 } from "./sessions.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
@@ -43,6 +44,29 @@ export const broadcastSessionUpdate = (session) => {
   const message = JSON.stringify({
     type: MESSAGE_TYPES.SESSION_UPDATE,
     payload: session,
+  });
+
+  const userIdsInSession = new Set(session.users.map((u) => u.id));
+
+  wssInstance.clients.forEach((client) => {
+    if (
+      client.readyState === client.OPEN &&
+      userIdsInSession.has(client.userId)
+    ) {
+      try {
+        client.send(message);
+      } catch (error) {
+        console.error("Error sending WebSocket message:", error);
+      }
+    }
+  });
+};
+
+export const broadcastEmojiReaction = (session, emoji, userId) => {
+  if (!wssInstance) return;
+  const message = JSON.stringify({
+    type: MESSAGE_TYPES.EMOJI_REACTION,
+    payload: { emoji, userId },
   });
 
   const userIdsInSession = new Set(session.users.map((u) => u.id));
@@ -251,6 +275,21 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in or not in a session.",
             });
           updateRepetitions(ws.currentSession, ws.userId);
+          break;
+
+        case MESSAGE_TYPES.SEND_EMOJI_REACTION:
+          if (!ws.userId || !ws.currentSession)
+            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
+              message: "User not logged in or not in a session.",
+            });
+          try {
+            const session = getSessionById(ws.currentSession);
+            if (session) {
+              broadcastEmojiReaction(session, payload.emoji, ws.userId);
+            }
+          } catch (error) {
+            sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
+          }
           break;
 
         default:

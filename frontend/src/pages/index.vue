@@ -2,7 +2,7 @@
   <div
     class="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-black p-4"
   >
-    <div class="w-full max-w-md bg-gray-800 rounded-xl shadow-lg p-8">
+    <div class="w-full max-w-md">
       <div class="text-center mb-2">
         <img src="@/assets/logo.png" alt="Logo" class="h-40 mx-auto" />
       </div>

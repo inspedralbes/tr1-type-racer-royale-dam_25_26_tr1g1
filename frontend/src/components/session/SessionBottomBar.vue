@@ -12,6 +12,11 @@
         </li>
       </ul>
     </div>
+    <div v-else-if="showEmojis" class="p-4 flex justify-around">
+      <button v-for="emoji in emojis" :key="emoji" @click="sendReaction(emoji)" class="text-3xl transform hover:scale-125 transition-transform">
+        {{ emoji }}
+      </button>
+    </div>
     <div v-else class="flex justify-around">
       <button @click="$emit('leave-session')" class="p-4 flex flex-col items-center">
         <i class="mdi mdi-exit-to-app text-xl"></i>
@@ -23,7 +28,7 @@
         <span class="text-xs mt-1 hidden sm:block">Càmera</span>
       </button>
 
-      <button @click="$emit('show-emojis')" class="p-4 flex flex-col items-center">
+      <button @click="showEmojis = true" class="p-4 flex flex-col items-center">
         <i class="mdi mdi-emoticon-happy text-xl"></i>
         <span class="text-xs mt-1 hidden sm:block">Emojis</span>
       </button>
@@ -41,12 +46,19 @@ defineProps({
   },
 });
 
-const emit = defineEmits(["leave-session", "show-emojis", "camera-selected"]);
+const emit = defineEmits(["leave-session", "send-reaction", "camera-selected"]);
 
 const showCameras = ref(false);
+const showEmojis = ref(false);
+const emojis = ["👍", "❤️", "🎉", "😂", "🔥"];
 
 const selectCamera = (deviceId) => {
   emit("camera-selected", deviceId);
   showCameras.value = false;
+};
+
+const sendReaction = (emoji) => {
+  emit("send-reaction", emoji);
+  showEmojis.value = false;
 };
 </script>

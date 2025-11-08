@@ -7,6 +7,7 @@ export const useWebSocketStore = defineStore("websocket", {
     socket: null,
     isConnected: false,
     sessions: [],
+    latestReaction: null,
   }),
 
   actions: {
@@ -36,7 +37,10 @@ export const useWebSocketStore = defineStore("websocket", {
               break;
 
             case "SESSION_UPDATE":
-              if (appStore.currentSession && appStore.currentSession.id === data.payload.id) {
+              if (
+                appStore.currentSession &&
+                appStore.currentSession.id === data.payload.id
+              ) {
                 appStore.setCurrentSession(data.payload);
               }
               break;
@@ -55,8 +59,18 @@ export const useWebSocketStore = defineStore("websocket", {
               appStore.clearCurrentSession();
               break;
 
+            case "EMOJI_REACTION":
+              this.latestReaction = { ...data.payload, id: Date.now() };
+              break;
+
             case "ERROR":
               console.error("Error from server:", data.payload.message);
+              if (
+                data.payload.message ===
+                "La sessió no existeix o ha sigut eliminada."
+              ) {
+                router.push("/sessions");
+              }
               break;
 
             default:

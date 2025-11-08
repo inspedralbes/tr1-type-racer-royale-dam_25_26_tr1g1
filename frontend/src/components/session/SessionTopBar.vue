@@ -27,20 +27,41 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref, computed, onMounted, onUnmounted } from "vue";
+
+const props = defineProps({
   currentSession: {
     type: Object,
     default: () => ({}),
   },
-  exerciseTime: {
-    type: Number,
-    default: 0,
-  },
-  formattedTime: {
-    type: String,
-    default: "00:00",
-  },
 });
 
 defineEmits(["toggleInfoExercices", "toggleScoreboard"]);
+
+const now = ref(Date.now());
+let timerInterval = null;
+
+const formattedTime = computed(() => {
+  if (!props.currentSession?.state?.startTime) {
+    return "00:00";
+  }
+  const duration = Math.floor(
+    (now.value - props.currentSession.state.startTime) / 1000
+  );
+  const minutes = Math.floor(duration / 60);
+  const seconds = duration % 60;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+});
+
+onMounted(() => {
+  timerInterval = setInterval(() => {
+    now.value = Date.now();
+  }, 1000);
+});
+
+onUnmounted(() => {
+  clearInterval(timerInterval);
+});
 </script>

@@ -142,9 +142,9 @@ const joinSession = (sessionId, password) => {
   });
 };
 
+const now = ref(Date.now());
 const formatDuration = (startTime) => {
-  const now = Date.now();
-  const duration = Math.floor((now - startTime) / 1000); // duration in seconds
+  const duration = Math.floor((now.value - startTime) / 1000); // duration in seconds
 
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
@@ -158,10 +158,7 @@ const formatDuration = (startTime) => {
 let durationInterval = null;
 onMounted(() => {
   durationInterval = setInterval(() => {
-    // Force re-render of computed properties that depend on Date.now()
-    // by updating a ref that is not directly used but triggers reactivity
-    // This is a workaround to make computed properties reactive to time
-    // A more robust solution might involve a dedicated time store or a more granular update mechanism
+    now.value = Date.now();
   }, 1000);
 });
 

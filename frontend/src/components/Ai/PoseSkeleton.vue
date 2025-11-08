@@ -8,7 +8,7 @@ import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
-const emit = defineEmits(["rep", "cameras", "in-pose"]);
+const emit = defineEmits(["rep", "cameras", "in-pose", "loading-model", "model-loaded"]);
 
 const props = defineProps({
   currentExercise: {
@@ -188,6 +188,7 @@ async function loop() {
 
 // 4) Inicialització i neteja
 onMounted(async () => {
+  emit("loading-model");
   await tf.setBackend("webgl");
   await tf.ready();
 
@@ -202,6 +203,7 @@ onMounted(async () => {
     }
   );
 
+  emit("model-loaded");
   loop();
 });
 
