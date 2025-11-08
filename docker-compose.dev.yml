@@ -3,50 +3,26 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
+    env_file:
+      - ./backend/.env
     ports:
       - "5000:5000"
     volumes:
       - ./backend:/app
-      - /app/node_modules
     restart: unless-stopped
-
-  mysql:
-    image: mysql:8.0
-    container_name: tr1-mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: fitAi
-    ports:
-      - "3306:3306"
-    volumes:
-       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-    command: --default-authentication-plugin=mysql_native_password
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: tr1-phpmyadmin
-    restart: always
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: 1234
-    ports:
-      - "8080:80"
-    depends_on:
-      - mysql
+    command: ["node", "server.js"]
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - CHOKIDAR_USEPOLLING=true
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
     depends_on:
       - backend
+    environment:
+      - VITE_API_URL=/api
+      - VITE_WS_URL=ws://localhost:5000
     restart: unless-stopped

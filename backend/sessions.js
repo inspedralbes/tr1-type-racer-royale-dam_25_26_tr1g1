@@ -105,6 +105,9 @@ export const joinSession = async (sessionId, userId, password) => {
     foto_perfil: joiningUser.foto_perfil,
     ready: false,
   });
+
+  console.log(`User ${userId} joined session ${sessionId}. Broadcasting sessions update.`);
+  broadcastSessionsUpdate();
   return session;
 };
 
@@ -130,6 +133,8 @@ export const leaveSession = async (sessionId, userId) => {
       deleteSession(sessionId);
       return null; // Session deleted
     } else {
+      console.log(`User ${userId} left session ${sessionId}. Broadcasting sessions update.`);
+      broadcastSessionsUpdate();
       return session; // Return updated session
     }
   }
@@ -252,4 +257,5 @@ export const startSession = (sessionId) => {
     }
     broadcastSessionUpdate(session);
   }, 1000);
+  broadcastSessionsUpdate(); // Broadcast to update the session list status
 };

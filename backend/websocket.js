@@ -8,6 +8,7 @@ import {
   nextExercise,
   updateRepetitions,
   setReady,
+  startSession,
 } from "./sessions.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
@@ -278,5 +279,3 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 };
-
-

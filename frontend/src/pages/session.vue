@@ -113,7 +113,9 @@ const currentExercise = computed(
 );
 
 const timer = computed(() => appStore.currentSession?.state.timer || 0);
-const isResting = computed(() => appStore.currentSession?.state.isResting || false);
+const isResting = computed(
+  () => appStore.currentSession?.state.isResting || false
+);
 const currentTimerType = computed(() =>
   isResting.value ? "descans" : "exercici"
 );

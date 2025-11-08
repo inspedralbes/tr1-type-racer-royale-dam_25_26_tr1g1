@@ -17,7 +17,7 @@ export const useAppStore = defineStore("app", {
     async login(username, password) {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || ""}/api/users/login`,
+          `${import.meta.env.VITE_API_URL || ""}/users/login`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -49,7 +49,7 @@ export const useAppStore = defineStore("app", {
     ) {
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || ""}/api/users/register`,
+          `${import.meta.env.VITE_API_URL || ""}/users/register`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -110,7 +110,7 @@ export const useAppStore = defineStore("app", {
         }
 
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || ''}/api/users/${userId}`,
+          `${import.meta.env.VITE_API_URL || ''}/users/${userId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },

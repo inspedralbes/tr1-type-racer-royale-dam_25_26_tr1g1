@@ -114,9 +114,11 @@ app.post("/api/users/register", async (req, res) => {
 });
 
 app.post("/api/users/login", (req, res) => {
+  console.log("Login request body:", req.body);
   const { username, password } = req.body;
   try {
     const { user } = loginUser(username, password);
+    console.log("User found:", user);
     res.json({
       user: {
         id: user.id,
@@ -131,6 +133,7 @@ app.post("/api/users/login", (req, res) => {
       },
     });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(401).json({ message: "Credencials incorrectes" });
   }
 });
@@ -152,134 +155,61 @@ app.get("/api/exercicis", (req, res) => {
   });
 });
 
-// app.get("/api/sessions/:id", (req, res) => {
-//   const session = getSessionById(req.params.id);
-//   if (session) {
-//     res.json(session);
-//   } else {
-//     res.status(404).json({ message: "Session not found" });
-//   }
-// });
-
-// app.put("/api/sessions/:id", async (req, res) => {
-//   try {
-//     const updatedSession = await updateSession(req.params.id, req.body);
-//     if (updatedSession) {
-//       res.json(updatedSession);
-//     } else {
-//       res.status(404).json({ message: "Session not found" });
-//     }
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error updating session", error: error.message });
-//   }
-// });
-
-// app.delete("/api/sessions/:id", async (req, res) => {
-//   try {
-//     const success = await deleteSession(req.params.id);
-//     if (success) {
-//       res.status(204).send();
-//     } else {
-//       res.status(404).json({ message: "Session not found" });
-//     }
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error deleting session", error: error.message });
-//   }
-// });
-
-// app.post("/api/sessions/:id/join", async (req, res) => {
-//   const { userId } = req.body;
-//   if (!userId) {
-//     return res.status(400).json({ message: "User ID is required" });
-//   }
-//   try {
-//     const updatedSession = await joinSession(req.params.id, userId);
-//     if (updatedSession) {
-//       res.json(updatedSession);
-//     } else {
-//       res.status(404).json({ message: "Session not found" });
-//     }
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error joining session", error: error.message });
-//   }
-// });
-
-app.get("/api/users/:id", (req, res) => {
-  const user = findUserById(req.params.id);
-
-  if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
-
-  res.json({
-    id: user.id,
-    username: user.username,
-    email: user.email,
-    date_created: user.date_created || null,
-    pesoActual: user.pesoActual || null,
-    altura: user.altura || null,
-    biografia: user.biografia || null,
-  });
-});
-
-app.put("/api/users/:id", async (req, res) => {
-  try {
-    const updatedUser = await updateUser(req.params.id, req.body);
-    res.json(updatedUser);
-  } catch (err) {
-    if (err.message === "USER_NOT_FOUND") {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    res.status(500).json({ message: "Error al actualizar" });
+app.get("/api/sessions/:id", (req, res) => {
+  const session = getSessionById(req.params.id);
+  if (session) {
+    res.json(session);
+  } else {
+    res.status(404).json({ message: "Session not found" });
   }
 });
 
-app.post("/api/users/register", async (req, res) => {
-  const { username, email, password, pesoActual, altura, biografia } = req.body;
-  if (!username || !email || !password || !pesoActual || !altura)
-    return res.status(400).json({ message: "Falten camps obligatoris" });
-
+app.put("/api/sessions/:id", async (req, res) => {
   try {
-    const newUser = await registerUser(
-      username,
-      email,
-      password,
-      pesoActual,
-      altura,
-      biografia
-    );
-    res.json(newUser);
-  } catch (err) {
-    if (err.message === "USERNAME_EXISTS") {
-      res.status(400).json({ message: "El nom d'usuari ja existeix" });
+    const updatedSession = await updateSession(req.params.id, req.body);
+    if (updatedSession) {
+      res.json(updatedSession);
     } else {
-      res.status(500).json({ message: "Error intern al registrar" });
+      res.status(404).json({ message: "Session not found" });
     }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating session", error: error.message });
   }
 });
 
-app.post("/api/users/login", (req, res) => {
-  const { username, password } = req.body;
+app.delete("/api/sessions/:id", async (req, res) => {
   try {
-    const { user } = loginUser(username, password);
-    res.json({
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        date_created: user.date_created || null,
-        pesoActual: user.pesoActual || null,
-        altura: user.altura || null,
-        nivel: user.nivel || 0,
-        biografia: user.biografia || null,
-      },
-    });
-  } catch (err) {
-    res.status(401).json({ message: "Credencials incorrectes" });
+    const success = await deleteSession(req.params.id);
+    if (success) {
+      res.status(204).send();
+    } else {
+      res.status(404).json({ message: "Session not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleting session", error: error.message });
+  }
+});
+
+app.post("/api/sessions/:id/join", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    const updatedSession = await joinSession(req.params.id, userId);
+    if (updatedSession) {
+      res.json(updatedSession);
+    } else {
+      res.status(404).json({ message: "Session not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error joining session", error: error.message });
   }
 });
 
@@ -352,4 +282,3 @@ const startServer = async () => {
 };
 
 startServer();
-

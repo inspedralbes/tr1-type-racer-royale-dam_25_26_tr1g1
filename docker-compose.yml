@@ -3,6 +3,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
     ports:
       - "5000:5000"
     restart: unless-stopped
@@ -12,7 +14,6 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      # Mapeamos el puerto 3000 del host al puerto 80 del contenedor (donde escucha Nginx)
       - "80:80"
     depends_on:
       - backend

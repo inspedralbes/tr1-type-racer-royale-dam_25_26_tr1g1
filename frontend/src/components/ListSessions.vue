@@ -5,11 +5,6 @@
         v-for="session in sessions"
         :key="session.id"
         class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-lg shadow-lg p-4 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
-        :class="{
-          'opacity-50 cursor-not-allowed':
-            session.users.length >= session.maxUsers ||
-            session.state.status !== 'WAITING',
-        }"
         @click="handleSessionClick(session)"
       >
         <div class="flex flex-wrap items-center justify-between text-white">
@@ -33,9 +28,8 @@
               <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
             </div>
             <div class="flex items-center mr-4">
-              <span class="mdi mdi-clock-outline text-gray-400 mr-2"></span>
               <span
-                class="mdi mr-2"
+                cl1ass="mdi mr-2"
                 :class="
                   !session.password
                     ? 'mdi-earth text-green-400'
@@ -46,21 +40,26 @@
                 !session.password ? "Public" : "Private"
               }}</span>
             </div>
+            <div class="flex items-center mr-4">
+              <span
+                class="px-3 py-1 rounded-full text-sm font-semibold"
+                :class="{
+                  'bg-green-500 text-white': session.state.status === 'WAITING',
+                  'bg-yellow-500 text-white':
+                    session.state.status === 'IN_PROGRESS',
+                }"
+              >
+                {{
+                  session.state.status === "WAITING" ? "Esperant" : "En Curs"
+                }}
+              </span>
+            </div>
+            <div class="flex items-center mr-4">
+              <span class="mdi mdi-timer-sand text-gray-400 mr-2"></span>
+              <span>{{ formatDuration(session.state.startTime) }}</span>
+            </div>
             <button
-              class="px-6 py-2 rounded-lg font-bold transition duration-300 ease-in-out"
-              :class="{
-                'bg-blue-600 hover:bg-blue-700 text-white': !(
-                  session.users.length >= session.maxUsers ||
-                  session.state.status !== 'WAITING'
-                ),
-                'bg-gray-500 text-gray-300 cursor-not-allowed':
-                  session.users.length >= session.maxUsers ||
-                  session.state.status !== 'WAITING',
-              }"
-              :disabled="
-                session.users.length >= session.maxUsers ||
-                session.state.status !== 'WAITING'
-              "
+              class="px-6 py-2 rounded-lg font-bold transition duration-300 ease-in-out bg-blue-600 hover:bg-blue-700 text-white"
               @click.stop="handleSessionClick(session)"
             >
               <span class="mdi mdi-play-circle-outline mr-2"></span>
@@ -105,7 +104,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, onMounted, onUnmounted } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useAppStore } from "@/stores/app";
 
@@ -142,4 +141,31 @@ const joinSession = (sessionId, password) => {
     payload: { sessionId, password },
   });
 };
+
+const formatDuration = (startTime) => {
+  const now = Date.now();
+  const duration = Math.floor((now - startTime) / 1000); // duration in seconds
+
+  const minutes = Math.floor(duration / 60);
+  const seconds = duration % 60;
+
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+};
+
+// Update duration every second
+let durationInterval = null;
+onMounted(() => {
+  durationInterval = setInterval(() => {
+    // Force re-render of computed properties that depend on Date.now()
+    // by updating a ref that is not directly used but triggers reactivity
+    // This is a workaround to make computed properties reactive to time
+    // A more robust solution might involve a dedicated time store or a more granular update mechanism
+  }, 1000);
+});
+
+onUnmounted(() => {
+  clearInterval(durationInterval);
+});
 </script>
