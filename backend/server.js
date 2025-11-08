@@ -3,8 +3,15 @@ import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
 import dotenv from "dotenv";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
 import { setupWebsocketHandlers, setWssInstance } from "./websocket.js";
 import { findUserById, registerUser, loginUser, updateUser } from "./users.js";
@@ -15,6 +22,8 @@ import {
   updateSession,
   deleteSession,
   joinSession,
+  leaveSession,
+  setReady,
 } from "./sessions.js";
 import {
   getAllPosts,
@@ -25,15 +34,11 @@ import {
   deleteComment,
 } from "./posts.js";
 
-const PORT = 5000;
+const PORT = process.env.PORT;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -134,7 +139,7 @@ app.post("/api/users/login", (req, res) => {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(401).json({ message: "Credencials incorrectes" });
+    res.status(500).json({ message: "Credencials incorrectes" });
   }
 });
 
@@ -153,6 +158,25 @@ app.get("/api/exercicis", (req, res) => {
       return res.status(500).json({ message: "JSON invàlid" });
     }
   });
+});
+
+app.get("/api/sessions", (req, res) => {
+  res.json(getAllSessions());
+});
+
+app.post("/api/sessions", async (req, res) => {
+  const { creatorId, ...sessionData } = req.body;
+  if (!creatorId) {
+    return res.status(400).json({ message: "Creator ID is required" });
+  }
+  try {
+    const newSession = await createSession(sessionData, creatorId);
+    res.status(201).json(newSession);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating session", error: error.message });
+  }
 });
 
 app.get("/api/sessions/:id", (req, res) => {
@@ -195,12 +219,12 @@ app.delete("/api/sessions/:id", async (req, res) => {
 });
 
 app.post("/api/sessions/:id/join", async (req, res) => {
-  const { userId } = req.body;
+  const { userId, password } = req.body;
   if (!userId) {
     return res.status(400).json({ message: "User ID is required" });
   }
   try {
-    const updatedSession = await joinSession(req.params.id, userId);
+    const updatedSession = await joinSession(req.params.id, userId, password);
     if (updatedSession) {
       res.json(updatedSession);
     } else {
@@ -210,6 +234,40 @@ app.post("/api/sessions/:id/join", async (req, res) => {
     res
       .status(500)
       .json({ message: "Error joining session", error: error.message });
+  }
+});
+
+app.post("/api/sessions/:id/leave", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    const updatedSession = await leaveSession(req.params.id, userId);
+    if (updatedSession) {
+      res.json(updatedSession);
+    } else {
+      res.status(404).json({ message: "Session not found or deleted" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error leaving session", error: error.message });
+  }
+});
+
+app.post("/api/sessions/:id/ready", async (req, res) => {
+  const { userId } = req.body;
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+  try {
+    setReady(req.params.id, userId);
+    res.status(200).json({ message: "User ready status updated" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error setting user ready", error: error.message });
   }
 });
 

@@ -3,8 +3,10 @@ import { broadcastSessionsUpdate, broadcastSessionUpdate } from "./websocket.js"
 import { findUserById } from "./users.js";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const exercicisPath = path.join(__dirname, "exercicis.json");
 const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
