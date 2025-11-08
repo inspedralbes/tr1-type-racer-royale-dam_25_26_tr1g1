@@ -1,17 +1,7 @@
 <template>
+  <NavBar />
   <div class="min-h-screen bg-gray-900 text-white">
-    <NavBar />
     <div class="container mx-auto p-4 pb-20">
-      <!-- Header Section -->
-      <div
-        class="relative bg-gradient-to-r from-purple-500 to-indigo-600 p-8 rounded-lg shadow-lg mb-6 text-center"
-      >
-        <h2 class="text-4xl font-extrabold mb-2">Rutines d'Exercicis</h2>
-        <p class="text-lg text-gray-200 mb-4">
-          Explora les nostres rutines d'entrenament personalitzades
-        </p>
-      </div>
-
       <div class="flex justify-end mb-4">
         <button
           @click="toggleAll"

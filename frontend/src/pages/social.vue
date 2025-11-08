@@ -1,100 +1,125 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
-    <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-6">Social</h1>
 
+    <div class="container mx-auto" style="max-width: 800px">
       <!-- Crear nuevo post -->
-      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+      <div class="p-4 border-b border-gray-700">
         <h2 class="text-xl font-semibold mb-4">Crea una publicació</h2>
         <textarea
           v-model="newPost"
-          class="w-full bg-gray-700 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows="4"
           placeholder="Què tens al cap?"
         ></textarea>
-        <button
-          @click="addPost"
-          class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg"
-        >
-          Publicar
-        </button>
+        <div class="flex justify-end">
+          <button
+            @click="addPost"
+            class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg"
+          >
+            Publicar
+          </button>
+        </div>
       </div>
 
       <!-- Llista de posts -->
-      <div class="space-y-6">
+      <div>
         <div
           v-for="post in posts"
           :key="post.id"
-          class="bg-gray-800 p-6 rounded-lg shadow-lg"
+          class="p-4 border-b border-gray-700"
         >
-          <div class="flex items-center mb-4">
+          <div class="flex">
             <img
-              :src="post.foto_perfil || '/default-avatar.png'"
+              :src="
+                post.foto_perfil ||
+                'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+              "
               alt="Avatar"
               class="w-12 h-12 rounded-full mr-4 object-cover"
             />
-            <div>
-              <h3 class="text-lg font-semibold">{{ post.username }}</h3>
-              <p class="text-gray-400 text-sm">
-                {{ new Date(post.timestamp).toLocaleString() }}
-              </p>
-            </div>
-          </div>
+            <div class="w-full">
+              <div class="flex items-center">
+                <h3 class="text-lg font-semibold">{{ post.username }}</h3>
+                <p class="text-gray-500 text-sm ml-2">
+                  · {{ new Date(post.timestamp).toLocaleDateString() }}
+                </p>
+              </div>
 
-          <p class="text-gray-300 mb-4">{{ post.content }}</p>
+              <p class="text-gray-300 mt-1">{{ post.content }}</p>
 
-          <!-- Like + Comments -->
-          <div class="flex items-center space-x-6 mb-4">
-            <button
-              @click="toggleLike(post.id)"
-              class="flex items-center space-x-1 hover:text-blue-400"
-            >
-              <span
-                :class="{
-                  'text-blue-400': post.likes.includes(appStore.user?.username),
-                }"
-              >
-                ❤️
-              </span>
-              <span>{{ post.likes.length }}</span>
-            </button>
+              <!-- Like + Comments -->
+              <div class="flex items-center space-x-6 mt-4 text-gray-500">
+                <button
+                  @click="toggleLike(post.id)"
+                  class="flex items-center space-x-2 hover:text-red-500"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    :class="{
+                      'text-red-500': post.likes.includes(
+                        appStore.user?.username
+                      ),
+                    }"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <span>{{ post.likes.length }}</span>
+                </button>
 
-            <button
-              @click="post.showComments = !post.showComments"
-              class="hover:text-blue-400"
-            >
-              💬 {{ post.comments.length }}
-            </button>
-          </div>
+                <button
+                  @click="post.showComments = !post.showComments"
+                  class="flex items-center space-x-2 hover:text-blue-400"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    ></path>
+                  </svg>
+                  <span>{{ post.comments.length }}</span>
+                </button>
+              </div>
 
-          <!-- Comment Section -->
-          <div
-            v-if="post.showComments"
-            class="mt-4 border-t border-gray-700 pt-4"
-          >
-            <div
-              v-for="comment in post.comments"
-              :key="comment.id"
-              class="mb-2 text-gray-300"
-            >
-              <strong>{{ comment.username }}</strong
-              >:
-              {{ comment.text }}
-            </div>
+              <!-- Comment Section -->
+              <div v-if="post.showComments" class="mt-4">
+                <div
+                  v-for="comment in post.comments"
+                  :key="comment.id"
+                  class="text-gray-400 text-sm mb-2"
+                >
+                  <strong>{{ comment.username }}</strong
+                  >:
+                  {{ comment.text }}
+                </div>
 
-            <div class="flex mt-2">
-              <input
-                v-model="commentText[post.id]"
-                class="flex-1 bg-gray-700 p-2 rounded-l-lg outline-none"
-                placeholder="Escriu un comentari..."
-              />
-              <button
-                @click="addComment(post.id)"
-                class="bg-blue-600 hover:bg-blue-700 px-3 rounded-r-lg"
-              >
-                Enviar
-              </button>
+                <div class="flex mt-4">
+                  <input
+                    v-model="commentText[post.id]"
+                    class="flex-1 bg-gray-800 p-2 rounded-l-lg outline-none"
+                    placeholder="Escriu un comentari..."
+                  />
+                  <button
+                    @click="addComment(post.id)"
+                    class="bg-blue-600 hover:bg-blue-700 px-4 rounded-r-lg font-semibold"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -102,7 +127,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted } from "vue";
 import NavBar from "@/components/NavBar.vue";

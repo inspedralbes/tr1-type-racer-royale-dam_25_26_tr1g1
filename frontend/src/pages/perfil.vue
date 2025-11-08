@@ -2,18 +2,16 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
     <div class="container mx-auto p-4 pb-20">
-      <div
-        class="max-w-4xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden"
-      >
+      <div class="max-w-4xl mx-auto">
         <!-- Banner Area -->
         <div
           v-if="userData"
-          class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600"
+          class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg"
         >
-          <!-- Profile Picture (positioned absolutely to overlap) -->
-          <div class="absolute -bottom-16 left-1/2 transform -translate-x-1/2">
+          <!-- Profile Picture -->
+          <div class="absolute -bottom-16 left-6">
             <div
-              class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-800"
+              class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-900"
             >
               <img
                 :src="
@@ -27,16 +25,33 @@
           </div>
         </div>
 
-        <div v-if="userData" class="pt-20 p-6">
-          <!-- pt-20 to account for overlapping avatar -->
-          <div class="text-center mb-6">
+        <!-- Action Buttons -->
+        <div
+          v-if="userData"
+          class="flex justify-end p-4 border-b border-gray-700"
+        >
+          <button
+            @click="openEditDialog"
+            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mr-2"
+          >
+            Editar perfil
+          </button>
+          <button
+            @click="handleLogout"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
+          >
+            Tancar Sessió
+          </button>
+        </div>
+
+        <div v-if="userData" class="p-6 pt-8">
+          <!-- User Info -->
+          <div class="mb-6">
             <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
             <p class="text-md text-gray-400">
               Nivell: {{ Math.floor(userData.nivel) }}
             </p>
-            <div
-              class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs mx-auto"
-            >
+            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs">
               <div
                 class="bg-blue-500 h-2.5 rounded-full"
                 :style="{ width: (userData.nivel % 1) * 100 + '%' }"
@@ -44,53 +59,55 @@
             </div>
           </div>
 
-          <!-- User Details (Email, Member Since, Weight, Height) - styled as stats -->
-          <div
-            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 text-center"
-          >
-            <div class="bg-gray-700 p-4 rounded-lg">
-              <h3 class="text-sm font-medium text-gray-400">Email</h3>
-              <p class="text-lg truncate">{{ userData.email }}</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg">
-              <h3 class="text-sm font-medium text-gray-400">Membre des de</h3>
-              <p class="text-lg">
-                {{ new Date(userData.date_created).toLocaleDateString() }}
-              </p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg">
-              <h3 class="text-sm font-medium text-gray-400">Pes actual</h3>
-              <p class="text-lg">{{ userData.pesoActual || "-" }} kg</p>
-            </div>
-            <div class="bg-gray-700 p-4 rounded-lg">
-              <h3 class="text-sm font-medium text-gray-400">Altura</h3>
-              <p class="text-lg">{{ userData.altura || "-" }} cm</p>
-            </div>
-          </div>
-
           <!-- User Biography -->
-          <div class="mt-6 text-center">
-            <h3 class="text-lg font-medium text-gray-400">Biografía</h3>
-            <p class="mt-2 text-gray-300">
+          <div class="mb-6">
+            <p class="text-gray-300">
               {{ userData.biografia || "No has afegit cap biografia." }}
             </p>
           </div>
 
-          <div
-            class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4"
-          >
-            <button
-              @click="openEditDialog"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Editar perfil
-            </button>
-            <button
-              @click="handleLogout"
-              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            >
-              Tancar Sessió
-            </button>
+          <!-- User Details -->
+          <div class="flex flex-wrap gap-x-6 gap-y-2 text-gray-400">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                ></path>
+                <path
+                  d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                ></path>
+              </svg>
+              <span>{{ userData.email }}</span>
+            </div>
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              <span
+                >Membre des de
+                {{ new Date(userData.date_created).toLocaleDateString() }}</span
+              >
+            </div>
+            <div v-if="userData.pesoActual" class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                ></path>
+              </svg>
+              <span>{{ userData.pesoActual }} kg</span>
+            </div>
+            <div v-if="userData.altura" class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                ></path>
+              </svg>
+              <span>{{ userData.altura }} cm</span>
+            </div>
           </div>
         </div>
       </div>

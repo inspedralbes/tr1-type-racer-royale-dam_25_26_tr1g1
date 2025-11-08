@@ -18,16 +18,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Navega a la carpeta del proyecto
             cd ${{ secrets.PROJECT_PATH }}
-
-            # Actualiza el código desde el repositorio
-            git pull origin main
-
-            # Detiene los contenedores actuales
-            docker-compose down
-
-            # Reconstruye y levanta los contenedores en segundo plano
-            docker-compose up -d --build
-
+            docker compose down -v
+            docker compose -f docker-compose.prod.yml up --build
             echo "Deploy finalizado exitosamente!"

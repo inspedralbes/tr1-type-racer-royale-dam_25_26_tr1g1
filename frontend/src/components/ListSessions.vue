@@ -1,10 +1,10 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto">
     <ul class="space-y-4">
       <li
         v-for="session in sessions"
         :key="session.id"
-        class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-lg shadow-lg p-4 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-105"
+        class="bg-gray-800/80 backdrop-filter backdrop-blur-sm rounded-lg shadow-lg p-4 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl hover:bg-gray-800"
         @click="handleSessionClick(session)"
       >
         <div class="flex flex-wrap items-center justify-between text-white">
@@ -29,7 +29,7 @@
             </div>
             <div class="flex items-center mr-4">
               <span
-                cl1ass="mdi mr-2"
+                class="mdi mr-2"
                 :class="
                   !session.password
                     ? 'mdi-earth text-green-400'
@@ -104,15 +104,17 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
-import { useAppStore } from "@/stores/app";
 
-const appStore = useAppStore();
+defineProps({
+  sessions: {
+    type: Array,
+    required: true,
+  },
+});
+
 const websocketStore = useWebSocketStore();
-const userId = appStore.user.id;
-
-const sessions = computed(() => websocketStore.sessions);
 
 const showPasswordDialog = ref(false);
 const passwordInput = ref("");
@@ -144,7 +146,7 @@ const joinSession = (sessionId, password) => {
 
 const now = ref(Date.now());
 const formatDuration = (startTime) => {
-  const duration = Math.floor((now.value - startTime) / 1000); // duration in seconds
+  const duration = Math.floor((now.value - new Date(startTime)) / 1000);
 
   const minutes = Math.floor(duration / 60);
   const seconds = duration % 60;
@@ -154,7 +156,6 @@ const formatDuration = (startTime) => {
     .padStart(2, "0")}`;
 };
 
-// Update duration every second
 let durationInterval = null;
 onMounted(() => {
   durationInterval = setInterval(() => {
