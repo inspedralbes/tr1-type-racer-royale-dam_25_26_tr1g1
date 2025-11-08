@@ -84,7 +84,7 @@ export const useAppStore = defineStore("app", {
       if (websocketStore.isConnected) {
         websocketStore.registerWebSocket(user.id);
       } else {
-        await websocketStore.connect("ws://localhost:5000", user.id);
+        await websocketStore.connect(import.meta.env.VITE_WS_URL, user.id);
       }
       this.isAuthenticated = true;
       this.user = user;
