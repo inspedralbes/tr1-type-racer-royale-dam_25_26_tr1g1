@@ -5,16 +5,7 @@
     @touchstart="handleUserInteraction"
   >
     <!-- AI Loading Overlay -->
-    <div
-      v-if="isAiLoading"
-      class="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center z-50"
-    >
-      <div
-        class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-32 w-32 mb-4"
-      ></div>
-      <p class="text-2xl font-bold text-gray-300">Carregant IA...</p>
-      <p class="text-lg text-gray-400 mt-2">Un moment, si us plau.</p>
-    </div>
+    <LoadingScreen v-if="isAiLoading" />
 
     <!-- Floating Emojis -->
     <FloatingEmoji
@@ -40,20 +31,15 @@
     <!-- Overlay content -->
     <div class="relative z-10 flex flex-col flex-grow">
       <!-- Top bar -->
-      <SessionTopBar
-        :current-session="currentSession"
-        @toggle-info-exercices="toggleInfoExercices"
-        @toggle-scoreboard="toggleScoreboard"
-      />
+      <SessionTopBar :current-session="currentSession" />
 
       <!-- Main content -->
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
-          <SessionExerciseInfo :current-exercise="currentExercise" />
-
-          <transition name="slide-fade">
+          <CollapsibleCard>
+            <SessionExerciseInfo :current-exercise="currentExercise" />
             <SessionProgressInfo
-              v-if="showInfoExercices && currentExercise"
+              v-if="currentExercise"
               :timer="timer"
               :is-resting="isResting"
               :current-timer-type="currentTimerType"
@@ -61,14 +47,11 @@
               :current-serie="currentSerie"
               :total-series="totalSeries"
             />
-          </transition>
+          </CollapsibleCard>
 
-          <transition name="slide-fade">
-            <SessionScoreboard
-              v-if="showScoreboard"
-              :sorted-participants="sortedParticipants"
-            />
-          </transition>
+          <CollapsibleCard>
+            <SessionScoreboard :sorted-participants="sortedParticipants" />
+          </CollapsibleCard>
         </div>
       </div>
 
@@ -99,9 +82,10 @@ import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useAppStore } from "@/stores/app";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useRoute, useRouter } from "vue-router";
-import { calculateAngle, KEYPOINTS } from "@/components/Ai/analysis.js";
 import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
 import FloatingEmoji from "@/components/FloatingEmoji.vue";
+import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
+import CollapsibleCard from "@/components/session/CollapsibleCard.vue";
 
 import SessionTopBar from "@/components/session/SessionTopBar.vue";
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
@@ -171,17 +155,31 @@ const leaveSession = () => {
 onMounted(() => {
   const sessionId = route.params.id;
   if (sessionId) {
-    websocketStore.sendMessage({
-      type: "JOIN_SESSION",
-      payload: { sessionId },
-    });
+    const currentUser = appStore.user;
+    const sessionUsers = currentSession.value?.users;
+
+    let shouldJoin = true;
+
+    if (currentUser && sessionUsers) {
+      const isUserInSession = sessionUsers.some(
+        (user) => user.id === currentUser.id
+      );
+      if (isUserInSession) {
+        shouldJoin = false;
+      }
+    }
+
+    if (shouldJoin) {
+      websocketStore.sendMessage({
+        type: "JOIN_SESSION",
+        payload: { sessionId },
+      });
+    }
   }
 });
 
 onUnmounted(() => {});
 
-const showScoreboard = ref(true);
-const showInfoExercices = ref(true);
 const showBottomBar = ref(false);
 
 const poseSkeletonRef = ref(null);
@@ -225,14 +223,6 @@ const handleUserInteraction = (event) => {
       }, 500);
     }
   }
-};
-
-const toggleScoreboard = () => {
-  showScoreboard.value = !showScoreboard.value;
-};
-
-const toggleInfoExercices = () => {
-  showInfoExercices.value = !showInfoExercices.value;
 };
 
 const sortedParticipants = computed(() => {

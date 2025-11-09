@@ -1,13 +1,13 @@
-import mysql from 'mysql2/promise';
+import mysql from "mysql2/promise";
 
 const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'tr1-mysql',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '1234',
-  database: process.env.DB_NAME || 'fitAi',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 export default pool;

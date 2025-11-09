@@ -15,9 +15,9 @@
               <span class="mdi mdi-dumbbell text-white text-3xl"></span>
             </div>
             <div>
-              <h3 class="text-xl font-bold">{{ session.type }}</h3>
+              <h3 class="text-xl font-bold">{{ session.name }}</h3>
               <p class="text-sm text-gray-300">
-                ID: {{ session.id.substring(0, 8) }}
+                {{ session.type }} - ID: {{ session.id.substring(0, 8) }}
               </p>
             </div>
           </div>

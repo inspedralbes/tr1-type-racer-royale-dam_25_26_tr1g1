@@ -13,7 +13,32 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=development
-    command: ["npm", "run", "dev"]
+    depends_on:
+      - tr1-mysql
+    command: ["./wait-for-it.sh", "tr1-mysql:3306", "--", "npm", "run", "dev"]
+
+  tr1-mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: muvv-database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    command: ["php", "-S", "0.0.0.0:8080", "-t", "/var/www/html"]
+    environment:
+      - ADMINER_DEFAULT_SERVER=tr1-mysql
 
   frontend:
     build:
@@ -30,3 +55,6 @@ services:
       - VITE_API_URL=http://localhost:5000
       - VITE_WS_URL=ws://localhost:5000
     restart: unless-stopped
+
+volumes:
+  db-data:

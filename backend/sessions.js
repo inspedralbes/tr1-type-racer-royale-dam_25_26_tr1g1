@@ -22,12 +22,12 @@ export const getAllSessions = () => {
 };
 
 export const createSession = async (sessionData, creatorId) => {
-  const creator = findUserById(creatorId);
+  const creator = await findUserById(creatorId);
   if (!creator) {
     throw new Error("Creator user not found");
   }
 
-  const { type, duration, password, maxUsers } = sessionData;
+  const { name, type, duration, password, maxUsers } = sessionData;
   const allExercises = exercicisData.routine[type];
 
   let series = 2;
@@ -44,6 +44,7 @@ export const createSession = async (sessionData, creatorId) => {
 
   const newSession = {
     id: uuidv4(),
+    name: name || `Sessió de ${creator.username}`,
     type,
     duration,
     password,
@@ -92,7 +93,7 @@ export const joinSession = async (sessionId, userId, password) => {
     throw new Error("La contrasenya es incorrecta.");
   }
 
-  const joiningUser = findUserById(userId);
+  const joiningUser = await findUserById(userId);
   if (!joiningUser) {
     throw new Error("Joining user not found");
   }

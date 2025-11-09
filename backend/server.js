@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import sequelize from "./database/sequelize.js";
 
 const envFile =
   process.env.NODE_ENV === "production"
@@ -56,8 +57,8 @@ app.get("/api/", (req, res) => {
   res.send("Servidor HTTP i WebSocket funcionant!");
 });
 
-app.get("/api/users/:id", (req, res) => {
-  const user = findUserById(req.params.id);
+app.get("/api/users/:id", async (req, res) => {
+  const user = await findUserById(req.params.id);
 
   if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
 
@@ -118,11 +119,11 @@ app.post("/api/users/register", async (req, res) => {
   }
 });
 
-app.post("/api/users/login", (req, res) => {
+app.post("/api/users/login", async (req, res) => {
   console.log("Login request body:", req.body);
   const { username, password } = req.body;
   try {
-    const { user } = loginUser(username, password);
+    const { user } = await loginUser(username, password);
     console.log("User found:", user);
     res.json({
       user: {
@@ -334,9 +335,16 @@ app.delete("/api/posts/:postId/comments/:commentId", (req, res) => {
 });
 
 const startServer = async () => {
-  server.listen(PORT, () =>
-    console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
-  );
+  try {
+    await sequelize.sync({ alter: true });
+    console.log("Database synchronized");
+
+    server.listen(PORT, () =>
+      console.log(`Servidor HTTP+WS escoltant en el port ${PORT}`)
+    );
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
 };
 
 startServer();

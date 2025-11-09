@@ -1,36 +1,31 @@
-CREATE TABLE Usuaris (
-    id_usuari INT AUTO_INCREMENT PRIMARY KEY,
-    nom_usuari VARCHAR(100) NOT NULL UNIQUE,
-    contrasenya VARCHAR(255) NOT NULL,
-    correu VARCHAR(150) NOT NULL UNIQUE,
-    data_registre DATETIME DEFAULT CURRENT_TIMESTAMP,
-    pes_actual DECIMAL(5,2) DEFAULT NULL,
-    altura DECIMAL(5,2) DEFAULT NULL,
-    biografia TEXT DEFAULT NULL,
-    nivell DECIMAL(3,1) DEFAULT 1.0
+CREATE TABLE IF NOT EXISTS Usuaris (
+    id CHAR(36) BINARY PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    biografia TEXT,
+    pesoActual FLOAT,
+    altura INTEGER,
+    nivel FLOAT DEFAULT 0,
+    foto_perfil VARCHAR(255),
+    date_created DATETIME
 );
 
-CREATE TABLE Sessions (
-    id_sessio INT AUTO_INCREMENT PRIMARY KEY,
-    nom_usuari VARCHAR(100) NOT NULL ,
-    categoria VARCHAR(100),
-    estat ENUM('publica', 'privada') DEFAULT 'publica',
-    max_usuaris INT DEFAULT 10,
-    FOREIGN KEY (nom_usuari) REFERENCES Usuaris(nom_usuari)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+CREATE TABLE IF NOT EXISTS Sessions (
+    id CHAR(36) BINARY PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    fecha DATETIME NOT NULL,
+    -- otros campos que necesites
+    creador_id CHAR(36) BINARY,
+    CONSTRAINT fk_creador FOREIGN KEY (creador_id) REFERENCES Usuaris(id) ON DELETE CASCADE
 );
 
-CREATE TABLE Participa (
-    id_sessio INT NOT NULL,
-    nom_usuari VARCHAR(100) NOT NULL,
-    posicio INT DEFAULT NULL,
-    puntuacio INT DEFAULT 0,
-    PRIMARY KEY (id_sessio, nom_usuari),
-    FOREIGN KEY (id_sessio) REFERENCES Sessions(id_sessio)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (nom_usuari) REFERENCES Usuaris(nom_usuari)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+-- Crear tabla Participa
+CREATE TABLE IF NOT EXISTS Participa (
+    id CHAR(36) BINARY PRIMARY KEY,
+    session_id CHAR(36) BINARY NOT NULL,
+    user_id CHAR(36) BINARY NOT NULL,
+    puntuacion INT DEFAULT 0,
+    CONSTRAINT fk_session FOREIGN KEY (session_id) REFERENCES Sessions(id) ON DELETE CASCADE,
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES Usuaris(id) ON DELETE CASCADE
 );

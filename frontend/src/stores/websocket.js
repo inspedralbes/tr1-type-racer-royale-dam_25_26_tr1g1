@@ -13,7 +13,7 @@ export const useWebSocketStore = defineStore("websocket", {
   actions: {
     connect(url, userId) {
       return new Promise((resolve, reject) => {
-        if (this.socket && this.isConnected) return resolve();
+        if (this.socket) return resolve();
 
         this.socket = new WebSocket(url);
 

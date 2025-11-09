@@ -3,6 +3,18 @@
     <h2 class="text-2xl font-bold mb-6">Crear Nova Sessió</h2>
     <form @submit.prevent="submitForm" class="space-y-6">
       <div>
+        <label for="name" class="block text-sm font-medium text-gray-300"
+          >Nom de la sessió</label
+        >
+        <input
+          type="text"
+          id="name"
+          v-model="session.name"
+          class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+      </div>
+      <div>
         <label for="type" class="block text-sm font-medium text-gray-300"
           >Tipus d'exercici</label
         >
@@ -70,12 +82,15 @@
 <script setup>
 import { ref, defineEmits } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
+import { useAppStore } from "@/stores/app";
 
 const emit = defineEmits(["session-created"]);
 
 const websocketStore = useWebSocketStore();
+const appStore = useAppStore();
 
 const session = ref({
+  name: `Sessió de ${appStore.user?.username || "convidat"}`,
   type: "fullbody",
   duration: "Ràpida",
   password: "", // Changed from isPublic
