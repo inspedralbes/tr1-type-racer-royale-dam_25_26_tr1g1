@@ -18,7 +18,8 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            rm -rf ${{ secrets.PROJECT_PATH }}
+            git clone https://github.com/inspedralbes/tr1-type-racer-royale-dam_25_26_tr1g1.git
             cd ${{ secrets.PROJECT_PATH }}
-            docker compose down -v
             docker compose -f docker-compose.prod.yml up --build
             echo "Deploy finalizado exitosamente!"
