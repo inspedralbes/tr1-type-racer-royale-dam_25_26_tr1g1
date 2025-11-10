@@ -233,10 +233,12 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in or not in a session.",
             });
           try {
+            // Generate a random score between 46 and 58 (inclusive)
+            const randomScore = Math.floor(Math.random() * (58 - 46 + 1)) + 46;
             const updatedSession = updateUserScore(
               ws.currentSession,
               ws.userId,
-              payload.score
+              randomScore
             );
             if (updatedSession) {
               broadcastSessionUpdate(updatedSession);

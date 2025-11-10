@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { broadcastSessionsUpdate, broadcastSessionUpdate } from "./websocket.js";
+import {
+  broadcastSessionsUpdate,
+  broadcastSessionUpdate,
+} from "./websocket.js";
 import { findUserById } from "./users.js";
 import fs from "fs";
 import path from "path";
@@ -109,7 +112,9 @@ export const joinSession = async (sessionId, userId, password) => {
     ready: false,
   });
 
-  console.log(`User ${userId} joined session ${sessionId}. Broadcasting sessions update.`);
+  console.log(
+    `User ${userId} joined session ${sessionId}. Broadcasting sessions update.`
+  );
   broadcastSessionsUpdate();
   return session;
 };
@@ -136,7 +141,9 @@ export const leaveSession = async (sessionId, userId) => {
       deleteSession(sessionId);
       return null; // Session deleted
     } else {
-      console.log(`User ${userId} left session ${sessionId}. Broadcasting sessions update.`);
+      console.log(
+        `User ${userId} left session ${sessionId}. Broadcasting sessions update.`
+      );
       broadcastSessionsUpdate();
       return session; // Return updated session
     }

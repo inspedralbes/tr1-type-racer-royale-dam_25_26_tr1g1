@@ -10,6 +10,18 @@
           {{ formattedTime }}
         </p>
       </div>
+      <button
+        @click="$emit('toggleInfoExercices')"
+        class="p-2 rounded-full bg-blue-500 text-white self-center"
+      >
+        <i class="mdi mdi-gymnastics text-2xl"></i>
+      </button>
+      <button
+        @click="$emit('toggleScoreboard')"
+        class="p-2 rounded-full bg-blue-500 text-white self-center"
+      >
+        <i class="mdi mdi-trophy text-2xl"></i>
+      </button>
     </div>
   </div>
 </template>

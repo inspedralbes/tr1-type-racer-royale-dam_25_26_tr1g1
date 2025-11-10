@@ -16,6 +16,15 @@
       @animation-end="onReactionAnimationEnd"
     />
 
+    <!-- Floating Numbers -->
+    <FloatingNumber
+      v-for="num in floatingNumbers"
+      :key="num.id"
+      :id="num.id"
+      :value="num.value"
+      @animation-end="onFloatingNumberAnimationEnd"
+    />
+
     <!-- PoseSkeleton -->
     <PoseSkeleton
       ref="poseSkeletonRef"
@@ -30,28 +39,37 @@
 
     <!-- Overlay content -->
     <div class="relative z-10 flex flex-col flex-grow">
-      <!-- Top bar -->
-      <SessionTopBar :current-session="currentSession" />
+      <SessionTopBar
+        :current-session="currentSession"
+        @toggle-info-exercices="toggleInfoExercices"
+        @toggle-scoreboard="toggleScoreboard"
+      />
 
-      <!-- Main content -->
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
-          <CollapsibleCard>
-            <SessionExerciseInfo :current-exercise="currentExercise" />
-            <SessionProgressInfo
-              v-if="currentExercise"
-              :timer="timer"
-              :is-resting="isResting"
-              :current-timer-type="currentTimerType"
-              :repetitions="repetitions"
-              :current-serie="currentSerie"
-              :total-series="totalSeries"
-            />
-          </CollapsibleCard>
+          <SessionProgressInfo
+            v-if="currentExercise"
+            :timer="timer"
+            :is-resting="isResting"
+            :current-timer-type="currentTimerType"
+            :repetitions="repetitions"
+            :current-serie="currentSerie"
+            :total-series="totalSeries"
+          />
 
-          <CollapsibleCard>
-            <SessionScoreboard :sorted-participants="sortedParticipants" />
-          </CollapsibleCard>
+          <transition name="slide-fade">
+            <SessionExerciseInfo
+              v-if="showInfoExercices && currentExercise"
+              :current-exercise="currentExercise"
+            />
+          </transition>
+
+          <transition name="slide-fade">
+            <SessionScoreboard
+              v-if="showScoreboard"
+              :sorted-participants="sortedParticipants"
+            />
+          </transition>
         </div>
       </div>
 
@@ -84,6 +102,7 @@ import { useWebSocketStore } from "@/stores/websocket";
 import { useRoute, useRouter } from "vue-router";
 import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
 import FloatingEmoji from "@/components/FloatingEmoji.vue";
+import FloatingNumber from "@/components/FloatingNumber.vue";
 import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CollapsibleCard from "@/components/session/CollapsibleCard.vue";
 
@@ -129,7 +148,7 @@ const currentTimerType = computed(() =>
 const handleRep = () => {
   if (currentSession.value.state.status === "IN_PROGRESS") {
     websocketStore.sendMessage({
-      type: "UPDATE_REPETITIONS",
+      type: "UPDATE_SCORE",
     });
   }
 };
@@ -180,6 +199,8 @@ onMounted(() => {
 
 onUnmounted(() => {});
 
+const showScoreboard = ref(true);
+const showInfoExercices = ref(true);
 const showBottomBar = ref(false);
 
 const poseSkeletonRef = ref(null);
@@ -225,6 +246,14 @@ const handleUserInteraction = (event) => {
   }
 };
 
+const toggleScoreboard = () => {
+  showScoreboard.value = !showScoreboard.value;
+};
+
+const toggleInfoExercices = () => {
+  showInfoExercices.value = !showInfoExercices.value;
+};
+
 const sortedParticipants = computed(() => {
   if (!currentSession.value || !currentSession.value.users) return [];
   return [...currentSession.value.users].sort((a, b) => b.puntos - a.puntos);
@@ -253,6 +282,29 @@ const onReactionAnimationEnd = (id) => {
     (reaction) => reaction.id !== id
   );
 };
+
+// Floating Numbers
+const floatingNumbers = ref([]);
+const onFloatingNumberAnimationEnd = (id) => {
+  floatingNumbers.value = floatingNumbers.value.filter((num) => num.id !== id);
+};
+
+const currentUserScore = computed(() => {
+  const user = currentSession.value?.users.find(
+    (u) => u.id === appStore.user.id
+  );
+  return user ? user.puntos : 0;
+});
+
+watch(currentUserScore, (newScore, oldScore) => {
+  if (newScore > oldScore) {
+    const scoreDiff = newScore - oldScore;
+    floatingNumbers.value.push({
+      id: Date.now(),
+      value: `+${scoreDiff}`,
+    });
+  }
+});
 </script>
 
 <style scoped>

@@ -2,7 +2,6 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { countSquats, estimatePose, drawSkeleton, countPushups, countJumpingJacks, countGluteBridges, countMountainClimbers, countHighKnees, countFireHydrants, checkPlank, checkSupermanHold } from "./analysis.js";
 import { useWebSocketStore } from "@/stores/websocket";
-import FloatingNumber from "../FloatingNumber.vue";
 
 import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
@@ -22,7 +21,6 @@ const canvasRef = ref(null);
 
 const repCount = ref(0);
 const exerciseState = ref("up"); // 'up' or 'down'
-const floatingNumbers = ref([]);
 const cameras = ref([]);
 
 const getCameras = async () => {
@@ -69,10 +67,6 @@ async function startCamera(deviceId = null) {
       "No s’ha pogut accedir a la càmera. Revisa permisos i que hi hagi una webcam disponible."
     );
   }
-}
-
-function removeFloatingNumber(id) {
-  floatingNumbers.value = floatingNumbers.value.filter((n) => n.id !== id);
 }
 
 function detectExercise(keypoints) {
@@ -145,17 +139,6 @@ function detectExercise(keypoints) {
   if (repDone) {
     emit("rep");
     repCount.value++;
-    const pointsPerRep = 100; // Points for each repetition
-    websocketStore.sendMessage({
-      type: "UPDATE_SCORE",
-      payload: {
-        score: pointsPerRep,
-      },
-    });
-    floatingNumbers.value.push({
-      id: Date.now(),
-      value: pointsPerRep
-    });
   }
 }
 
@@ -221,13 +204,6 @@ onBeforeUnmount(() => {
     <div class="stage">
       <video ref="videoRef" playsinline muted autoplay class="video"></video>
       <canvas ref="canvasRef" class="overlay"></canvas>
-      <FloatingNumber
-        v-for="num in floatingNumbers"
-        :key="num.id"
-        :id="num.id"
-        :value="num.value"
-        @animation-end="removeFloatingNumber"
-      />
     </div>
   </div>
 </template>
