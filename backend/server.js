@@ -7,6 +7,7 @@ import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import sequelize from "./database/sequelize.js";
+import "./models/index.js";
 
 const envFile =
   process.env.NODE_ENV === "production"
@@ -272,66 +273,102 @@ app.post("/api/sessions/:id/ready", async (req, res) => {
   }
 });
 
-app.get("/api/posts", (req, res) => {
-  res.json(getAllPosts());
+app.get("/api/posts", async (req, res) => {
+  try {
+    const posts = await getAllPosts();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener los posts" });
+  }
 });
 
-app.post("/api/posts", (req, res) => {
+app.post("/api/posts", async (req, res) => {
   const { username, content } = req.body;
   if (!username || !content) {
     return res
       .status(400)
-      .json({ message: "Username and content are required" });
+      .json({ message: "Usuario y contenido son obligatorios" });
   }
-  const newPost = createPost(username, content);
-  res.status(201).json(newPost);
+  try {
+    const newPost = await createPost(username, content);
+    res.status(201).json(newPost);
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    res.status(500).json({ message: "Error al crear el post" });
+  }
 });
 
 // Like
-app.post("/api/posts/:id/like", (req, res) => {
+app.post("/api/posts/:id/like", async (req, res) => {
   const { username } = req.body;
-  if (!username) return res.status(400).json({ message: "Username required" });
+  if (!username) return res.status(400).json({ message: "Usuario obligatorio" });
 
-  const updatedPost = toggleLike(req.params.id, username);
-  if (!updatedPost) return res.status(404).json({ message: "Post not found" });
-
-  res.json(updatedPost);
+  try {
+    const updatedPost = await toggleLike(req.params.id, username);
+    res.json(updatedPost);
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    if (error.message === "POST_NOT_FOUND") {
+      return res.status(404).json({ message: "Post no encontrado" });
+    }
+    res.status(500).json({ message: "Error al dar like" });
+  }
 });
 
 // Comentari post
-app.post("/api/posts/:id/comment", (req, res) => {
+app.post("/api/posts/:id/comment", async (req, res) => {
   const { username, text } = req.body;
   if (!username || !text)
-    return res.status(400).json({ message: "Username and text required" });
+    return res.status(400).json({ message: "Usuario y texto son obligatorios" });
 
-  const comment = addComment(req.params.id, username, text);
-  if (!comment) return res.status(404).json({ message: "Post not found" });
-
-  res.status(201).json(comment);
+  try {
+    const comment = await addComment(req.params.id, username, text);
+    res.status(201).json(comment);
+  } catch (error) {
+    if (error.message === "USER_NOT_FOUND") {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+    if (error.message === "POST_NOT_FOUND") {
+      return res.status(404).json({ message: "Post no encontrado" });
+    }
+    res.status(500).json({ message: "Error al añadir comentario" });
+  }
 });
 
 // Eliminar post
-app.delete("/api/posts/:id", (req, res) => {
+app.delete("/api/posts/:id", async (req, res) => {
   const { id } = req.params;
   const { username } = req.body;
-  const success = deletePost(id, username);
-  if (!success)
-    return res
-      .status(403)
-      .json({ message: "No autorizado o post no encontrado" });
-  res.json({ message: "Post eliminado correctamente" });
+  try {
+    const success = await deletePost(id, username);
+    if (!success)
+      return res
+        .status(403)
+        .json({ message: "No autorizado o post no encontrado" });
+    res.json({ message: "Post eliminado correctamente" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar el post" });
+  }
 });
 
 // Eliminar comentari
-app.delete("/api/posts/:postId/comments/:commentId", (req, res) => {
+app.delete("/api/posts/:postId/comments/:commentId", async (req, res) => {
   const { postId, commentId } = req.params;
   const { username } = req.body;
-  const success = deleteComment(postId, commentId, username);
-  if (!success)
-    return res
-      .status(403)
-      .json({ message: "No autorizado o comentario no encontrado" });
-  res.json({ message: "Comentario eliminado correctamente" });
+  try {
+    const success = await deleteComment(postId, commentId, username);
+    if (!success)
+      return res
+        .status(403)
+        .json({ message: "No autorizado o comentario no encontrado" });
+    res.json({ message: "Comentario eliminado correctamente" });
+  } catch (error) {
+    res.status(500).json({ message: "Error al eliminar el comentario" });
+  }
 });
 
 const startServer = async () => {

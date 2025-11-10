@@ -1,116 +1,241 @@
-import { v4 as uuidv4 } from "uuid";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import { User, Post, Comment, Like } from "./models/index.js";
 import { findUserByUsername } from "./users.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const POSTS_FILE = path.join(__dirname, "posts.json");
-
-// 📂 Cargar posts desde archivo
-let posts = [];
-try {
-  const data = fs.readFileSync(POSTS_FILE, "utf8");
-  posts = JSON.parse(data);
-} catch (err) {
-  console.warn("⚠️ No se pudo cargar posts.json, se iniciará vacío");
-  posts = [];
-}
-
-// 💾 Guardar en archivo
-const savePosts = () => {
-  fs.writeFileSync(POSTS_FILE, JSON.stringify(posts, null, 2), "utf8");
-};
-
 // 🔹 Obtener todos los posts
-export const getAllPosts = () => {
-  return posts
-    .map((post) => {
-      const user = findUserByUsername(post.username);
-      return {
-        ...post,
-        foto_perfil: user?.foto_perfil || post.foto_perfil || "",
-      };
-    })
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+export const getAllPosts = async () => {
+  const posts = await Post.findAll({
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["username", "foto_perfil"],
+      },
+      {
+        model: Comment,
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: ["username", "foto_perfil"],
+          },
+        ],
+      },
+      {
+        model: Like,
+        include: [
+          {
+            model: User,
+            attributes: ["username"],
+          },
+        ],
+      },
+    ],
+    order: [["createdAt", "DESC"]],
+  });
+
+  return posts.map((post) => {
+    return {
+      id: post.id,
+      content: post.content,
+      timestamp: post.createdAt,
+      username: post.author.username,
+      foto_perfil: post.author.foto_perfil,
+      likes: post.Likes.map((like) => like.User.username),
+      comments: post.Comments.map((comment) => {
+        return {
+          id: comment.id,
+          text: comment.text,
+          timestamp: comment.createdAt,
+          username: comment.author.username,
+          foto_perfil: comment.author.foto_perfil,
+        };
+      }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+    };
+  });
 };
 
 // 🔹 Crear un nuevo post
-export const createPost = (username, content) => {
-  const user = findUserByUsername(username);
-  const newPost = {
-    id: uuidv4(),
-    username,
-    foto_perfil: user?.foto_perfil || "",
+export const createPost = async (username, content) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  const newPost = await Post.create({
     content,
-    timestamp: new Date().toISOString(),
+    userId: user.id,
+  });
+
+  const postWithAuthor = await Post.findByPk(newPost.id, {
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["username", "foto_perfil"],
+      },
+    ],
+  });
+
+  return {
+    id: postWithAuthor.id,
+    content: postWithAuthor.content,
+    timestamp: postWithAuthor.createdAt,
+    username: postWithAuthor.author.username,
+    foto_perfil: postWithAuthor.author.foto_perfil,
     likes: [],
     comments: [],
   };
-  posts.push(newPost);
-  savePosts();
-  return newPost;
 };
 
 // 🔹 Dar o quitar like
-export const toggleLike = (postId, username) => {
-  const post = posts.find((p) => p.id === postId);
-  if (!post) return null;
-
-  const alreadyLiked = post.likes.includes(username);
-  if (alreadyLiked) {
-    post.likes = post.likes.filter((u) => u !== username);
-  } else {
-    post.likes.push(username);
+export const toggleLike = async (postId, username) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
   }
 
-  savePosts();
-  return post;
+  const post = await Post.findByPk(postId);
+  if (!post) {
+    throw new Error("POST_NOT_FOUND");
+  }
+
+  const like = await Like.findOne({
+    where: {
+      postId,
+      userId: user.id,
+    },
+  });
+
+  if (like) {
+    await like.destroy();
+  } else {
+    await Like.create({
+      postId,
+      userId: user.id,
+    });
+  }
+
+  const updatedPost = await Post.findByPk(postId, {
+    include: [
+      {
+        model: User,
+        as: "author",
+        attributes: ["username", "foto_perfil"],
+      },
+      {
+        model: Comment,
+        include: [
+          {
+            model: User,
+            as: "author",
+            attributes: ["username", "foto_perfil"],
+          },
+        ],
+      },
+      {
+        model: Like,
+        include: [
+          {
+            model: User,
+            attributes: ["username"],
+          },
+        ],
+      },
+    ],
+  });
+
+    return {
+        id: updatedPost.id,
+        content: updatedPost.content,
+        timestamp: updatedPost.createdAt,
+        username: updatedPost.author.username,
+        foto_perfil: updatedPost.author.foto_perfil,
+        likes: updatedPost.Likes.map((like) => like.User.username),
+        comments: updatedPost.Comments.map((comment) => {
+            return {
+                id: comment.id,
+                text: comment.text,
+                timestamp: comment.createdAt,
+                username: comment.author.username,
+                foto_perfil: comment.author.foto_perfil,
+            };
+        }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+    };
 };
 
 // 🔹 Añadir comentario
-export const addComment = (postId, username, text) => {
-  const post = posts.find((p) => p.id === postId);
-  if (!post) return null;
+export const addComment = async (postId, username, text) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
 
-  const user = findUserByUsername(username);
-  const newComment = {
-    id: uuidv4(),
-    username,
-    foto_perfil: user?.foto_perfil || "",
+  const post = await Post.findByPk(postId);
+  if (!post) {
+    throw new Error("POST_NOT_FOUND");
+  }
+
+  const newComment = await Comment.create({
     text,
-    timestamp: new Date().toISOString(),
-  };
+    postId,
+    userId: user.id,
+  });
 
-  post.comments.push(newComment);
-  savePosts();
-  return newComment;
+  const commentWithAuthor = await Comment.findByPk(newComment.id, {
+    include: [
+        {
+            model: User,
+            as: "author",
+            attributes: ["username", "foto_perfil"],
+        },
+    ],
+  });
+
+  return {
+    id: commentWithAuthor.id,
+    text: commentWithAuthor.text,
+    timestamp: commentWithAuthor.createdAt,
+    username: commentWithAuthor.author.username,
+    foto_perfil: commentWithAuthor.author.foto_perfil,
+  };
 };
 
 // 🔹 Eliminar post (solo autor)
-export const deletePost = (postId, username) => {
-  const index = posts.findIndex((p) => p.id === postId);
-  if (index === -1) return false;
+export const deletePost = async (postId, username) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    return false;
+  }
 
-  if (posts[index].username !== username) return false;
+  const post = await Post.findByPk(postId);
+  if (!post) {
+    return false;
+  }
 
-  posts.splice(index, 1);
-  savePosts();
+  if (post.userId !== user.id) {
+    return false;
+  }
+
+  await post.destroy();
   return true;
 };
 
 // 🔹 Eliminar comentario (solo autor)
-export const deleteComment = (postId, commentId, username) => {
-  const post = posts.find((p) => p.id === postId);
-  if (!post) return false;
+export const deleteComment = async (postId, commentId, username) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    return false;
+  }
 
-  const commentIndex = post.comments.findIndex((c) => c.id === commentId);
-  if (commentIndex === -1) return false;
+  const comment = await Comment.findByPk(commentId);
+  if (!comment) {
+    return false;
+  }
 
-  if (post.comments[commentIndex].username !== username) return false;
+  if (comment.userId !== user.id) {
+    return false;
+  }
 
-  post.comments.splice(commentIndex, 1);
-  savePosts();
+  await comment.destroy();
   return true;
 };
