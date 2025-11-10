@@ -30,7 +30,6 @@ import {
 import {
   getAllPosts,
   createPost,
-  toggleLike,
   addComment,
   deletePost,
   deleteComment,
@@ -297,25 +296,6 @@ app.post("/api/posts", async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
     res.status(500).json({ message: "Error al crear el post" });
-  }
-});
-
-// Like
-app.post("/api/posts/:id/like", async (req, res) => {
-  const { username } = req.body;
-  if (!username) return res.status(400).json({ message: "Usuario obligatorio" });
-
-  try {
-    const updatedPost = await toggleLike(req.params.id, username);
-    res.json(updatedPost);
-  } catch (error) {
-    if (error.message === "USER_NOT_FOUND") {
-      return res.status(404).json({ message: "Usuario no encontrado" });
-    }
-    if (error.message === "POST_NOT_FOUND") {
-      return res.status(404).json({ message: "Post no encontrado" });
-    }
-    res.status(500).json({ message: "Error al dar like" });
   }
 });
 

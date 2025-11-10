@@ -1,4 +1,4 @@
-import { User, Post, Comment, Like } from "./models/index.js";
+import { User, Post, Comment } from "./models/index.js";
 import { findUserByUsername } from "./users.js";
 
 // 🔹 Obtener todos los posts
@@ -9,6 +9,7 @@ export const getAllPosts = async () => {
         model: User,
         as: "author",
         attributes: ["username", "foto_perfil"],
+        required: true, // Un post ha de tenir autor
       },
       {
         model: Comment,
@@ -19,15 +20,7 @@ export const getAllPosts = async () => {
             attributes: ["username", "foto_perfil"],
           },
         ],
-      },
-      {
-        model: Like,
-        include: [
-          {
-            model: User,
-            attributes: ["username"],
-          },
-        ],
+        required: false,
       },
     ],
     order: [["createdAt", "DESC"]],
@@ -40,16 +33,17 @@ export const getAllPosts = async () => {
       timestamp: post.createdAt,
       username: post.author.username,
       foto_perfil: post.author.foto_perfil,
-      likes: post.Likes.map((like) => like.User.username),
-      comments: post.Comments.map((comment) => {
-        return {
-          id: comment.id,
-          text: comment.text,
-          timestamp: comment.createdAt,
-          username: comment.author.username,
-          foto_perfil: comment.author.foto_perfil,
-        };
-      }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
+      comments: post.Comments.filter((comment) => comment.author)
+        .map((comment) => {
+          return {
+            id: comment.id,
+            text: comment.text,
+            timestamp: comment.createdAt,
+            username: comment.author.username,
+            foto_perfil: comment.author.foto_perfil,
+          };
+        })
+        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
     };
   });
 };
@@ -82,85 +76,8 @@ export const createPost = async (username, content) => {
     timestamp: postWithAuthor.createdAt,
     username: postWithAuthor.author.username,
     foto_perfil: postWithAuthor.author.foto_perfil,
-    likes: [],
     comments: [],
   };
-};
-
-// 🔹 Dar o quitar like
-export const toggleLike = async (postId, username) => {
-  const user = await findUserByUsername(username);
-  if (!user) {
-    throw new Error("USER_NOT_FOUND");
-  }
-
-  const post = await Post.findByPk(postId);
-  if (!post) {
-    throw new Error("POST_NOT_FOUND");
-  }
-
-  const like = await Like.findOne({
-    where: {
-      postId,
-      userId: user.id,
-    },
-  });
-
-  if (like) {
-    await like.destroy();
-  } else {
-    await Like.create({
-      postId,
-      userId: user.id,
-    });
-  }
-
-  const updatedPost = await Post.findByPk(postId, {
-    include: [
-      {
-        model: User,
-        as: "author",
-        attributes: ["username", "foto_perfil"],
-      },
-      {
-        model: Comment,
-        include: [
-          {
-            model: User,
-            as: "author",
-            attributes: ["username", "foto_perfil"],
-          },
-        ],
-      },
-      {
-        model: Like,
-        include: [
-          {
-            model: User,
-            attributes: ["username"],
-          },
-        ],
-      },
-    ],
-  });
-
-    return {
-        id: updatedPost.id,
-        content: updatedPost.content,
-        timestamp: updatedPost.createdAt,
-        username: updatedPost.author.username,
-        foto_perfil: updatedPost.author.foto_perfil,
-        likes: updatedPost.Likes.map((like) => like.User.username),
-        comments: updatedPost.Comments.map((comment) => {
-            return {
-                id: comment.id,
-                text: comment.text,
-                timestamp: comment.createdAt,
-                username: comment.author.username,
-                foto_perfil: comment.author.foto_perfil,
-            };
-        }).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
-    };
 };
 
 // 🔹 Añadir comentario
@@ -183,11 +100,11 @@ export const addComment = async (postId, username, text) => {
 
   const commentWithAuthor = await Comment.findByPk(newComment.id, {
     include: [
-        {
-            model: User,
-            as: "author",
-            attributes: ["username", "foto_perfil"],
-        },
+      {
+        model: User,
+        as: "author",
+        attributes: ["username", "foto_perfil"],
+      },
     ],
   });
 
