@@ -5,6 +5,17 @@
     <p class="text-2xl font-bold text-amber-400">
       {{ currentExercise?.name }}
     </p>
+
+    <div v-if="currentExercise?.gif" class="my-4">
+      <img
+        :src="currentExercise.gif"
+        loading="lazy"
+        :alt="currentExercise.name + ' GIF'"
+        width="480"
+        height="270"
+        class="w-full max-w-xs mx-auto rounded shadow-lg"
+      />
+    </div>
     <p class="text-sm text-gray-300 mt-2">
       {{ currentExercise?.description }}
     </p>
