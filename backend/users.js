@@ -30,7 +30,7 @@ export const registerUser = async (
     pesoActual,
     altura,
     biografia,
-    foto_perfil: foto_perfil || "",
+    foto_perfil: foto_perfil || `https://robohash.org/${username}.png?bgset=bg1`,
   });
 
   return { user: newUser };
@@ -50,6 +50,10 @@ export const updateUser = async (id, updateData) => {
   const user = await findUserById(id);
   if (!user) {
     throw new Error("USER_NOT_FOUND");
+  }
+
+  if (updateData.foto_perfil === "") {
+    delete updateData.foto_perfil;
   }
 
   const updatedUser = await user.update(updateData);
