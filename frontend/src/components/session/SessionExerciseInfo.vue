@@ -18,7 +18,7 @@
     </div>
     <p class="text-sm text-gray-300 mt-2">
       {{ currentExercise?.description }}
-    </p>
+    </p> 
   </div>
 </template>
 
