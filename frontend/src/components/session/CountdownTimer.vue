@@ -5,10 +5,9 @@
       v-if="count > 0 && !showGo"
       class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
     >
-      <!-- 🔑 usamos :key="count" para recrear el elemento y reiniciar la animación -->
       <div
         :key="count"
-        class="text-white font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] animate-pop-glow"
+        class="font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] text-[clamp(6rem,20vw,18rem)] animate-pop-glow text-white"
       >
         {{ count }}
       </div>
@@ -20,7 +19,7 @@
       class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
     >
       <div
-        class="text-green-400 font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(34,197,94,0.9)]"
+        class="text-white font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(255,255,255,0.9)]"
       >
         GO!
       </div>
@@ -32,7 +31,7 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const emit = defineEmits(["countdown-finished"]);
-const count = ref(5);
+const count = ref(3);
 const showGo = ref(false);
 let intervalId = null;
 
@@ -43,7 +42,6 @@ onMounted(() => {
       clearInterval(intervalId);
       showGo.value = true;
 
-      // Mostrar "GO!" por 1 segundo y luego emitir evento
       setTimeout(() => {
         showGo.value = false;
         emit("countdown-finished");
@@ -58,14 +56,11 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* Tamaño adaptable al viewport */
-div.text-white,
-div.text-green-400 {
+div.font-extrabold {
   font-size: clamp(6rem, 20vw, 18rem);
   line-height: 1;
 }
 
-/* 💫 Animación del número (idéntica para todos) */
 @keyframes pop-glow {
   0% {
     transform: scale(0.5);
@@ -88,22 +83,21 @@ div.text-green-400 {
   animation: pop-glow 0.8s ease-out;
 }
 
-/* 💥 Animación del “GO!” */
 @keyframes go-explode {
   0% {
     transform: scale(0);
     opacity: 0;
-    text-shadow: 0 0 0 rgba(34, 197, 94, 0);
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
   }
   40% {
     transform: scale(1.4);
     opacity: 1;
-    text-shadow: 0 0 100px rgba(34, 197, 94, 0.9);
+    text-shadow: 0 0 100px rgba(255, 255, 255, 0.9);
   }
   100% {
     transform: scale(2.5);
     opacity: 0;
-    text-shadow: 0 0 0 rgba(34, 197, 94, 0);
+    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
   }
 }
 
@@ -111,7 +105,6 @@ div.text-green-400 {
   animation: go-explode 1s ease-out forwards;
 }
 
-/* Transición suave */
 .fade-zoom-enter-active,
 .fade-zoom-leave-active {
   transition: all 0.5s ease;
