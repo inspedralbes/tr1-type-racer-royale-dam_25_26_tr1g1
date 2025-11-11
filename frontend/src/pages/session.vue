@@ -4,12 +4,19 @@
     @mousemove="handleUserInteraction"
     @touchstart="handleUserInteraction"
   >
+    <!-- Session End Screen -->
+    <SessionEndScreen
+      v-if="showEndScreen"
+      :sorted-participants="sortedParticipants"
+      @exit-session="leaveSession"
+    />
+
     <!-- AI Loading Overlay -->
-    <LoadingScreen v-if="isAiLoading" />
+    <LoadingScreen v-if="isAiLoading && !showEndScreen" />
 
     <!-- Countdown Timer -->
     <CountdownTimer
-      v-if="showCountdown"
+      v-if="showCountdown && !showEndScreen"
       @countdown-finished="handleCountdownFinished"
     />
 
@@ -44,7 +51,10 @@
     />
 
     <!-- Overlay content -->
-    <div class="relative z-10 flex flex-col flex-grow">
+    <div
+      v-if="!showEndScreen"
+      class="relative z-10 flex flex-col flex-grow"
+    >
       <SessionTopBar
         :current-session="currentSession"
         @toggle-info-exercices="toggleInfoExercices"
@@ -124,6 +134,7 @@ import FloatingEmoji from "@/components/FloatingEmoji.vue";
 import FloatingNumber from "@/components/FloatingNumber.vue";
 import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CountdownTimer from "@/components/session/CountdownTimer.vue";
+import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
 
 import SessionTopBar from "@/components/session/SessionTopBar.vue";
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
@@ -139,6 +150,7 @@ const route = useRoute();
 
 const isAiLoading = ref(true);
 const showCountdown = ref(false);
+const showEndScreen = ref(false);
 const currentSession = computed(() => appStore.currentSession);
 
 const repetitions = computed(
@@ -235,6 +247,7 @@ const handleCameraSelected = (deviceId) => {
 };
 
 const handleUserInteraction = (event) => {
+  if (showEndScreen.value) return;
   const isTouch = event.type === "touchstart";
   const isMouseAtBottom = !isTouch && event.clientY > window.innerHeight - 150;
 
@@ -335,6 +348,9 @@ watch(
   (newStatus, oldStatus) => {
     if (oldStatus === "WAITING" && newStatus === "IN_PROGRESS") {
       showCountdown.value = true;
+    }
+    if (newStatus === "FINISHED") {
+      showEndScreen.value = true;
     }
   }
 );
