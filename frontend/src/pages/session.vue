@@ -7,6 +7,12 @@
     <!-- AI Loading Overlay -->
     <LoadingScreen v-if="isAiLoading" />
 
+    <!-- Countdown Timer -->
+    <CountdownTimer
+      v-if="showCountdown"
+      @countdown-finished="handleCountdownFinished"
+    />
+
     <!-- Floating Emojis -->
     <FloatingEmoji
       v-for="reaction in activeReactions"
@@ -48,7 +54,11 @@
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
-            v-if="currentExercise"
+            v-if="
+              currentExercise &&
+              currentSession.state.status !== 'WAITING' &&
+              !showCountdown
+            "
             :timer="timer"
             :is-resting="isResting"
             :current-timer-type="currentTimerType"
@@ -59,14 +69,23 @@
 
           <transition name="slide-fade">
             <SessionExerciseInfo
-              v-if="showInfoExercices && currentExercise"
+              v-if="
+                showInfoExercices &&
+                currentExercise &&
+                currentSession.state.status !== 'WAITING' &&
+                !showCountdown
+              "
               :current-exercise="currentExercise"
             />
           </transition>
 
           <transition name="slide-fade">
             <SessionScoreboard
-              v-if="showScoreboard"
+              v-if="
+                showScoreboard &&
+                currentSession.state.status !== 'WAITING' &&
+                !showCountdown
+              "
               :sorted-participants="sortedParticipants"
             />
           </transition>
@@ -104,7 +123,7 @@ import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
 import FloatingEmoji from "@/components/FloatingEmoji.vue";
 import FloatingNumber from "@/components/FloatingNumber.vue";
 import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
-import CollapsibleCard from "@/components/session/CollapsibleCard.vue";
+import CountdownTimer from "@/components/session/CountdownTimer.vue";
 
 import SessionTopBar from "@/components/session/SessionTopBar.vue";
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
@@ -119,6 +138,7 @@ const router = useRouter();
 const route = useRoute();
 
 const isAiLoading = ref(true);
+const showCountdown = ref(false);
 const currentSession = computed(() => appStore.currentSession);
 
 const repetitions = computed(
@@ -305,6 +325,19 @@ watch(currentUserScore, (newScore, oldScore) => {
     });
   }
 });
+
+const handleCountdownFinished = () => {
+  showCountdown.value = false;
+};
+
+watch(
+  () => currentSession.value?.state.status,
+  (newStatus, oldStatus) => {
+    if (oldStatus === "WAITING" && newStatus === "IN_PROGRESS") {
+      showCountdown.value = true;
+    }
+  }
+);
 </script>
 
 <style scoped>
