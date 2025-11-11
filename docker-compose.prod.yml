@@ -49,6 +49,10 @@ services:
     volumes:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $!; done;'"
+    command: certonly --webroot -w /var/www/certbot -d muvv.dam.inspedralbes.cat --email marticastanorodriguez@gmail.com --agree-tos --no-eff-email --force-renewal
+    depends_on:
+      - nginx
 
 volumes:
   db-data-prod:
