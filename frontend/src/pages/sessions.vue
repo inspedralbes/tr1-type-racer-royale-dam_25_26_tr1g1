@@ -41,7 +41,7 @@
 
           <div class="flex items-end sm:col-span-1">
             <button
-              @click="showForm = true"
+              @click="openCreateModal"
               class="w-full transform rounded-full bg-white px-8 py-3 font-bold text-blue-600 shadow-md transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-100"
             >
               Crear Nova Sessió
@@ -57,13 +57,22 @@
       >
         <div class="relative w-full max-w-lg rounded-lg bg-gray-800 shadow-xl">
           <button
-            @click="showForm = false"
+            @click="closeCreateModal"
             class="absolute right-3 top-3 text-2xl text-gray-400 hover:text-white"
           >
             <i class="mdi mdi-close"></i>
           </button>
           <div>
-            <FormCrearSessio @session-created="onSessionCreated" />
+            <template v-if="selectionStep">
+              <SelectRoutine @selected="onRoutineSelected" @cancel="closeCreateModal" />
+            </template>
+            <template v-else>
+              <FormCrearSessio
+                :initialType="selectedRoutine"
+                @session-created="onSessionCreated"
+                @cancel="backToSelection"
+              />
+            </template>
           </div>
         </div>
       </div>
@@ -106,6 +115,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import FormCrearSessio from "@/components/Forms/FormCrearSessio.vue";
+import SelectRoutine from "@/components/session/SelectRoutine.vue";
 import ListSessions from "@/components/ListSessions.vue";
 import NavBar from "@/components/NavBar.vue";
 import { useWebSocketStore } from "@/stores/websocket";
@@ -113,6 +123,8 @@ import { useWebSocketStore } from "@/stores/websocket";
 const websocketStore = useWebSocketStore();
 
 const showForm = ref(false);
+const selectionStep = ref(true); // true: show selector first
+const selectedRoutine = ref("fullbody");
 
 // --- Search, Filter, and Pagination State ---
 const searchQuery = ref("");
@@ -157,7 +169,28 @@ const paginatedSessions = computed(() => {
 // --- Methods ---
 const onSessionCreated = () => {
   showForm.value = false;
+  selectionStep.value = true;
   // No need to force reload, computed properties will update automatically
+};
+
+const openCreateModal = () => {
+  selectedRoutine.value = "fullbody";
+  selectionStep.value = true;
+  showForm.value = true;
+};
+
+const onRoutineSelected = (routine) => {
+  selectedRoutine.value = routine;
+  selectionStep.value = false;
+};
+
+const backToSelection = () => {
+  selectionStep.value = true;
+};
+
+const closeCreateModal = () => {
+  showForm.value = false;
+  selectionStep.value = true;
 };
 
 const nextPage = () => {
