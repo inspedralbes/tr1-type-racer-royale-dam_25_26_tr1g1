@@ -1,14 +1,14 @@
 <template>
   <div
-    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-4 w-72 text-center"
+    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-64 sm:w-72 text-center"
   >
-    <div class="mt-4 text-lg">
+    <div class="mt-2 sm:mt-4 text-base sm:text-lg">
       <p v-if="isResting" class="text-red-400 font-semibold">Descansando...</p>
       <p v-else class="text-green-400 font-semibold">¡A entrenar!</p>
-      <p class="text-4xl font-bold mt-2">{{ formattedTime }}</p>
+      <p class="text-3xl sm:text-4xl font-bold mt-2">{{ formattedTime }}</p>
     </div>
 
-    <div class="mt-4 text-lg">
+    <div class="mt-2 sm:mt-4 text-base sm:text-lg">
       <p>Repeticiones: <span class="font-bold">{{ repetitions }}</span></p>
       <p>Serie: <span class="font-bold">{{ currentSerie }} / {{ totalSeries }}</span></p>
     </div>

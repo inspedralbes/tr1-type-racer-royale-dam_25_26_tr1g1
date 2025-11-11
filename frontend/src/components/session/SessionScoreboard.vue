@@ -1,12 +1,12 @@
 <template>
   <div
-    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-4 w-72 max-h-full overflow-y-auto"
+    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-64 sm:w-72 max-h-full overflow-y-auto"
   >
     <h2
-      class="text-xl font-semibold mb-4 flex items-center justify-center"
+      class="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 flex items-center justify-center"
     >
       <span
-        class="mdi mdi-trophy text-amber-400 text-2xl mr-2"
+        class="mdi mdi-trophy text-amber-400 text-xl sm:text-2xl mr-2"
       ></span>
       Marcador
     </h2>
@@ -21,7 +21,7 @@
         }"
       >
         <div
-          class="w-8 h-8 rounded-full flex items-center justify-center mr-3 overflow-hidden"
+          class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mr-2 sm:mr-3 overflow-hidden"
           :class="index === 0 ? 'bg-amber-400' : 'bg-gray-400'"
         >
           <img
@@ -32,14 +32,14 @@
           />
           <span
             v-else
-            class="mdi mdi-crown text-white text-lg"
+            class="mdi mdi-crown text-white text-base sm:text-lg"
           ></span>
         </div>
-        <span class="font-medium text-sm flex-grow">{{
+        <span class="font-medium text-xs sm:text-sm flex-grow">{{
           participant.username
         }}</span>
         <span
-          class="px-3 py-1 rounded-full text-xs font-bold"
+          class="px-2 py-1 sm:px-3 rounded-full text-xs font-bold"
           :class="
             index === 0
               ? 'bg-amber-400 text-gray-900'

@@ -1,51 +1,125 @@
 <template>
-  <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
-    <transition name="scale" mode="out-in">
-      <div :key="count" class="text-9xl font-bold text-white" style="font-size: 20rem;">
+  <transition name="fade-zoom">
+    <!-- Contador -->
+    <div
+      v-if="count > 0 && !showGo"
+      class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
+    >
+      <!-- 🔑 usamos :key="count" para recrear el elemento y reiniciar la animación -->
+      <div
+        :key="count"
+        class="text-white font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] animate-pop-glow"
+      >
         {{ count }}
       </div>
-    </transition>
-  </div>
+    </div>
+
+    <!-- GO! -->
+    <div
+      v-else-if="showGo"
+      class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
+    >
+      <div
+        class="text-green-400 font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(34,197,94,0.9)]"
+      >
+        GO!
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from "vue";
 
-const emit = defineEmits(['countdown-finished']);
-
+const emit = defineEmits(["countdown-finished"]);
 const count = ref(5);
+const showGo = ref(false);
 let intervalId = null;
 
 onMounted(() => {
-  if (count.value > 0) {
-    intervalId = setInterval(() => {
-      count.value--;
-      if (count.value === 0) {
-        clearInterval(intervalId);
-        // Add a small delay before finishing to allow the '1' to be seen
-        setTimeout(() => emit('countdown-finished'), 500);
-      }
-    }, 1000);
-  } else {
-    emit('countdown-finished');
-  }
+  intervalId = setInterval(() => {
+    count.value--;
+    if (count.value === 0) {
+      clearInterval(intervalId);
+      showGo.value = true;
+
+      // Mostrar "GO!" por 1 segundo y luego emitir evento
+      setTimeout(() => {
+        showGo.value = false;
+        emit("countdown-finished");
+      }, 1000);
+    }
+  }, 1000);
 });
 
 onUnmounted(() => {
-  if (intervalId) {
-    clearInterval(intervalId);
-  }
+  if (intervalId) clearInterval(intervalId);
 });
 </script>
 
 <style scoped>
-.scale-enter-active,
-.scale-leave-active {
+/* Tamaño adaptable al viewport */
+div.text-white,
+div.text-green-400 {
+  font-size: clamp(6rem, 20vw, 18rem);
+  line-height: 1;
+}
+
+/* 💫 Animación del número (idéntica para todos) */
+@keyframes pop-glow {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.2);
+  }
+  40% {
+    transform: scale(1.3);
+    opacity: 1;
+    text-shadow: 0 0 80px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+  }
+}
+
+.animate-pop-glow {
+  animation: pop-glow 0.8s ease-out;
+}
+
+/* 💥 Animación del “GO!” */
+@keyframes go-explode {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+    text-shadow: 0 0 0 rgba(34, 197, 94, 0);
+  }
+  40% {
+    transform: scale(1.4);
+    opacity: 1;
+    text-shadow: 0 0 100px rgba(34, 197, 94, 0.9);
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+    text-shadow: 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.animate-go-explode {
+  animation: go-explode 1s ease-out forwards;
+}
+
+/* Transición suave */
+.fade-zoom-enter-active,
+.fade-zoom-leave-active {
   transition: all 0.5s ease;
 }
-.scale-enter-from,
-.scale-leave-to {
+
+.fade-zoom-enter-from,
+.fade-zoom-leave-to {
   opacity: 0;
-  transform: scale(1.2);
+  transform: scale(0.8);
 }
 </style>
