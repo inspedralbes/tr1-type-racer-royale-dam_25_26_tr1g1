@@ -47,12 +47,12 @@ const __dirname = path.dirname(__filename);
 const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true });
 
-server.on('upgrade', (request, socket, head) => {
+server.on("upgrade", (request, socket, head) => {
   const { pathname } = new URL(request.url, `http://${request.headers.host}`);
 
-  if (pathname === '/ws') {
+  if (pathname === "/ws") {
     wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
+      wss.emit("connection", ws, request);
     });
   } else {
     socket.destroy();
@@ -315,7 +315,9 @@ app.post("/api/posts", async (req, res) => {
 app.post("/api/posts/:id/comment", async (req, res) => {
   const { username, text } = req.body;
   if (!username || !text)
-    return res.status(400).json({ message: "Usuario y texto son obligatorios" });
+    return res
+      .status(400)
+      .json({ message: "Usuario y texto son obligatorios" });
 
   try {
     const comment = await addComment(req.params.id, username, text);

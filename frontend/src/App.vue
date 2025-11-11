@@ -13,7 +13,7 @@ const webSocketSotre = useWebSocketStore();
 const appStore = useAppStore();
 
 onMounted(() => {
-  const wsURL = import.meta.env.VITE_WS_URL;
+  const wsURL = import.meta.env.VITE_WS_URL + '/ws';
   const user = appStore.user;
   if (user) {
     webSocketSotre.connect(wsURL, user.id);

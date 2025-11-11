@@ -22,7 +22,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secure_password}
     volumes:
       - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - db-data:/var/lib/mysql
+      - db-data-prod:/var/lib/mysql
 
   frontend:
     build:
@@ -51,4 +51,4 @@ services:
       - ./data/certbot/www:/var/www/certbot
 
 volumes:
-  db-data:
+  db-data-prod:
