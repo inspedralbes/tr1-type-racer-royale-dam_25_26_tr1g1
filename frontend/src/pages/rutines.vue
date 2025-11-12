@@ -27,7 +27,7 @@
             @click="upperOpen = !upperOpen"
             class="w-full flex items-center justify-between bg-blue-600 p-4 focus:outline-none"
           >
-            <div>
+            <div class="flex flex-col justify-center text-left">
               <h3 class="text-2xl font-bold">Tren Superior</h3>
               <p class="text-gray-200">
                 Exercicis per a braços, pit i espatlles
@@ -102,7 +102,7 @@
             @click="lowerOpen = !lowerOpen"
             class="w-full flex items-center justify-between bg-blue-600 p-4 focus:outline-none"
           >
-            <div>
+            <div class="flex flex-col justify-center text-left">
               <h3 class="text-2xl font-bold">Tren Inferior</h3>
               <p class="text-gray-200">Exercicis per a cames i glutis</p>
             </div>
@@ -175,7 +175,7 @@
             @click="fullOpen = !fullOpen"
             class="w-full flex items-center justify-between bg-blue-600 p-4 focus:outline-none"
           >
-            <div>
+            <div class="flex flex-col justify-center text-left">
               <h3 class="text-2xl font-bold">Cos Complet</h3>
               <p class="text-gray-200">Exercicis per a tot el cos</p>
             </div>
