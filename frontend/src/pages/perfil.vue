@@ -9,9 +9,9 @@
           class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg"
         >
           <!-- Profile Picture -->
-          <div class="absolute -bottom-16 left-6">
+          <div class="absolute -bottom-12 left-4 md:-bottom-16 md:left-6">
             <div
-              class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-900"
+              class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gray-900"
             >
               <img
                 :src="
@@ -28,13 +28,21 @@
         <!-- Action Buttons -->
         <div
           v-if="userData"
-          class="flex justify-end p-4 border-b border-gray-700"
+          class="flex flex-col sm:flex-row justify-end p-4 border-b border-gray-700 mt-12 md:mt-16"
         >
           <button
+            v-if="isProfileComplete"
             @click="openEditDialog"
-            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mr-2"
+            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
           >
             Editar perfil
+          </button>
+          <button
+            v-else
+            @click="openEditDialog"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
+          >
+            Completa el teu perfil
           </button>
           <button
             @click="openLogoutDialog"
@@ -44,10 +52,12 @@
           </button>
         </div>
 
-        <div v-if="userData" class="p-6 pt-8">
+        <div v-if="userData" class="p-6">
           <!-- User Info -->
           <div class="mb-6">
-            <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold">
+              {{ userData.username }}
+            </h2>
             <p class="text-md text-gray-400">
               Nivell: {{ Math.floor(userData.nivel) }}
             </p>
@@ -116,7 +126,7 @@
     <!-- EDICIÓ PERFIL -->
     <div
       v-if="isEditDialogOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4"
     >
       <div
         class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-lg"
@@ -270,6 +280,15 @@ const editableUserData = reactive({
   altura: null,
   biografia: null,
   foto_perfil: null,
+});
+
+const isProfileComplete = computed(() => {
+  if (!userData.value) return false;
+  return (
+    userData.value.pesoActual > 0 &&
+    userData.value.altura > 0 &&
+    !!userData.value.biografia
+  );
 });
 
 onMounted(() => {
