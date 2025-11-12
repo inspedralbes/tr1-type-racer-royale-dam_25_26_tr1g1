@@ -15,7 +15,10 @@ CREATE TABLE IF NOT EXISTS Sessions (
     id CHAR(36) BINARY PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     fecha DATETIME NOT NULL,
-    -- otros campos que necesites
+    tipo_ejercicio VARCHAR(50) NOT NULL, 
+    duracion VARCHAR(50) NOT NULL,      
+    password VARCHAR(255),           
+    max_usuarios INT NOT NULL,          
     creador_id CHAR(36) BINARY,
     CONSTRAINT fk_creador FOREIGN KEY (creador_id) REFERENCES Usuaris(id) ON DELETE CASCADE
 );
