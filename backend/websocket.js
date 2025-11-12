@@ -170,6 +170,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
             const newSession = await createSession(payload, ws.userId);
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
+            broadcastSessionsUpdate();
           } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
@@ -209,6 +210,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in.",
             });
           deleteSession(payload.sessionId);
+          broadcastSessionsUpdate();
           break;
 
         case MESSAGE_TYPES.LEAVE_SESSION:
@@ -222,6 +224,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
           );
           if (updatedSession) {
             broadcastSessionUpdate(updatedSession);
+            broadcastSessionsUpdate();
           }
           ws.currentSession = null;
           sendMessage(ws, MESSAGE_TYPES.LEAVE_SUCCESS, {});
@@ -233,16 +236,10 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in or not in a session.",
             });
           try {
-            // Generate a random score between 46 and 58 (inclusive)
-            const randomScore = Math.floor(Math.random() * (58 - 46 + 1)) + 46;
-            const updatedSession = updateUserScore(
+            updateRepetitions(
               ws.currentSession,
-              ws.userId,
-              randomScore
+              ws.userId
             );
-            if (updatedSession) {
-              broadcastSessionUpdate(updatedSession);
-            }
           } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
@@ -269,14 +266,6 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in or not in a session.",
             });
           setReady(ws.currentSession, ws.userId);
-          break;
-
-        case "UPDATE_REPETITIONS":
-          if (!ws.userId || !ws.currentSession)
-            return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in or not in a session.",
-            });
-          updateRepetitions(ws.currentSession, ws.userId);
           break;
 
         case MESSAGE_TYPES.SEND_EMOJI_REACTION:

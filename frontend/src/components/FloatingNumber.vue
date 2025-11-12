@@ -1,6 +1,6 @@
 <template>
   <div class="floating-number" :style="position" @animationend="onAnimationEnd">
-    +{{ value }}
+    {{ value }}
   </div>
 </template>
 
@@ -9,7 +9,7 @@ import { ref } from 'vue';
 
 const props = defineProps({
   value: {
-    type: Number,
+    type: String,
     required: true,
   },
   id: {

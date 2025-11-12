@@ -74,7 +74,6 @@ export const createSession = async (sessionData, creatorId) => {
   };
 
   sessions.push(newSession);
-  broadcastSessionsUpdate();
   return newSession;
 };
 
@@ -82,7 +81,6 @@ export const updateSession = async (id, updateData) => {
   const index = sessions.findIndex((session) => session.id === id);
   if (index > -1) {
     sessions[index] = { ...sessions[index], ...updateData };
-    broadcastSessionsUpdate();
     return sessions[index];
   }
   return null;
@@ -115,7 +113,6 @@ export const joinSession = async (sessionId, userId, password) => {
   console.log(
     `User ${userId} joined session ${sessionId}. Broadcasting sessions update.`
   );
-  broadcastSessionsUpdate();
   return session;
 };
 
@@ -123,7 +120,6 @@ export const deleteSession = async (id) => {
   const initialLength = sessions.length;
   sessions = sessions.filter((session) => session.id !== id);
   if (sessions.length < initialLength) {
-    broadcastSessionsUpdate();
     return true;
   }
   return false;
@@ -144,7 +140,6 @@ export const leaveSession = async (sessionId, userId) => {
       console.log(
         `User ${userId} left session ${sessionId}. Broadcasting sessions update.`
       );
-      broadcastSessionsUpdate();
       return session; // Return updated session
     }
   }
@@ -177,11 +172,17 @@ export const nextExercise = (sessionId) => {
     session.state.currentExercise++;
     session.state.currentSeries = 1;
     session.state.repetitions = 0;
-    broadcastSessionUpdate(session);
+    session.state.isResting = false; // Reset resting state
+    const newExercise = session.exercicis[session.state.currentExercise];
+    session.state.timer = newExercise.duration; // Set timer for new exercise
   } else {
     // Last exercise finished, end session
     session.state.status = "FINISHED";
-    broadcastSessionUpdate(session);
+    if (timers[sessionId]) {
+      // Stop the timer
+      clearInterval(timers[sessionId]);
+      delete timers[sessionId];
+    }
   }
 
   return session;
@@ -189,7 +190,7 @@ export const nextExercise = (sessionId) => {
 
 export const updateRepetitions = (sessionId, userId) => {
   const session = getSessionById(sessionId);
-  if (!session) {
+  if (!session || session.state.isResting) {
     return null;
   }
 
@@ -198,6 +199,7 @@ export const updateRepetitions = (sessionId, userId) => {
     return null;
   }
 
+  userInSession.puntos += 10; // Add 10 points for each rep
   session.state.repetitions++;
 
   const currentExercise = session.exercicis[session.state.currentExercise];
@@ -244,21 +246,32 @@ export const startSession = (sessionId) => {
   }
 
   session.state.status = "IN_PROGRESS";
-  const currentExercise = session.exercicis[session.state.currentExercise];
-  session.state.timer = currentExercise.duration;
+  const firstExercise = session.exercicis[session.state.currentExercise];
+  session.state.timer = firstExercise.duration;
   session.state.isResting = false;
 
   timers[sessionId] = setInterval(() => {
+    if (session.state.status !== "IN_PROGRESS") {
+      clearInterval(timers[sessionId]);
+      delete timers[sessionId];
+      return;
+    }
+
+    const currentExercise = session.exercicis[session.state.currentExercise];
+
     if (session.state.timer > 0) {
       session.state.timer--;
     } else {
       if (!session.state.isResting) {
+        // Transition to rest
         session.state.isResting = true;
         session.state.timer = 15; // 15 seconds rest
       } else {
+        // Rest is over, check for next series or exercise
         if (session.state.currentSeries >= currentExercise.series) {
           nextExercise(sessionId);
         } else {
+          // Start next series
           session.state.currentSeries++;
           session.state.timer = currentExercise.duration;
           session.state.isResting = false;
@@ -267,5 +280,4 @@ export const startSession = (sessionId) => {
     }
     broadcastSessionUpdate(session);
   }, 1000);
-  broadcastSessionsUpdate(); // Broadcast to update the session list status
 };

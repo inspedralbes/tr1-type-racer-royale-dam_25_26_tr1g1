@@ -14,6 +14,18 @@ export const useAppStore = defineStore("app", {
     };
   },
   actions: {
+    listenForStorageChanges() {
+      window.addEventListener("storage", (event) => {
+        if (event.key === "user") {
+          this.user = event.newValue ? JSON.parse(event.newValue) : null;
+        }
+        if (event.key === "isAuthenticated") {
+          this.isAuthenticated = event.newValue
+            ? JSON.parse(event.newValue)
+            : false;
+        }
+      });
+    },
     async login(username, password) {
       try {
         const res = await fetch(
@@ -84,7 +96,10 @@ export const useAppStore = defineStore("app", {
       if (websocketStore.isConnected) {
         websocketStore.registerWebSocket(user.id);
       } else {
-        await websocketStore.connect(import.meta.env.VITE_WS_URL, user.id);
+        await websocketStore.connect(
+          import.meta.env.VITE_WS_URL + "/ws",
+          user.id
+        );
       }
       this.isAuthenticated = true;
       this.user = user;
@@ -110,7 +125,7 @@ export const useAppStore = defineStore("app", {
         }
 
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL || ''}/api/users/${userId}`,
+          `${import.meta.env.VITE_API_URL || ""}/api/users/${userId}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -118,7 +133,8 @@ export const useAppStore = defineStore("app", {
           }
         );
         const updatedUser = await res.json();
-        if (!res.ok) throw new Error(updatedUser.message || "Error actualitzant usuari");
+        if (!res.ok)
+          throw new Error(updatedUser.message || "Error actualitzant usuari");
 
         this.user = updatedUser;
         localStorage.setItem("user", JSON.stringify(this.user));
