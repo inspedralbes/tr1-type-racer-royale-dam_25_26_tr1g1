@@ -91,7 +91,7 @@ const session = ref({
   type: props.initialType || "fullbody",
   duration: "Ràpida",
   password: "", // Changed from isPublic
-  maxUsers: 8,
+  maxUsers: 5,
 });
 
 const submitForm = () => {

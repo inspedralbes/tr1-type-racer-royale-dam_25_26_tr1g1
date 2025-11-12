@@ -1,11 +1,8 @@
 <template>
-  <div class="w-full max-w-md p-8 space-y-6 bg-gray-800 rounded-lg shadow-md">
+  <div class="w-full">
     <h2 class="text-2xl font-bold text-center text-white">Inici de sessió</h2>
-    <form @submit.prevent="login" class="space-y-6">
+    <form @submit.prevent="login" class="space-y-4 mt-6">
       <div>
-        <label class="block text-sm font-medium text-gray-300" for="username"
-          >Nom d'usuari</label
-        >
         <input
           type="text"
           placeholder="Nom d'usuari"
@@ -15,9 +12,6 @@
         />
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-300" for="password"
-          >Contrasenya</label
-        >
         <input
           type="password"
           placeholder="Contrasenya"

@@ -26,11 +26,12 @@ export const registerUser = async (
   const newUser = await User.create({
     username,
     email,
-    password, // Storing password in plain text as requested.
+    password,
     pesoActual,
     altura,
     biografia,
-    foto_perfil: foto_perfil || `https://robohash.org/${username}.png?bgset=bg1`,
+    foto_perfil:
+      foto_perfil || `https://robohash.org/${username}.png?bgset=bg1`,
   });
 
   return { user: newUser };

@@ -9,9 +9,9 @@
           class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg"
         >
           <!-- Profile Picture -->
-          <div class="absolute -bottom-16 left-6">
+          <div class="absolute -bottom-12 left-4 md:-bottom-16 md:left-6">
             <div
-              class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-900"
+              class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gray-900"
             >
               <img
                 :src="
@@ -28,13 +28,21 @@
         <!-- Action Buttons -->
         <div
           v-if="userData"
-          class="flex justify-end p-4 border-b border-gray-700"
+          class="flex flex-col sm:flex-row justify-end p-4 border-b border-gray-700 mt-12 md:mt-16"
         >
           <button
+            v-if="isProfileComplete"
             @click="openEditDialog"
-            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mr-2"
+            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
           >
             Editar perfil
+          </button>
+          <button
+            v-else
+            @click="openEditDialog"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
+          >
+            Completa tu perfil
           </button>
           <button
             @click="handleLogout"
@@ -44,10 +52,12 @@
           </button>
         </div>
 
-        <div v-if="userData" class="p-6 pt-8">
+        <div v-if="userData" class="p-6">
           <!-- User Info -->
           <div class="mb-6">
-            <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
+            <h2 class="text-2xl sm:text-3xl font-bold">
+              {{ userData.username }}
+            </h2>
             <p class="text-md text-gray-400">
               Nivell: {{ Math.floor(userData.nivel) }}
             </p>
@@ -116,111 +126,13 @@
     <!-- EDICIÓ PERFIL -->
     <div
       v-if="isEditDialogOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4"
     >
-      <div
-        class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-lg"
-      >
-        <h2 class="text-2xl font-bold mb-4">Editar Perfil</h2>
-
-        <div class="space-y-4">
-          <div>
-            <label
-              for="username"
-              class="block text-sm font-medium text-gray-400"
-              >Nom d'usuari</label
-            >
-            <input
-              type="text"
-              id="username"
-              v-model="editableUserData.username"
-              required
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-400"
-              >Email</label
-            >
-            <input
-              type="email"
-              id="email"
-              v-model="editableUserData.email"
-              required
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label for="peso" class="block text-sm font-medium text-gray-400"
-                >Pes (kg)</label
-              >
-              <input
-                type="number"
-                id="peso"
-                v-model="editableUserData.pesoActual"
-                required
-                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                for="altura"
-                class="block text-sm font-medium text-gray-400"
-                >Altura (cm)</label
-              >
-              <input
-                type="number"
-                id="altura"
-                v-model="editableUserData.altura"
-                required
-                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              for="biografia"
-              class="block text-sm font-medium text-gray-400"
-              >Biografia</label
-            >
-            <textarea
-              id="biografia"
-              v-model="editableUserData.biografia"
-              rows="3"
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            ></textarea>
-          </div>
-          <div>
-            <label
-              for="foto_perfil"
-              class="block text-sm font-medium text-gray-400"
-              >Foto de perfil (URL)</label
-            >
-            <input
-              type="text"
-              id="foto_perfil"
-              v-model="editableUserData.foto_perfil"
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-        </div>
-
-        <div class="mt-6 flex justify-end space-x-4">
-          <button
-            @click="isEditDialogOpen = false"
-            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Cancel·lar
-          </button>
-          <button
-            @click="handleUpdateProfile"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Guardar
-          </button>
-        </div>
-      </div>
+      <FormEditarPerfil
+        :initial-data="editableUserData"
+        @save="handleUpdateProfile"
+        @cancel="isEditDialogOpen = false"
+      />
     </div>
   </div>
 </template>
@@ -229,6 +141,7 @@ import { computed, onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
 import NavBar from "@/components/NavBar.vue";
+import FormEditarPerfil from "@/components/Forms/FormEditarPerfil.vue";
 
 const router = useRouter();
 const appStore = useAppStore();
@@ -242,6 +155,15 @@ const editableUserData = reactive({
   altura: null,
   biografia: null,
   foto_perfil: null,
+});
+
+const isProfileComplete = computed(() => {
+  if (!userData.value) return false;
+  return (
+    userData.value.pesoActual > 0 &&
+    userData.value.altura > 0 &&
+    !!userData.value.biografia
+  );
 });
 
 onMounted(() => {
@@ -262,9 +184,9 @@ const openEditDialog = () => {
   isEditDialogOpen.value = true;
 };
 
-const handleUpdateProfile = async () => {
+const handleUpdateProfile = async (updatedData) => {
   try {
-    await appStore.updateUser(editableUserData);
+    await appStore.updateUser(updatedData);
     isEditDialogOpen.value = false;
   } catch (error) {
     console.error("Error en actualitzar el perfil:", error);

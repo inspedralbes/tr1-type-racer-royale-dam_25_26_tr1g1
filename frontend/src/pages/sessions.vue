@@ -3,48 +3,89 @@
     <NavBar />
     <div class="container mx-auto p-4 pb-20">
       <!-- Controls -->
-      <div class="mb-6 rounded-lg bg-gray-800 p-4 shadow-lg">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <!-- Search Input -->
-          <div class="sm:col-span-1">
-            <label
-              for="search"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Buscar Sessió</label
-            >
+      <div
+        class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
+      >
+        <div
+          class="flex flex-col items-center justify-between gap-4 md:flex-row"
+        >
+          <!-- Left side: Search -->
+          <div class="relative w-full md:w-80">
+            <span
+              class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            ></span>
             <input
               type="text"
               id="search"
               v-model="searchQuery"
-              placeholder="Nom, ID..."
-              class="block w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+              placeholder="Buscar per Nom, ID..."
+              class="w-full rounded-lg border-transparent bg-gray-700/50 py-2 pl-10 pr-4 text-white placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
             />
           </div>
 
-          <!-- Filter Select -->
-          <div class="sm:col-span-1">
-            <label
-              for="status-filter"
-              class="mb-2 block text-sm font-medium text-gray-300"
-              >Filtrar per Estat</label
-            >
-            <select
-              id="status-filter"
-              v-model="selectedStatus"
-              class="block w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="ALL">Tots</option>
-              <option value="WAITING">Esperant</option>
-              <option value="IN_PROGRESS">En Curs</option>
-            </select>
-          </div>
+          <!-- Right side: Action Buttons -->
+          <div
+            class="flex w-full shrink-0 items-center justify-end gap-4 md:w-auto"
+          >
+            <!-- Filter Button and Dropdown -->
+            <div class="relative" ref="filterMenu">
+              <button
+                @click="toggleFilterMenu"
+                class="flex items-center gap-2 rounded-full bg-gray-700/50 px-4 py-3 font-semibold text-white transition hover:bg-gray-700"
+              >
+                <span class="mdi mdi-filter-variant"></span>
+                <span>Filtre</span>
+                <span
+                  class="mdi mdi-chevron-down transition-transform"
+                  :class="{ 'rotate-180': showFilterMenu }"
+                ></span>
+              </button>
+              <div
+                v-if="showFilterMenu"
+                class="absolute left-0 right-0 mx-auto top-full z-20 mt-2 max-w-xs origin-top-right rounded-lg bg-gray-700 py-1 shadow-lg ring-1 ring-black ring-opacity-5 md:right-0 md:left-auto md:mx-0 md:w-48"
+              >
+                <ul>
+                  <li
+                    @click="applyFilter('ALL')"
+                    class="flex cursor-pointer items-center justify-between px-4 py-2 text-sm hover:bg-gray-600"
+                  >
+                    Tots
+                    <span
+                      v-if="selectedStatus === 'ALL'"
+                      class="mdi mdi-check text-blue-400"
+                    ></span>
+                  </li>
+                  <li
+                    @click="applyFilter('WAITING')"
+                    class="flex cursor-pointer items-center justify-between px-4 py-2 text-sm hover:bg-gray-600"
+                  >
+                    Esperant
+                    <span
+                      v-if="selectedStatus === 'WAITING'"
+                      class="mdi mdi-check text-blue-400"
+                    ></span>
+                  </li>
+                  <li
+                    @click="applyFilter('IN_PROGRESS')"
+                    class="flex cursor-pointer items-center justify-between px-4 py-2 text-sm hover:bg-gray-600"
+                  >
+                    En Curs
+                    <span
+                      v-if="selectedStatus === 'IN_PROGRESS'"
+                      class="mdi mdi-check text-blue-400"
+                    ></span>
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-          <div class="flex items-end sm:col-span-1">
+            <!-- Create Button -->
             <button
               @click="openCreateModal"
-              class="w-full transform rounded-full bg-white px-8 py-3 font-bold text-blue-600 shadow-md transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-100"
+              class="flex w-full transform items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 md:w-auto"
             >
-              Crear Nova Sessió
+              <span class="mdi mdi-plus-circle"></span>
+              <span>Crear Sessió</span>
             </button>
           </div>
         </div>
@@ -64,7 +105,10 @@
           </button>
           <div>
             <template v-if="selectionStep">
-              <SelectRoutine @selected="onRoutineSelected" @cancel="closeCreateModal" />
+              <SelectRoutine
+                @selected="onRoutineSelected"
+                @cancel="closeCreateModal"
+              />
             </template>
             <template v-else>
               <FormCrearSessio
@@ -113,7 +157,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import FormCrearSessio from "@/components/Forms/FormCrearSessio.vue";
 import SelectRoutine from "@/components/session/SelectRoutine.vue";
 import ListSessions from "@/components/ListSessions.vue";
@@ -131,6 +175,8 @@ const searchQuery = ref("");
 const selectedStatus = ref("ALL"); // 'ALL', 'WAITING', 'IN_PROGRESS'
 const currentPage = ref(1);
 const itemsPerPage = 5;
+const showFilterMenu = ref(false);
+const filterMenu = ref(null);
 
 // --- Computed Properties ---
 const allSessions = computed(() => websocketStore.sessions);
@@ -204,6 +250,29 @@ const prevPage = () => {
     currentPage.value--;
   }
 };
+
+const toggleFilterMenu = () => {
+  showFilterMenu.value = !showFilterMenu.value;
+};
+
+const applyFilter = (status) => {
+  selectedStatus.value = status;
+  showFilterMenu.value = false;
+};
+
+const handleClickOutside = (event) => {
+  if (filterMenu.value && !filterMenu.value.contains(event.target)) {
+    showFilterMenu.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 
 // Watch for changes that could affect pagination
 watch([searchQuery, selectedStatus], () => {

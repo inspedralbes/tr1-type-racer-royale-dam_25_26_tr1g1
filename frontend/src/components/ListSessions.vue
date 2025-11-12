@@ -4,67 +4,77 @@
       <li
         v-for="session in sessions"
         :key="session.id"
-        class="bg-gray-800/80 backdrop-filter backdrop-blur-sm rounded-lg shadow-lg p-4 cursor-pointer transition-all duration-300 ease-in-out hover:shadow-xl hover:bg-gray-800"
+        class="relative rounded-lg shadow-lg cursor-pointer transition-all duration-300 ease-in-out overflow-hidden bg-cover bg-center hover:shadow-xl"
+        :style="{
+          backgroundImage: `linear-gradient(rgba(40, 91, 137, 0.9), rgba(18, 16, 50, 1))`,
+        }"
         @click="handleSessionClick(session)"
       >
-        <div class="flex flex-wrap items-center justify-between text-white">
-          <div class="flex items-center">
-            <div
-              class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center mr-4"
-            >
-              <span class="mdi mdi-dumbbell text-white text-3xl"></span>
-            </div>
-            <div>
-              <h3 class="text-xl font-bold">{{ session.name }}</h3>
-              <p class="text-sm text-gray-300">
-                {{ session.type }} - ID: {{ session.id.substring(0, 8) }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex items-center text-lg mt-4 md:mt-0">
-            <div class="flex items-center mr-4">
-              <span class="mdi mdi-account-group text-gray-400 mr-2"></span>
-              <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
-            </div>
-            <div class="flex items-center mr-4">
-              <span
-                class="mdi mr-2"
-                :class="
-                  !session.password
-                    ? 'mdi-earth text-green-400'
-                    : 'mdi-lock text-red-400'
-                "
-              ></span>
-              <span class="hidden sm:inline">{{
-                !session.password ? "Public" : "Private"
-              }}</span>
-            </div>
-            <div class="flex items-center mr-4">
-              <span
-                class="px-3 py-1 rounded-full text-sm font-semibold"
-                :class="{
-                  'bg-green-500 text-white': session.state.status === 'WAITING',
-                  'bg-yellow-500 text-white':
-                    session.state.status === 'IN_PROGRESS',
-                }"
+        <div class="p-4">
+          <div
+            class="flex flex-col md:flex-row md:items-center md:justify-between text-white"
+          >
+            <div class="flex items-center mb-4 md:mb-0">
+              <div
+                class="w-14 h-14 bg-blue-500/80 rounded-full flex items-center justify-center mr-4"
               >
-                {{
-                  session.state.status === "WAITING" ? "Esperant" : "En Curs"
-                }}
-              </span>
+                <span class="mdi mdi-dumbbell text-white text-3xl"></span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold">{{ session.name }}</h3>
+                <p class="text-sm text-gray-200">
+                  {{ session.type }} - ID: {{ session.id.substring(0, 8) }}
+                </p>
+              </div>
             </div>
-            <div class="flex items-center mr-4">
-              <span class="mdi mdi-timer-sand text-gray-400 mr-2"></span>
-              <span>{{ formatDuration(session.state.startTime) }}</span>
-            </div>
-            <button
-              class="px-6 py-2 rounded-lg font-bold transition duration-300 ease-in-out bg-blue-600 hover:bg-blue-700 text-white"
-              @click.stop="handleSessionClick(session)"
+
+            <div
+              class="flex flex-wrap items-center justify-start md:justify-end gap-x-4 gap-y-2 text-lg"
             >
-              <span class="mdi mdi-play-circle-outline mr-2"></span>
-              <span class="hidden sm:inline">Join</span>
-            </button>
+              <div class="flex items-center">
+                <span class="mdi mdi-account-group text-gray-300 mr-2"></span>
+                <span>{{ session.users.length }} / {{ session.maxUsers }}</span>
+              </div>
+              <div class="flex items-center">
+                <span
+                  class="mdi mr-2"
+                  :class="
+                    !session.password
+                      ? 'mdi-earth text-green-400'
+                      : 'mdi-lock text-red-400'
+                  "
+                ></span>
+                <span class="hidden sm:inline">{{
+                  !session.password ? "Public" : "Private"
+                }}</span>
+              </div>
+              <div class="flex items-center">
+                <span
+                  class="px-3 py-1 rounded-full text-sm font-semibold"
+                  :class="{
+                    'bg-green-500/80 text-white':
+                      session.state.status === 'WAITING',
+                    'bg-yellow-500/80 text-white':
+                      session.state.status === 'IN_PROGRESS',
+                  }"
+                >
+                  {{
+                    session.state.status === "WAITING" ? "Esperant" : "En Curs"
+                  }}
+                </span>
+              </div>
+              <div class="flex items-center">
+                <span class="mdi mdi-timer-sand text-gray-300 mr-2"></span>
+                <span>{{ formatDuration(session.state.startTime) }}</span>
+              </div>
+              <button
+                class="hidden md:block px-6 py-2 rounded-lg font-bold transition duration-300 ease-in-out bg-blue-600 hover:bg-blue-700 text-white"
+                @click.stop="handleSessionClick(session)"
+              >
+                <span class="mdi mdi-play-circle-outline mr-2"></span>
+                <span class="hidden sm:inline">Join</span>
+              </button>
+            </div>
           </div>
         </div>
       </li>
@@ -113,6 +123,20 @@ defineProps({
     required: true,
   },
 });
+
+// En un futuro ya se verá si se usa...
+const getBackgroundImage = (type) => {
+  if (!type) return "";
+  const typeLower = type.toLowerCase();
+  if (typeLower.includes("fullbody")) {
+    return "/Cos_complet.png";
+  } else if (typeLower.includes("lower")) {
+    return "/Tren_inferior.png";
+  } else if (typeLower.includes("upper")) {
+    return "/Tren_superior.png";
+  }
+  return "";
+};
 
 const websocketStore = useWebSocketStore();
 
