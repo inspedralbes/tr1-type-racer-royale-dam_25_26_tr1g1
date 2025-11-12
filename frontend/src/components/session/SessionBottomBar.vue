@@ -6,7 +6,11 @@
       <h3 class="text-lg font-semibold mb-2">Selecciona una càmera</h3>
       <ul>
         <li v-for="camera in cameras" :key="camera.deviceId">
-          <button @touchstart.stop.prevent="selectCamera(camera.deviceId)" class="w-full text-left p-2 hover:bg-gray-700">
+          <button 
+            @touchstart.stop.prevent="selectCamera(camera.deviceId)"
+            @click.stop="selectCamera(camera.deviceId)" 
+            class="w-full text-left p-2 hover:bg-gray-700"
+          >
             {{ camera.label || `Càmera ${camera.deviceId.substring(0, 6)}` }}
           </button>
         </li>
@@ -14,23 +18,40 @@
     </div>
     
     <div v-else-if="showEmojis" class="p-4 flex justify-around">
-      <button v-for="emoji in emojis" :key="emoji" @touchstart.stop.prevent="sendReaction(emoji)" class="text-3xl transform hover:scale-125 transition-transform">
+      <button 
+        v-for="emoji in emojis" :key="emoji" 
+        @touchstart.stop.prevent="sendReaction(emoji)"
+        @click.stop="sendReaction(emoji)"
+        class="text-3xl transform hover:scale-125 transition-transform"
+      >
         {{ emoji }}
       </button>
     </div>
     
     <div v-else class="flex justify-around">
-      <button @touchstart.stop.prevent="$emit('leave-session')" class="p-4 flex flex-col items-center">
+      <button 
+        @touchstart.stop.prevent="openLeaveDialog"
+        @click.stop="openLeaveDialog"
+        class="p-4 flex flex-col items-center"
+      >
         <i class="mdi mdi-exit-to-app text-xl"></i>
         <span class="text-xs mt-1 hidden sm:block">Sortir</span>
       </button>
 
-      <button @touchstart.stop.prevent="showCameras = true" class="p-4 flex flex-col items-center">
+      <button 
+        @touchstart.stop.prevent="showCameras = true"
+        @click.stop="showCameras = true"
+        class="p-4 flex flex-col items-center"
+      >
         <i class="mdi mdi-camera-flip text-xl"></i>
         <span class="text-xs mt-1 hidden sm:block">Càmera</span>
       </button>
 
-      <button @touchstart.stop.prevent="showEmojis = true" class="p-4 flex flex-col items-center">
+      <button 
+        @touchstart.stop.prevent="showEmojis = true"
+        @click.stop="showEmojis = true"
+        class="p-4 flex flex-col items-center"
+      >
         <i class="mdi mdi-emoticon-happy text-xl"></i>
         <span class="text-xs mt-1 hidden sm:block">Emojis</span>
       </button>
