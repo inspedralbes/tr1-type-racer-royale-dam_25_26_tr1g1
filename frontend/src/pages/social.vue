@@ -75,7 +75,7 @@
                       >Editar</a
                     >
                     <a
-                      @click="deletePost(post.id)"
+                      @click="openDeleteDialog(post.id)"
                       class="block px-4 py-2 text-sm text-red-500 hover:bg-gray-700 cursor-pointer"
                       >Eliminar</a
                     >
@@ -162,6 +162,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <div
+      v-if="isDeleteDialogOpen"
+      class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
+    >
+      <div
+        class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-sm"
+      >
+        <h2 class="text-xl font-bold mb-4">Eliminar Publicació</h2>
+        <p>Estàs segur que vols eliminar aquesta publicació?</p>
+        <div class="mt-6 flex justify-end space-x-4">
+          <button
+            @click="isDeleteDialogOpen = false"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Cancel·lar
+          </button>
+          <button
+            @click="confirmDelete"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
@@ -175,6 +202,8 @@ const posts = ref([]);
 const commentText = ref({});
 const editingPost = ref(null);
 const editedContent = ref("");
+const isDeleteDialogOpen = ref(false);
+const postToDeleteId = ref(null);
 
 const API = import.meta.env.VITE_API_URL || "";
 
@@ -227,24 +256,31 @@ const addComment = async (postId) => {
   commentText.value[postId] = "";
 };
 
-const deletePost = async (postId) => {
-  if (!appStore.user) return;
-
-  if (confirm("Segur que vols eliminar aquesta publicació?")) {
-    const res = await fetch(`${API}/api/posts/${postId}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: appStore.user.username }),
-    });
-
-    if (res.ok) {
-      posts.value = posts.value.filter((p) => p.id !== postId);
-    } else {
-      alert("No s'ha pogut eliminar la publicació.");
-    }
+const openDeleteDialog = (postId) => {
+  postToDeleteId.value = postId;
+  isDeleteDialogOpen.value = true;
+  const post = posts.value.find((p) => p.id === postId);
+  if (post) {
+    post.showDropdown = false;
   }
 };
 
+const confirmDelete = async () => {
+  if (!appStore.user) return;
+
+  const res = await fetch(`${API}/api/posts/${postToDeleteId.value}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: appStore.user.username }),
+  });
+
+  if (res.ok) {
+    posts.value = posts.value.filter((p) => p.id !== postToDeleteId.value);
+  } else {
+    alert("No s'ha pogut eliminar la publicació.");
+  }
+  isDeleteDialogOpen.value = false;
+};
 const startEditing = (post) => {
   editingPost.value = post;
   editedContent.value = post.content;
@@ -282,4 +318,3 @@ const updatePost = async (postId) => {
 
 onMounted(fetchPosts);
 </script>
-
