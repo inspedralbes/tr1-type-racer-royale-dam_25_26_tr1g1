@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="relative min-h-screen bg-gray-900 text-white flex flex-col"
-    @mousemove="handleUserInteraction"
-    @touchstart="handleUserInteraction"
-  >
+  <div class="relative min-h-screen bg-gray-900 text-white flex flex-col">
     <!-- Session End Screen -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -51,16 +47,7 @@
     />
 
     <!-- Overlay content -->
-    <div
-      v-if="!showEndScreen"
-      class="relative z-10 flex flex-col flex-grow"
-    >
-      <SessionTopBar
-        :current-session="currentSession"
-        @toggle-info-exercices="toggleInfoExercices"
-        @toggle-scoreboard="toggleScoreboard"
-      />
-
+    <div v-if="!showEndScreen" class="relative z-10 flex flex-col flex-grow">
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
@@ -103,15 +90,13 @@
       </div>
 
       <!-- Bottom bar -->
-      <transition name="slide-up">
-        <SessionBottomBar
-          v-if="showBottomBar"
-          :cameras="cameras"
-          @leave-session="leaveSession"
-          @camera-selected="handleCameraSelected"
-          @send-reaction="sendReaction"
-        />
-      </transition>
+      <SessionBottomBar
+        :cameras="cameras"
+        @leave-session="leaveSession"
+        @camera-selected="handleCameraSelected"
+        @send-reaction="sendReaction"
+        @toggle-info="toggleInfo"
+      />
 
       <!-- Ready Card -->
       <div
@@ -136,7 +121,6 @@ import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CountdownTimer from "@/components/session/CountdownTimer.vue";
 import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
 
-import SessionTopBar from "@/components/session/SessionTopBar.vue";
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
@@ -194,8 +178,7 @@ const handleInPose = () => {
 };
 
 const leaveSession = () => {
-  // If the session is over, just navigate away. No need to send a leave message.
-  if (currentSession.value?.state.status === 'FINISHED') {
+  if (currentSession.value?.state.status === "FINISHED") {
     router.push("/sessions");
     return;
   }
@@ -207,7 +190,6 @@ const leaveSession = () => {
     });
     router.push("/sessions");
   } else {
-    // Fallback if session is already null
     router.push("/sessions");
   }
 };
@@ -242,11 +224,9 @@ onUnmounted(() => {});
 
 const showScoreboard = ref(true);
 const showInfoExercices = ref(true);
-const showBottomBar = ref(false);
 
 const poseSkeletonRef = ref(null);
 const cameras = ref([]);
-let bottomBarTimeout = null;
 
 const handleCameras = (cameraList) => {
   cameras.value = cameraList;
@@ -255,44 +235,8 @@ const handleCameraSelected = (deviceId) => {
   poseSkeletonRef.value.startCamera(deviceId);
 };
 
-const handleUserInteraction = (event) => {
-  if (showEndScreen.value) return;
-  const isTouch = event.type === "touchstart";
-  const isMouseAtBottom = !isTouch && event.clientY > window.innerHeight - 150;
-
-  if (isTouch) {
-    showBottomBar.value = !showBottomBar.value;
-    if (bottomBarTimeout) {
-      clearTimeout(bottomBarTimeout);
-    }
-    if (showBottomBar.value) {
-      bottomBarTimeout = setTimeout(() => {
-        showBottomBar.value = false;
-      }, 10000);
-    }
-  } else if (isMouseAtBottom) {
-    showBottomBar.value = true;
-    if (bottomBarTimeout) {
-      clearTimeout(bottomBarTimeout);
-    }
-    bottomBarTimeout = setTimeout(() => {
-      showBottomBar.value = false;
-    }, 3000);
-  } else if (!isTouch) {
-    if (showBottomBar.value) {
-      clearTimeout(bottomBarTimeout);
-      bottomBarTimeout = setTimeout(() => {
-        showBottomBar.value = false;
-      }, 500);
-    }
-  }
-};
-
-const toggleScoreboard = () => {
+const toggleInfo = () => {
   showScoreboard.value = !showScoreboard.value;
-};
-
-const toggleInfoExercices = () => {
   showInfoExercices.value = !showInfoExercices.value;
 };
 

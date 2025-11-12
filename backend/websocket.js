@@ -192,6 +192,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
               ws.currentSession = session.id;
               sendMessage(ws, MESSAGE_TYPES.JOIN_SUCCESS, session);
               broadcastSessionUpdate(session);
+              broadcastSessionsUpdate();
             }
           } catch (error) {
             if (error.message === "SESSION_NOT_FOUND") {
@@ -224,8 +225,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
           );
           if (updatedSession) {
             broadcastSessionUpdate(updatedSession);
-            broadcastSessionsUpdate();
           }
+          broadcastSessionsUpdate();
           ws.currentSession = null;
           sendMessage(ws, MESSAGE_TYPES.LEAVE_SUCCESS, {});
           break;
@@ -305,6 +306,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         if (updatedSession) {
           broadcastSessionUpdate(updatedSession);
         }
+        broadcastSessionsUpdate();
       }
     }
   });

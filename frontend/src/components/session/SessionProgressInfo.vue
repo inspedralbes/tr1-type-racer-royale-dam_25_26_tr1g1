@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-64 sm:w-72 text-center"
+    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 text-center"
   >
     <div class="mt-2 sm:mt-4 text-base sm:text-lg">
       <p v-if="isResting" class="text-red-400 font-semibold">Descansando...</p>
