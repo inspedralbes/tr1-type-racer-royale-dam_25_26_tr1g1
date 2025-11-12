@@ -194,11 +194,20 @@ const handleInPose = () => {
 };
 
 const leaveSession = () => {
+  // If the session is over, just navigate away. No need to send a leave message.
+  if (currentSession.value?.state.status === 'FINISHED') {
+    router.push("/sessions");
+    return;
+  }
+
   if (currentSession.value) {
     websocketStore.sendMessage({
       type: "LEAVE_SESSION",
       payload: { sessionId: currentSession.value.id },
     });
+    router.push("/sessions");
+  } else {
+    // Fallback if session is already null
     router.push("/sessions");
   }
 };
