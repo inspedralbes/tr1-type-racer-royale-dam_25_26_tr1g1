@@ -39,14 +39,74 @@
               class="w-12 h-12 rounded-full mr-4 object-cover"
             />
             <div class="w-full">
-              <div class="flex items-center">
-                <h3 class="text-lg font-semibold">{{ post.username }}</h3>
-                <p class="text-gray-500 text-sm ml-2">
-                  · {{ new Date(post.timestamp).toLocaleDateString() }}
-                </p>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <h3 class="text-lg font-semibold">{{ post.username }}</h3>
+                  <p class="text-gray-500 text-sm ml-2">
+                    · {{ new Date(post.timestamp).toLocaleDateString() }}
+                  </p>
+                </div>
+                <!-- Dropdown for edit/delete -->
+                <div
+                  v-if="appStore.user && appStore.user.username === post.username"
+                  class="relative"
+                >
+                  <button
+                    @click="post.showDropdown = !post.showDropdown"
+                    class="text-gray-400 hover:text-white"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+                      ></path>
+                    </svg>
+                  </button>
+                  <div
+                    v-if="post.showDropdown"
+                    class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10"
+                  >
+                    <a
+                      @click="startEditing(post)"
+                      class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 cursor-pointer"
+                      >Editar</a
+                    >
+                    <a
+                      @click="deletePost(post.id)"
+                      class="block px-4 py-2 text-sm text-red-500 hover:bg-gray-700 cursor-pointer"
+                      >Eliminar</a
+                    >
+                  </div>
+                </div>
               </div>
 
-              <p class="text-gray-300 mt-1">{{ post.content }}</p>
+              <!-- Edit mode -->
+              <div v-if="editingPost && editingPost.id === post.id">
+                <textarea
+                  v-model="editedContent"
+                  class="w-full bg-gray-800 text-white p-2 rounded-lg mt-2"
+                  rows="3"
+                ></textarea>
+                <div class="flex justify-end mt-2">
+                  <button
+                    @click="cancelEditing"
+                    class="text-gray-400 hover:text-white mr-2"
+                  >
+                    Cancel·lar
+                  </button>
+                  <button
+                    @click="updatePost(post.id)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-full"
+                  >
+                    Guardar
+                  </button>
+                </div>
+              </div>
+              <!-- Normal mode -->
+              <p v-else class="text-gray-300 mt-1">{{ post.content }}</p>
 
               <!-- Comments -->
               <div class="flex items-center space-x-6 mt-4 text-gray-500">
@@ -113,6 +173,8 @@ const appStore = useAppStore();
 const newPost = ref("");
 const posts = ref([]);
 const commentText = ref({});
+const editingPost = ref(null);
+const editedContent = ref("");
 
 const API = import.meta.env.VITE_API_URL || "";
 
@@ -120,7 +182,11 @@ const fetchPosts = async () => {
   try {
     const res = await fetch(`${API}/api/posts`);
     const data = await res.json();
-    posts.value = data.map((p) => ({ ...p, showComments: false }));
+    posts.value = data.map((p) => ({
+      ...p,
+      showComments: false,
+      showDropdown: false,
+    }));
   } catch (error) {
     console.error("Error fetching posts:", error);
   }
@@ -138,7 +204,7 @@ const addPost = async () => {
     }),
   });
   const data = await res.json();
-  posts.value.unshift({ ...data, showComments: false });
+  posts.value.unshift({ ...data, showComments: false, showDropdown: false });
   newPost.value = "";
 };
 
@@ -160,5 +226,60 @@ const addComment = async (postId) => {
   post.comments.push(newComment);
   commentText.value[postId] = "";
 };
+
+const deletePost = async (postId) => {
+  if (!appStore.user) return;
+
+  if (confirm("Segur que vols eliminar aquesta publicació?")) {
+    const res = await fetch(`${API}/api/posts/${postId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: appStore.user.username }),
+    });
+
+    if (res.ok) {
+      posts.value = posts.value.filter((p) => p.id !== postId);
+    } else {
+      alert("No s'ha pogut eliminar la publicació.");
+    }
+  }
+};
+
+const startEditing = (post) => {
+  editingPost.value = post;
+  editedContent.value = post.content;
+  post.showDropdown = false;
+};
+
+const cancelEditing = () => {
+  editingPost.value = null;
+  editedContent.value = "";
+};
+
+const updatePost = async (postId) => {
+  if (!editedContent.value.trim() || !appStore.user) return;
+
+  const res = await fetch(`${API}/api/posts/${postId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: appStore.user.username,
+      content: editedContent.value,
+    }),
+  });
+
+  if (res.ok) {
+    const updatedPost = await res.json();
+    const index = posts.value.findIndex((p) => p.id === postId);
+    if (index !== -1) {
+      posts.value[index].content = updatedPost.content;
+    }
+    cancelEditing();
+  } else {
+    alert("No s'ha pogut actualitzar la publicació.");
+  }
+};
+
 onMounted(fetchPosts);
 </script>
+

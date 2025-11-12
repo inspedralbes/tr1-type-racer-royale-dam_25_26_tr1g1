@@ -117,6 +117,28 @@ export const addComment = async (postId, username, text) => {
   };
 };
 
+// 🔹 Actualizar un post
+export const updatePost = async (postId, username, content) => {
+  const user = await findUserByUsername(username);
+  if (!user) {
+    return null;
+  }
+
+  const post = await Post.findByPk(postId);
+  if (!post) {
+    return null;
+  }
+
+  if (post.userId !== user.id) {
+    return null;
+  }
+
+  post.content = content;
+  await post.save();
+
+  return post;
+};
+
 // 🔹 Eliminar post (solo autor)
 export const deletePost = async (postId, username) => {
   const user = await findUserByUsername(username);

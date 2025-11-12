@@ -32,6 +32,7 @@ import {
   createPost,
   addComment,
   deletePost,
+  updatePost,
   deleteComment,
 } from "./posts.js";
 
@@ -346,6 +347,22 @@ app.delete("/api/posts/:id", async (req, res) => {
     res.json({ message: "Post eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ message: "Error al eliminar el post" });
+  }
+});
+
+// Actualizar post
+app.put("/api/posts/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, content } = req.body;
+  try {
+    const updatedPost = await updatePost(id, username, content);
+    if (!updatedPost)
+      return res
+        .status(403)
+        .json({ message: "No autorizado o post no encontrado" });
+    res.json(updatedPost);
+  } catch (error) {
+    res.status(500).json({ message: "Error al actualizar el post" });
   }
 });
 
