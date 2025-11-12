@@ -16,13 +16,13 @@ En resum: mou-te, juga i guanya!
 
 - **Frontend:** Vue.js, Vite, Pinia, Vue Router, Tailwind CSS
 - **Backend:** Node.js, Express.js, WebSocket
-- **Base de dades:** MySQL
+- **Base de dades:** Adminer 
 - **IA/ML:** TensorFlow.js (Pose Detection)
 - **Contenidorització:** Docker
 
 ## Gestió del Projecte
 
-- **Gestor de Tasques:** [Enllaç a Taiga](https://example.com)
+- **Gestor de Tasques:** [Enllaç a Taiga](https://tree.taiga.io/project/kore29-dam_25_26_tr1g1/timeline) 
 - **Documentació:** [Wiki](https://github.com/inspedralbes/tr1-type-racer-royale-dam_25_26_tr1g1/tree/main/doc)
 - **URL de Producció:** (Encara no desplegat)
 
@@ -46,7 +46,7 @@ Per executar aquest projecte localment, necessites tenir Docker i Docker Compose
 3.  **Accedeix als serveis:**
     - **Frontend:** [http://localhost:3000](http://localhost:3000)
     - **Backend:** [http://localhost:5000](http://localhost:5000)
-    - **phpMyAdmin:** [http://localhost:8080](http://localhost:8080)
+    - **Adminer (Gestor de BD):** [http://localhost:8080](http://localhost:8080)
 
 ## Estat del Projecte
 
