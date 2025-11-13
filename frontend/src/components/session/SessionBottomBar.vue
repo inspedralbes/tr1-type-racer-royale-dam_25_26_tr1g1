@@ -67,6 +67,30 @@
       </button>
     </div>
   </nav>
+  <div
+  v-if="isLeaveDialogOpen"
+  class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50"
+  @click.self="isLeaveDialogOpen = false"
+>
+  <div class="bg-gray-800 text-white p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
+    <h3 class="text-xl font-bold mb-4">Segur que vols sortir?</h3>
+    <p class="mb-6">Aquesta acció finalitzarà la teva sessió actual.</p>
+    <div class="flex justify-end space-x-3">
+      <button
+        @click="isLeaveDialogOpen = false"
+        class="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition duration-150"
+      >
+        Cancel·lar
+      </button>
+      <button
+        @click="confirmLeave"
+        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-150"
+      >
+        Sortir
+      </button>
+    </div>
+  </div>
+</div>
 </template>
 
 <script setup>
