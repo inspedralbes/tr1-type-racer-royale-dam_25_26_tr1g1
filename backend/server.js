@@ -384,7 +384,7 @@ app.delete("/api/posts/:postId/comments/:commentId", async (req, res) => {
 
 const startServer = async () => {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Database synchronized");
 
     server.listen(PORT, () =>

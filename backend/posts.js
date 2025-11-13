@@ -1,51 +1,39 @@
-import { User, Post, Comment } from "./models/index.js";
+import pool from "./database/db.js";
 import { findUserByUsername } from "./users.js";
+import { v4 as uuidv4 } from "uuid";
 
 // 🔹 Obtener todos los posts
 export const getAllPosts = async () => {
-  const posts = await Post.findAll({
-    include: [
-      {
-        model: User,
-        as: "author",
-        attributes: ["username", "foto_perfil"],
-        required: true, // Un post ha de tenir autor
-      },
-      {
-        model: Comment,
-        include: [
-          {
-            model: User,
-            as: "author",
-            attributes: ["username", "foto_perfil"],
-          },
-        ],
-        required: false,
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-  });
+  const [posts] = await pool.query(
+    `SELECT
+      p.id,
+      p.content,
+      p.createdAt as timestamp,
+      u.username,
+      u.foto_perfil
+    FROM Posts p
+    JOIN Usuaris u ON p.userId = u.id
+    ORDER BY p.createdAt DESC`
+  );
 
-  return posts.map((post) => {
-    return {
-      id: post.id,
-      content: post.content,
-      timestamp: post.createdAt,
-      username: post.author.username,
-      foto_perfil: post.author.foto_perfil,
-      comments: post.Comments.filter((comment) => comment.author)
-        .map((comment) => {
-          return {
-            id: comment.id,
-            text: comment.text,
-            timestamp: comment.createdAt,
-            username: comment.author.username,
-            foto_perfil: comment.author.foto_perfil,
-          };
-        })
-        .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)),
-    };
-  });
+  for (const post of posts) {
+    const [comments] = await pool.query(
+      `SELECT
+        c.id,
+        c.text,
+        c.createdAt as timestamp,
+        u.username,
+        u.foto_perfil
+      FROM Comentaris c
+      JOIN Usuaris u ON c.userId = u.id
+      WHERE c.postId = ?
+      ORDER BY c.createdAt ASC`,
+      [post.id]
+    );
+    post.comments = comments;
+  }
+
+  return posts;
 };
 
 // 🔹 Crear un nuevo post
@@ -55,29 +43,27 @@ export const createPost = async (username, content) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const newPost = await Post.create({
-    content,
-    userId: user.id,
-  });
+  const newPostId = uuidv4();
+  await pool.query(
+    "INSERT INTO Posts (id, content, userId) VALUES (?, ?, ?)",
+    [newPostId, content, user.id]
+  );
 
-  const postWithAuthor = await Post.findByPk(newPost.id, {
-    include: [
-      {
-        model: User,
-        as: "author",
-        attributes: ["username", "foto_perfil"],
-      },
-    ],
-  });
+  const [[post]] = await pool.query(
+    `SELECT
+      p.id,
+      p.content,
+      p.createdAt as timestamp,
+      u.username,
+      u.foto_perfil
+    FROM Posts p
+    JOIN Usuaris u ON p.userId = u.id
+    WHERE p.id = ?`,
+    [newPostId]
+  );
 
-  return {
-    id: postWithAuthor.id,
-    content: postWithAuthor.content,
-    timestamp: postWithAuthor.createdAt,
-    username: postWithAuthor.author.username,
-    foto_perfil: postWithAuthor.author.foto_perfil,
-    comments: [],
-  };
+  post.comments = [];
+  return post;
 };
 
 // 🔹 Añadir comentario
@@ -87,34 +73,33 @@ export const addComment = async (postId, username, text) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const post = await Post.findByPk(postId);
+  const [[post]] = await pool.query("SELECT id FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   if (!post) {
     throw new Error("POST_NOT_FOUND");
   }
 
-  const newComment = await Comment.create({
-    text,
-    postId,
-    userId: user.id,
-  });
+  const newCommentId = uuidv4();
+  await pool.query(
+    "INSERT INTO Comentaris (id, text, userId, postId) VALUES (?, ?, ?, ?)",
+    [newCommentId, text, user.id, postId]
+  );
 
-  const commentWithAuthor = await Comment.findByPk(newComment.id, {
-    include: [
-      {
-        model: User,
-        as: "author",
-        attributes: ["username", "foto_perfil"],
-      },
-    ],
-  });
+  const [[comment]] = await pool.query(
+    `SELECT
+      c.id,
+      c.text,
+      c.createdAt as timestamp,
+      u.username,
+      u.foto_perfil
+    FROM Comentaris c
+    JOIN Usuaris u ON c.userId = u.id
+    WHERE c.id = ?`,
+    [newCommentId]
+  );
 
-  return {
-    id: commentWithAuthor.id,
-    text: commentWithAuthor.text,
-    timestamp: commentWithAuthor.createdAt,
-    username: commentWithAuthor.author.username,
-    foto_perfil: commentWithAuthor.author.foto_perfil,
-  };
+  return comment;
 };
 
 // 🔹 Actualizar un post
@@ -124,7 +109,9 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  const post = await Post.findByPk(postId);
+  const [[post]] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   if (!post) {
     return null;
   }
@@ -133,10 +120,15 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  post.content = content;
-  await post.save();
+  await pool.query("UPDATE Posts SET content = ? WHERE id = ?", [
+    content,
+    postId,
+  ]);
 
-  return post;
+  const [[updatedPost]] = await pool.query("SELECT * FROM Posts WHERE id = ?", [
+    postId,
+  ]);
+  return updatedPost;
 };
 
 // 🔹 Eliminar post (solo autor)
@@ -146,7 +138,9 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  const post = await Post.findByPk(postId);
+  const [[post]] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   if (!post) {
     return false;
   }
@@ -155,7 +149,7 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  await post.destroy();
+  await pool.query("DELETE FROM Posts WHERE id = ?", [postId]);
   return true;
 };
 
@@ -166,7 +160,10 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  const comment = await Comment.findByPk(commentId);
+  const [[comment]] = await pool.query(
+    "SELECT userId FROM Comentaris WHERE id = ? AND postId = ?",
+    [commentId, postId]
+  );
   if (!comment) {
     return false;
   }
@@ -175,6 +172,6 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  await comment.destroy();
+  await pool.query("DELETE FROM Comentaris WHERE id = ?", [commentId]);
   return true;
 };
