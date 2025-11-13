@@ -167,7 +167,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in.",
             });
           try {
-            const newSession = await createSession(payload, ws.userId);
+            const newSession = await createSession(payload);
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
             broadcastSessionsUpdate();

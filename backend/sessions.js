@@ -1,8 +1,6 @@
+import sequelize from "./database/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
-import {
-  broadcastSessionsUpdate,
-  broadcastSessionUpdate,
-} from "./websocket.js";
+import { broadcastSessionUpdate } from "./websocket.js";
 import { findUserById } from "./users.js";
 import fs from "fs";
 import path from "path";
@@ -24,12 +22,7 @@ export const getAllSessions = () => {
   return sessions;
 };
 
-export const createSession = async (sessionData, creatorId) => {
-  const creator = await findUserById(creatorId);
-  if (!creator) {
-    throw new Error("Creator user not found");
-  }
-
+export const createSession = async (sessionData) => {
   const { name, type, duration, password, maxUsers } = sessionData;
   const allExercises = exercicisData.routine[type];
 
@@ -47,21 +40,13 @@ export const createSession = async (sessionData, creatorId) => {
 
   const newSession = {
     id: uuidv4(),
-    name: name || `Sessió de ${creator.username}`,
+    name: name || `Sessió sense nom`,
     type,
     duration,
     password,
     maxUsers,
     exercicis: exercisesWithSeries,
-    users: [
-      {
-        id: creator.id,
-        username: creator.username,
-        puntos: 0,
-        foto_perfil: creator.foto_perfil,
-        ready: false,
-      },
-    ],
+    users: [],
     state: {
       status: "WAITING",
       startTime: Date.now(),
@@ -162,6 +147,41 @@ export const updateUserScore = (sessionId, userId, score) => {
   return session;
 };
 
+export const saveFinishedSession = async (session) => {
+  try {
+    await sequelize.transaction(async (t) => {
+      await sequelize.query(
+        "INSERT INTO Sessions (id, nombre, fecha, tipo_ejercicio, duracion, password, max_usuarios) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        {
+          replacements: [
+            session.id,
+            session.name,
+            new Date(session.state.startTime),
+            session.type,
+            session.duration,
+            session.password,
+            session.maxUsers,
+          ],
+          transaction: t,
+        }
+      );
+
+      for (const user of session.users) {
+        const participaId = uuidv4();
+        await sequelize.query(
+          "INSERT INTO Participa (id, session_id, user_id, puntuacion) VALUES (?, ?, ?, ?)",
+          {
+            replacements: [participaId, session.id, user.id, user.puntos],
+            transaction: t,
+          }
+        );
+      }
+    });
+  } catch (error) {
+    console.error("Error saving finished session:", error);
+  }
+};
+
 export const nextExercise = (sessionId) => {
   const session = getSessionById(sessionId);
   if (!session) {
@@ -178,11 +198,13 @@ export const nextExercise = (sessionId) => {
   } else {
     // Last exercise finished, end session
     session.state.status = "FINISHED";
+    saveFinishedSession(session);
     if (timers[sessionId]) {
       // Stop the timer
       clearInterval(timers[sessionId]);
       delete timers[sessionId];
     }
+    deleteSession(sessionId);
   }
 
   return session;

@@ -50,38 +50,6 @@
         "gif": "/exercicis_gif/Squat.gif",
         "duration": 30,
         "reps": 10
-      },
-      {
-        "name": "Lunges",
-        "description": "Fa un pas endavant, baixa fins que tots dos genolls formin 90° i torna a la posició inicial.",
-        "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "gif": "/exercicis_gif/Lunges.gif",
-        "duration": 30,
-        "reps": 10
-      },
-      {
-        "name": "Jump Squats",
-        "description": "Realitza una gatzoneta i en pujar salta explosivament cap amunt, aterra suaument i repeteix.",
-        "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "gif": "/exercicis_gif/Jump-Squat.gif",
-        "duration": 30,
-        "reps": 10
-      },
-      {
-        "name": "Fire Hydrants",
-        "description": "A quatre grapes, aixeca una cama lateralment mantenint el genoll flexionat a 90 graus, com un gos en un hidrant.",
-        "keypoints_detected": ["malucs", "genolls", "esquena"],
-        "gif": "/exercicis_gif/Fire-Hydrant.gif",
-        "duration": 30,
-        "reps": 10
-      },
-      {
-        "name": "Glute Bridge",
-        "description": "Tombat boca amunt, eleva els malucs fins a formar una línia recta espatlles-genolls.",
-        "keypoints_detected": ["espatlles", "malucs", "genolls"],
-        "gif": "/exercicis_gif/Glute-Bridges.gif",
-        "duration": 30,
-        "reps": 10
       }
     ],
     "fullbody": [

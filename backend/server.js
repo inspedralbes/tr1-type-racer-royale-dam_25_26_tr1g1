@@ -6,8 +6,7 @@ import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import sequelize from "./database/sequelize.js";
-import "./models/index.js";
+import db from "./models/index.js";
 
 const envFile =
   process.env.NODE_ENV === "production"
@@ -184,7 +183,7 @@ app.post("/api/sessions", async (req, res) => {
     return res.status(400).json({ message: "Creator ID is required" });
   }
   try {
-    const newSession = await createSession(sessionData, creatorId);
+    const newSession = await createSession(sessionData);
     res.status(201).json(newSession);
   } catch (error) {
     res
@@ -384,7 +383,7 @@ app.delete("/api/posts/:postId/comments/:commentId", async (req, res) => {
 
 const startServer = async () => {
   try {
-    await sequelize.sync();
+    await db.sequelize.sync();
     console.log("Database synchronized");
 
     server.listen(PORT, () =>

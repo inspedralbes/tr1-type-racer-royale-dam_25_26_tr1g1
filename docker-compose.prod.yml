@@ -21,7 +21,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-secure_password}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secure_password}
     volumes:
-      - ./backend/database/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db-data-prod:/var/lib/mysql
 
   frontend:

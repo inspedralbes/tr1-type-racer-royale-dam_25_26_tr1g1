@@ -1,10 +1,10 @@
-import pool from "./database/db.js";
+import sequelize from "./database/sequelize.js";
 import { findUserByUsername } from "./users.js";
 import { v4 as uuidv4 } from "uuid";
 
 // 🔹 Obtener todos los posts
 export const getAllPosts = async () => {
-  const [posts] = await pool.query(
+  const [posts] = await sequelize.query(
     `SELECT
       p.id,
       p.content,
@@ -17,7 +17,7 @@ export const getAllPosts = async () => {
   );
 
   for (const post of posts) {
-    const [comments] = await pool.query(
+    const [comments] = await sequelize.query(
       `SELECT
         c.id,
         c.text,
@@ -28,7 +28,7 @@ export const getAllPosts = async () => {
       JOIN Usuaris u ON c.userId = u.id
       WHERE c.postId = ?
       ORDER BY c.createdAt ASC`,
-      [post.id]
+      { replacements: [post.id] }
     );
     post.comments = comments;
   }
@@ -44,12 +44,12 @@ export const createPost = async (username, content) => {
   }
 
   const newPostId = uuidv4();
-  await pool.query(
+  await sequelize.query(
     "INSERT INTO Posts (id, content, userId) VALUES (?, ?, ?)",
-    [newPostId, content, user.id]
+    { replacements: [newPostId, content, user.id] }
   );
 
-  const [[post]] = await pool.query(
+  const [[post]] = await sequelize.query(
     `SELECT
       p.id,
       p.content,
@@ -59,7 +59,7 @@ export const createPost = async (username, content) => {
     FROM Posts p
     JOIN Usuaris u ON p.userId = u.id
     WHERE p.id = ?`,
-    [newPostId]
+    { replacements: [newPostId] }
   );
 
   post.comments = [];
@@ -73,20 +73,20 @@ export const addComment = async (postId, username, text) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const [[post]] = await pool.query("SELECT id FROM Posts WHERE id = ?", [
-    postId,
-  ]);
+  const [[post]] = await sequelize.query("SELECT id FROM Posts WHERE id = ?", {
+    replacements: [postId],
+  });
   if (!post) {
     throw new Error("POST_NOT_FOUND");
   }
 
   const newCommentId = uuidv4();
-  await pool.query(
+  await sequelize.query(
     "INSERT INTO Comentaris (id, text, userId, postId) VALUES (?, ?, ?, ?)",
-    [newCommentId, text, user.id, postId]
+    { replacements: [newCommentId, text, user.id, postId] }
   );
 
-  const [[comment]] = await pool.query(
+  const [[comment]] = await sequelize.query(
     `SELECT
       c.id,
       c.text,
@@ -96,7 +96,7 @@ export const addComment = async (postId, username, text) => {
     FROM Comentaris c
     JOIN Usuaris u ON c.userId = u.id
     WHERE c.id = ?`,
-    [newCommentId]
+    { replacements: [newCommentId] }
   );
 
   return comment;
@@ -109,9 +109,9 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  const [[post]] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
-    postId,
-  ]);
+  const [[post]] = await sequelize.query("SELECT userId FROM Posts WHERE id = ?", {
+    replacements: [postId],
+  });
   if (!post) {
     return null;
   }
@@ -120,14 +120,13 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  await pool.query("UPDATE Posts SET content = ? WHERE id = ?", [
-    content,
-    postId,
-  ]);
+  await sequelize.query("UPDATE Posts SET content = ? WHERE id = ?", {
+    replacements: [content, postId],
+  });
 
-  const [[updatedPost]] = await pool.query("SELECT * FROM Posts WHERE id = ?", [
-    postId,
-  ]);
+  const [[updatedPost]] = await sequelize.query("SELECT * FROM Posts WHERE id = ?", {
+    replacements: [postId],
+  });
   return updatedPost;
 };
 
@@ -138,9 +137,9 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  const [[post]] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
-    postId,
-  ]);
+  const [[post]] = await sequelize.query("SELECT userId FROM Posts WHERE id = ?", {
+    replacements: [postId],
+  });
   if (!post) {
     return false;
   }
@@ -149,7 +148,9 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  await pool.query("DELETE FROM Posts WHERE id = ?", [postId]);
+  await sequelize.query("DELETE FROM Posts WHERE id = ?", {
+    replacements: [postId],
+  });
   return true;
 };
 
@@ -160,9 +161,9 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  const [[comment]] = await pool.query(
+  const [[comment]] = await sequelize.query(
     "SELECT userId FROM Comentaris WHERE id = ? AND postId = ?",
-    [commentId, postId]
+    { replacements: [commentId, postId] }
   );
   if (!comment) {
     return false;
@@ -172,6 +173,8 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  await pool.query("DELETE FROM Comentaris WHERE id = ?", [commentId]);
+  await sequelize.query("DELETE FROM Comentaris WHERE id = ?", {
+    replacements: [commentId],
+  });
   return true;
 };
