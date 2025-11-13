@@ -233,6 +233,7 @@ const addPost = async () => {
     }),
   });
   const data = await res.json();
+  console.log(data);
   posts.value.unshift({ ...data, showComments: false, showDropdown: false });
   newPost.value = "";
 };
