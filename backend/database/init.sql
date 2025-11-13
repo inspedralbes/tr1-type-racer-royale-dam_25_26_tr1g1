@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS Sessions (
     CONSTRAINT fk_creador FOREIGN KEY (creador_id) REFERENCES Usuaris(id) ON DELETE CASCADE
 );
 
--- Crear tabla Participa
 CREATE TABLE IF NOT EXISTS Participa (
     id CHAR(36) BINARY PRIMARY KEY,
     session_id CHAR(36) BINARY NOT NULL,
