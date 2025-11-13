@@ -221,13 +221,13 @@
         <div class="mt-6 flex justify-end space-x-4">
           <button
             @click="isLogoutDialogOpen = false"
-            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
           >
             Cancel·lar
           </button>
           <button
             @click="handleLogout"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
           >
             Confirmar
           </button>
@@ -306,3 +306,4 @@ const handleLogout = () => {
 </script>
 
 <style scoped></style>
+
