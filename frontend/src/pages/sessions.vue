@@ -82,7 +82,7 @@
             <!-- Create Button -->
             <button
               @click="openCreateModal"
-              class="flex w-full transform items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-3 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 md:w-auto"
+              class="flex w-full transform items-center justify-center gap-2 rounded-full bg-blue-500 px-6 py-3 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105 md:w-auto"
             >
               <span class="mdi mdi-plus-circle"></span>
               <span>Crear Sessió</span>
@@ -104,19 +104,10 @@
             <i class="mdi mdi-close"></i>
           </button>
           <div>
-            <template v-if="selectionStep">
-              <SelectRoutine
-                @selected="onRoutineSelected"
-                @cancel="closeCreateModal"
-              />
-            </template>
-            <template v-else>
-              <FormCrearSessio
-                :initialType="selectedRoutine"
-                @session-created="onSessionCreated"
-                @cancel="backToSelection"
-              />
-            </template>
+            <FormSessio
+              @session-created="onSessionCreated"
+              @cancel="closeCreateModal"
+            />
           </div>
         </div>
       </div>
@@ -158,8 +149,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
-import FormCrearSessio from "@/components/Forms/FormCrearSessio.vue";
-import SelectRoutine from "@/components/session/SelectRoutine.vue";
+import FormSessio from "@/components/Forms/FormSessio.vue";
 import ListSessions from "@/components/ListSessions.vue";
 import NavBar from "@/components/NavBar.vue";
 import { useWebSocketStore } from "@/stores/websocket";
@@ -167,8 +157,6 @@ import { useWebSocketStore } from "@/stores/websocket";
 const websocketStore = useWebSocketStore();
 
 const showForm = ref(false);
-const selectionStep = ref(true); // true: show selector first
-const selectedRoutine = ref("fullbody");
 
 // --- Search, Filter, and Pagination State ---
 const searchQuery = ref("");
@@ -215,28 +203,14 @@ const paginatedSessions = computed(() => {
 // --- Methods ---
 const onSessionCreated = () => {
   showForm.value = false;
-  selectionStep.value = true;
-  // No need to force reload, computed properties will update automatically
 };
 
 const openCreateModal = () => {
-  selectedRoutine.value = "fullbody";
-  selectionStep.value = true;
   showForm.value = true;
-};
-
-const onRoutineSelected = (routine) => {
-  selectedRoutine.value = routine;
-  selectionStep.value = false;
-};
-
-const backToSelection = () => {
-  selectionStep.value = true;
 };
 
 const closeCreateModal = () => {
   showForm.value = false;
-  selectionStep.value = true;
 };
 
 const nextPage = () => {

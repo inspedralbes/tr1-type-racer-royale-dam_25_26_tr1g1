@@ -2,16 +2,14 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
     <div class="container mx-auto p-4 pb-20">
-      <div class="max-w-4xl mx-auto">
-        <!-- Banner Area -->
+      <div v-if="userData" class="max-w-2xl mx-auto">
+        <!-- Profile Header -->
         <div
-          v-if="userData"
-          class="relative h-48 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-lg"
+          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm text-center"
         >
-          <!-- Profile Picture -->
-          <div class="absolute -bottom-12 left-4 md:-bottom-16 md:left-6">
+          <div class="flex justify-center mb-4">
             <div
-              class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-4 border-gray-900"
+              class="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-500"
             >
               <img
                 :src="
@@ -23,100 +21,77 @@
               />
             </div>
           </div>
+          <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
+          <p class="text-md text-gray-400">
+            Nivell: {{ Math.floor(userData.nivel) }}
+          </p>
+          <div
+            class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs mx-auto"
+          >
+            <div
+              class="bg-blue-500 h-2.5 rounded-full"
+              :style="{ width: (userData.nivel % 1) * 100 + '%' }"
+            ></div>
+          </div>
+          <!-- Action Buttons -->
+          <div class="mt-6 flex justify-center gap-4">
+            <button
+              v-if="isProfileComplete"
+              @click="openEditDialog"
+              class="border border-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              Editar perfil
+            </button>
+            <button
+              v-else
+              @click="openEditDialog"
+              class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              Completa el teu perfil
+            </button>
+            <button
+              @click="openLogoutDialog"
+              class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              Tancar Sessió
+            </button>
+          </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- User Biography -->
         <div
-          v-if="userData"
-          class="flex flex-col sm:flex-row justify-end p-4 border-b border-gray-700 mt-12 md:mt-16"
+          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
         >
-          <button
-            v-if="isProfileComplete"
-            @click="openEditDialog"
-            class="border border-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
-          >
-            Editar perfil
-          </button>
-          <button
-            v-else
-            @click="openEditDialog"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full mb-2 sm:mb-0 sm:mr-2"
-          >
-            Completa el teu perfil
-          </button>
-          <button
-            @click="openLogoutDialog"
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
-          >
-            Tancar Sessió
-          </button>
+          <h3 class="text-xl font-bold mb-4">Biografia</h3>
+          <p class="text-gray-300">
+            {{ userData.biografia || "No has afegit cap biografia." }}
+          </p>
         </div>
 
-        <div v-if="userData" class="p-6">
-          <!-- User Info -->
-          <div class="mb-6">
-            <h2 class="text-2xl sm:text-3xl font-bold">
-              {{ userData.username }}
-            </h2>
-            <p class="text-md text-gray-400">
-              Nivell: {{ Math.floor(userData.nivel) }}
-            </p>
-            <div class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs">
-              <div
-                class="bg-blue-500 h-2.5 rounded-full"
-                :style="{ width: (userData.nivel % 1) * 100 + '%' }"
-              ></div>
-            </div>
-          </div>
-
-          <!-- User Biography -->
-          <div class="mb-6">
-            <p class="text-gray-300">
-              {{ userData.biografia || "No has afegit cap biografia." }}
-            </p>
-          </div>
-
-          <!-- User Details -->
-          <div class="flex flex-wrap gap-x-6 gap-y-2 text-gray-400">
+        <!-- User Details -->
+        <div
+          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
+        >
+          <h3 class="text-xl font-bold mb-4">Detalls</h3>
+          <div class="space-y-4">
             <div class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
-                ></path>
-                <path
-                  d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
-                ></path>
-              </svg>
-              <span>{{ userData.email }}</span>
+              <i class="mdi mdi-email-outline text-gray-400 w-6"></i>
+              <span class="ml-3">{{ userData.email }}</span>
             </div>
             <div class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-              <span
+              <i class="mdi mdi-calendar-clock text-gray-400 w-6"></i>
+              <span class="ml-3"
                 >Membre des de
                 {{ new Date(userData.date_created).toLocaleDateString() }}</span
               >
             </div>
             <div v-if="userData.pesoActual" class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                ></path>
-              </svg>
-              <span>{{ userData.pesoActual }} kg</span>
+              <i class="mdi mdi-weight-kilogram text-gray-400 w-6"></i>
+              <span class="ml-3">{{ userData.pesoActual }} kg</span>
             </div>
             <div v-if="userData.altura" class="flex items-center">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                ></path>
-              </svg>
-              <span>{{ userData.altura }} cm</span>
+              <i class="mdi mdi-human-male-height text-gray-400 w-6"></i>
+              <span class="ml-3">{{ userData.altura }} cm</span>
             </div>
           </div>
         </div>

@@ -16,22 +16,17 @@
       @countdown-finished="handleCountdownFinished"
     />
 
-    <!-- Floating Emojis -->
-    <FloatingEmoji
-      v-for="reaction in activeReactions"
-      :key="reaction.id"
-      :emoji="reaction.emoji"
-      :id="reaction.id"
-      @animation-end="onReactionAnimationEnd"
-    />
-
-    <!-- Floating Numbers -->
-    <FloatingNumber
-      v-for="num in floatingNumbers"
-      :key="num.id"
-      :id="num.id"
-      :value="num.value"
-      @animation-end="onFloatingNumberAnimationEnd"
+    <!-- Floating Items -->
+    <FloatingItem
+      v-for="item in floatingItems"
+      :key="item.id"
+      :id="item.id"
+      :content="item.content"
+      :size="item.size"
+      :color="item.color"
+      :duration="item.duration"
+      :translateY="item.translateY"
+      @animation-end="onFloatingItemAnimationEnd"
     />
 
     <!-- PoseSkeleton -->
@@ -93,8 +88,8 @@
       <SessionBottomBar
         :cameras="cameras"
         @leave-session="leaveSession"
-        @camera-selected="handleCameraSelected"
         @send-reaction="sendReaction"
+        @camera-selected="handleCameraSelected"
         @toggle-info="toggleInfo"
       />
 
@@ -115,16 +110,15 @@ import { useAppStore } from "@/stores/app";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useRoute, useRouter } from "vue-router";
 import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
-import FloatingEmoji from "@/components/FloatingEmoji.vue";
-import FloatingNumber from "@/components/FloatingNumber.vue";
+import FloatingItem from "@/components/FloatingItem.vue";
 import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CountdownTimer from "@/components/session/CountdownTimer.vue";
 import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
+import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
 
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
-import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
-import SessionProgressInfo from "@/components/session/SessionProgressInfo.vue";
+import SessionProgressInfo from "@/components/session/ProgressInfo.vue";
 import ReadyCard from "@/components/session/ReadyCard.vue";
 
 const appStore = useAppStore();
@@ -245,13 +239,20 @@ const sortedParticipants = computed(() => {
   return [...currentSession.value.users].sort((a, b) => b.puntos - a.puntos);
 });
 
-// Emoji Reactions
-const activeReactions = ref([]);
+const floatingItems = ref([]);
+
 watch(
   () => websocketStore.latestReaction,
   (newReaction) => {
     if (newReaction) {
-      activeReactions.value.push(newReaction);
+      floatingItems.value.push({
+        id: newReaction.id,
+        content: newReaction.emoji,
+        size: "3rem",
+        color: "white",
+        duration: "2s",
+        translateY: "-150px",
+      });
     }
   }
 );
@@ -263,16 +264,8 @@ const sendReaction = (emoji) => {
   });
 };
 
-const onReactionAnimationEnd = (id) => {
-  activeReactions.value = activeReactions.value.filter(
-    (reaction) => reaction.id !== id
-  );
-};
-
-// Floating Numbers
-const floatingNumbers = ref([]);
-const onFloatingNumberAnimationEnd = (id) => {
-  floatingNumbers.value = floatingNumbers.value.filter((num) => num.id !== id);
+const onFloatingItemAnimationEnd = (id) => {
+  floatingItems.value = floatingItems.value.filter((item) => item.id !== id);
 };
 
 const currentUserScore = computed(() => {
@@ -285,9 +278,13 @@ const currentUserScore = computed(() => {
 watch(currentUserScore, (newScore, oldScore) => {
   if (newScore > oldScore) {
     const scoreDiff = newScore - oldScore;
-    floatingNumbers.value.push({
+    floatingItems.value.push({
       id: Date.now(),
-      value: `+${scoreDiff}`,
+      content: `+${scoreDiff}`,
+      size: "2.5rem",
+      color: "#ffc107",
+      duration: "1.5s",
+      translateY: "-120px",
     });
   }
 });
@@ -307,6 +304,8 @@ watch(
     }
   }
 );
+
+
 </script>
 
 <style scoped>

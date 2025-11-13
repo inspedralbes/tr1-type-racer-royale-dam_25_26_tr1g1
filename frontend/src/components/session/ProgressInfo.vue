@@ -9,14 +9,19 @@
     </div>
 
     <div class="mt-2 sm:mt-4 text-base sm:text-lg">
-      <p>Repeticiones: <span class="font-bold">{{ repetitions }}</span></p>
-      <p>Serie: <span class="font-bold">{{ currentSerie }} / {{ totalSeries }}</span></p>
+      <p>
+        Repeticiones: <span class="font-bold">{{ repetitions }}</span>
+      </p>
+      <p>
+        Serie:
+        <span class="font-bold">{{ currentSerie }} / {{ totalSeries }}</span>
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
   timer: {
@@ -48,6 +53,8 @@ const props = defineProps({
 const formattedTime = computed(() => {
   const minutes = Math.floor(props.timer / 60);
   const seconds = props.timer % 60;
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
 });
 </script>

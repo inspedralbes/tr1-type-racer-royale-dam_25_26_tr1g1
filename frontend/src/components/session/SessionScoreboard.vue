@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 max-h-full overflow-y-auto"
+    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 text-center"
   >
     <h2
       class="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 flex items-center justify-center"
