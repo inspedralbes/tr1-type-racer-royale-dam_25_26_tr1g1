@@ -4,7 +4,7 @@
     <div class="container mx-auto p-4 pb-20">
       <!-- Controls -->
       <div
-        class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
+        class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm relative z-30"
       >
         <div
           class="flex flex-col items-center justify-between gap-4 md:flex-row"
@@ -28,7 +28,7 @@
             class="flex w-full shrink-0 items-center justify-end gap-4 md:w-auto"
           >
             <!-- Filter Button and Dropdown -->
-            <div class="relative" ref="filterMenu">
+            <div class="relative z-40" ref="filterMenu">
               <button
                 @click="toggleFilterMenu"
                 class="flex items-center gap-2 rounded-full bg-gray-700/50 px-4 py-3 font-semibold text-white transition hover:bg-gray-700"
@@ -42,7 +42,7 @@
               </button>
               <div
                 v-if="showFilterMenu"
-                class="absolute left-0 right-0 mx-auto top-full z-20 mt-2 max-w-xs origin-top-right rounded-lg bg-gray-700 py-1 shadow-lg ring-1 ring-black ring-opacity-5 md:right-0 md:left-auto md:mx-0 md:w-48"
+                class="absolute left-0 right-0 mx-auto top-full z-50 mt-2 max-w-xs origin-top-right rounded-lg bg-gray-700 py-1 shadow-xl ring-1 ring-black ring-opacity-5 md:right-0 md:left-auto md:mx-0 md:w-48"
               >
                 <ul>
                   <li
@@ -113,7 +113,9 @@
       </div>
 
       <!-- Session List -->
-      <ListSessions :sessions="paginatedSessions" />
+      <div class="relative z-10">
+        <ListSessions :sessions="paginatedSessions" />
+      </div>
 
       <!-- Pagination Controls -->
       <div
@@ -158,26 +160,25 @@ const websocketStore = useWebSocketStore();
 
 const showForm = ref(false);
 
-// --- Search, Filter, and Pagination State ---
+
 const searchQuery = ref("");
-const selectedStatus = ref("ALL"); // 'ALL', 'WAITING', 'IN_PROGRESS'
+const selectedStatus = ref("ALL"); 
 const currentPage = ref(1);
 const itemsPerPage = 5;
 const showFilterMenu = ref(false);
 const filterMenu = ref(null);
 
-// --- Computed Properties ---
 const allSessions = computed(() => websocketStore.sessions);
 
 const filteredSessions = computed(() => {
   let sessions = allSessions.value;
 
-  // Filter by status
+
   if (selectedStatus.value !== "ALL") {
     sessions = sessions.filter((s) => s.state.status === selectedStatus.value);
   }
 
-  // Filter by search query
+  
   if (searchQuery.value) {
     const lowerQuery = searchQuery.value.toLowerCase();
     sessions = sessions.filter(
@@ -200,7 +201,7 @@ const paginatedSessions = computed(() => {
   return filteredSessions.value.slice(start, end);
 });
 
-// --- Methods ---
+
 const onSessionCreated = () => {
   showForm.value = false;
 };
