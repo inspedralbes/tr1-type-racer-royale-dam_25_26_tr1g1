@@ -108,6 +108,15 @@
         <SessionScoreboard :sorted-participants="remainingParticipants" />
       </div>
 
+      <!-- Level Progression -->
+      <div v-if="currentUserProgression" class="w-full max-w-md mt-8">
+        <LevelProgressBar
+          :old-level="currentUserProgression.oldLevel"
+          :new-level="currentUserProgression.newLevel"
+          :points="currentUserProgression.points"
+        />
+      </div>
+
       <button
         @click="$emit('exit-session')"
         class="mt-12 px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full shadow-lg transition-transform transform hover:scale-105"
@@ -122,6 +131,8 @@
 <script setup>
 import { computed } from "vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
+import LevelProgressBar from "@/components/session/LevelProgressBar.vue";
+import { useAppStore } from "@/stores/app";
 
 const props = defineProps({
   sortedParticipants: {
@@ -132,10 +143,20 @@ const props = defineProps({
 
 defineEmits(["exit-session"]);
 
+const appStore = useAppStore();
+const currentUserId = computed(() => appStore.user?.id);
+
 const firstPlace = computed(() => props.sortedParticipants[0]);
 const secondPlace = computed(() => props.sortedParticipants[1]);
 const thirdPlace = computed(() => props.sortedParticipants[2]);
 const remainingParticipants = computed(() => props.sortedParticipants.slice(3));
+
+const currentUserProgression = computed(() => {
+  const currentUser = props.sortedParticipants.find(
+    (p) => p.id === currentUserId.value
+  );
+  return currentUser?.levelProgression;
+});
 </script>
 
 <style scoped>

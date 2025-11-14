@@ -2,6 +2,7 @@ import sequelize from "./database/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
 import { broadcastSessionUpdate } from "./websocket.js";
 import { findUserById } from "./users.js";
+import User from "./models/user.model.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -184,14 +185,32 @@ export const saveFinishedSession = async (session) => {
             transaction: t,
           }
         );
-      }
+
+                  // Level up logic
+                  const userRecord = await User.findByPk(user.id, { transaction: t });
+                  if (userRecord) {
+                    const oldLevel = userRecord.nivel;
+                    const currentLevelInt = Math.floor(oldLevel);
+                    const xpNeededForNextLevel = (currentLevelInt + 1) * 1000;
+                    const levelIncrease = user.puntos / xpNeededForNextLevel;
+                    const newLevel = oldLevel + levelIncrease;
+                    userRecord.nivel = newLevel;
+                    await userRecord.save({ transaction: t });
+        
+                    // Attach progression data for the frontend
+                    user.levelProgression = {
+                      oldLevel,
+                      newLevel,
+                      points: user.puntos,
+                    };
+                  }      }
     });
   } catch (error) {
     console.error("Error saving finished session:", error);
   }
 };
 
-export const nextExercise = (sessionId) => {
+export const nextExercise = async (sessionId) => {
   const session = getSessionById(sessionId);
   if (!session) {
     return null;
@@ -204,10 +223,14 @@ export const nextExercise = (sessionId) => {
     session.state.isResting = false; // Reset resting state
     const newExercise = session.exercicis[session.state.currentExercise];
     session.state.timer = newExercise.duration; // Set timer for new exercise
+    broadcastSessionUpdate(session);
   } else {
     // Last exercise finished, end session
     session.state.status = "FINISHED";
-    saveFinishedSession(session);
+    await saveFinishedSession(session);
+
+    broadcastSessionUpdate(session); // Broadcast final state with level progression
+
     if (timers[sessionId]) {
       // Stop the timer
       clearInterval(timers[sessionId]);
