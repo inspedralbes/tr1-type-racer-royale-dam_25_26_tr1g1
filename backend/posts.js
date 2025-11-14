@@ -1,39 +1,50 @@
-import sequelize from "./database/sequelize.js";
+import db from "./models/index.js";
 import { findUserByUsername } from "./users.js";
-import { v4 as uuidv4 } from "uuid";
 
 // 🔹 Obtener todos los posts
 export const getAllPosts = async () => {
-  const [posts] = await sequelize.query(
-    `SELECT
-      p.id,
-      p.content,
-      p.createdAt as timestamp,
-      u.username,
-      u.foto_perfil
-    FROM Posts p
-    JOIN Usuaris u ON p.userId = u.id
-    ORDER BY p.createdAt DESC`
-  );
+  const posts = await db.Post.findAll({
+    attributes: ["id", "content", ["createdAt", "timestamp"]],
+    include: [
+      {
+        model: db.User,
+        as: "user",
+        attributes: ["username", "foto_perfil"],
+      },
+      {
+        model: db.Comment,
+        as: "comments",
+        attributes: ["id", "text", ["createdAt", "timestamp"]],
+        include: {
+          model: db.User,
+          as: "user",
+          attributes: ["username", "foto_perfil"],
+        },
+      },
+    ],
+    order: [
+      ["createdAt", "DESC"],
+      [{ model: db.Comment, as: "comments" }, "createdAt", "ASC"],
+    ],
+  });
 
-  for (const post of posts) {
-    const [comments] = await sequelize.query(
-      `SELECT
-        c.id,
-        c.text,
-        c.createdAt as timestamp,
-        u.username,
-        u.foto_perfil
-      FROM Comentaris c
-      JOIN Usuaris u ON c.userId = u.id
-      WHERE c.postId = ?
-      ORDER BY c.createdAt ASC`,
-      { replacements: [post.id] }
-    );
-    post.comments = comments;
-  }
-
-  return posts;
+  return posts.map((post) => {
+    const plainPost = post.get({ plain: true });
+    return {
+      id: plainPost.id,
+      content: plainPost.content,
+      timestamp: plainPost.timestamp,
+      username: plainPost.user.username,
+      foto_perfil: plainPost.user.foto_perfil,
+      comments: (plainPost.comments || []).map((comment) => ({
+        id: comment.id,
+        text: comment.text,
+        timestamp: comment.timestamp,
+        username: comment.user.username,
+        foto_perfil: comment.user.foto_perfil,
+      })),
+    };
+  });
 };
 
 // 🔹 Crear un nuevo post
@@ -43,27 +54,27 @@ export const createPost = async (username, content) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const newPostId = uuidv4();
-  await sequelize.query(
-    "INSERT INTO Posts (id, content, userId) VALUES (?, ?, ?)",
-    { replacements: [newPostId, content, user.id] }
-  );
+  const newPost = await db.Post.create({
+    content: content,
+    userId: user.id,
+  });
 
-  const [[post]] = await sequelize.query(
-    `SELECT
-      p.id,
-      p.content,
-      p.createdAt as timestamp,
-      u.username,
-      u.foto_perfil
-    FROM Posts p
-    JOIN Usuaris u ON p.userId = u.id
-    WHERE p.id = ?`,
-    { replacements: [newPostId] }
-  );
+  const postWithUser = await db.Post.findByPk(newPost.id, {
+    include: {
+      model: db.User,
+      as: "user",
+      attributes: ["username", "foto_perfil"],
+    },
+  });
 
-  post.comments = [];
-  return post;
+  return {
+    id: postWithUser.id,
+    content: postWithUser.content,
+    timestamp: postWithUser.createdAt,
+    username: postWithUser.user.username,
+    foto_perfil: postWithUser.user.foto_perfil,
+    comments: [],
+  };
 };
 
 // 🔹 Añadir comentario
@@ -73,33 +84,32 @@ export const addComment = async (postId, username, text) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const [[post]] = await sequelize.query("SELECT id FROM Posts WHERE id = ?", {
-    replacements: [postId],
-  });
+  const post = await db.Post.findByPk(postId);
   if (!post) {
     throw new Error("POST_NOT_FOUND");
   }
 
-  const newCommentId = uuidv4();
-  await sequelize.query(
-    "INSERT INTO Comentaris (id, text, userId, postId) VALUES (?, ?, ?, ?)",
-    { replacements: [newCommentId, text, user.id, postId] }
-  );
+  const newComment = await db.Comment.create({
+    text: text,
+    userId: user.id,
+    postId: postId,
+  });
 
-  const [[comment]] = await sequelize.query(
-    `SELECT
-      c.id,
-      c.text,
-      c.createdAt as timestamp,
-      u.username,
-      u.foto_perfil
-    FROM Comentaris c
-    JOIN Usuaris u ON c.userId = u.id
-    WHERE c.id = ?`,
-    { replacements: [newCommentId] }
-  );
+  const commentWithUser = await db.Comment.findByPk(newComment.id, {
+    include: {
+      model: db.User,
+      as: "user",
+      attributes: ["username", "foto_perfil"],
+    },
+  });
 
-  return comment;
+  return {
+    id: commentWithUser.id,
+    text: commentWithUser.text,
+    timestamp: commentWithUser.createdAt,
+    username: commentWithUser.user.username,
+    foto_perfil: commentWithUser.user.foto_perfil,
+  };
 };
 
 // 🔹 Actualizar un post
@@ -109,9 +119,7 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  const [[post]] = await sequelize.query("SELECT userId FROM Posts WHERE id = ?", {
-    replacements: [postId],
-  });
+  const post = await db.Post.findByPk(postId);
   if (!post) {
     return null;
   }
@@ -120,14 +128,10 @@ export const updatePost = async (postId, username, content) => {
     return null;
   }
 
-  await sequelize.query("UPDATE Posts SET content = ? WHERE id = ?", {
-    replacements: [content, postId],
-  });
+  post.content = content;
+  await post.save();
 
-  const [[updatedPost]] = await sequelize.query("SELECT * FROM Posts WHERE id = ?", {
-    replacements: [postId],
-  });
-  return updatedPost;
+  return post;
 };
 
 // 🔹 Eliminar post (solo autor)
@@ -137,9 +141,7 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  const [[post]] = await sequelize.query("SELECT userId FROM Posts WHERE id = ?", {
-    replacements: [postId],
-  });
+  const post = await db.Post.findByPk(postId);
   if (!post) {
     return false;
   }
@@ -148,9 +150,7 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  await sequelize.query("DELETE FROM Posts WHERE id = ?", {
-    replacements: [postId],
-  });
+  await post.destroy();
   return true;
 };
 
@@ -161,10 +161,10 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  const [[comment]] = await sequelize.query(
-    "SELECT userId FROM Comentaris WHERE id = ? AND postId = ?",
-    { replacements: [commentId, postId] }
-  );
+  const comment = await db.Comment.findOne({
+    where: { id: commentId, postId: postId },
+  });
+
   if (!comment) {
     return false;
   }
@@ -173,8 +173,6 @@ export const deleteComment = async (postId, commentId, username) => {
     return false;
   }
 
-  await sequelize.query("DELETE FROM Comentaris WHERE id = ?", {
-    replacements: [commentId],
-  });
+  await comment.destroy();
   return true;
 };

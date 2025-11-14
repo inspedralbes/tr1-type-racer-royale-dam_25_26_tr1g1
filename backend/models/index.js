@@ -7,12 +7,12 @@ import Participation from "./participation.model.js";
 
 // Associations
 User.hasMany(Post, { foreignKey: "userId" });
-Post.belongsTo(User, { foreignKey: "userId" });
+Post.belongsTo(User, { foreignKey: "userId", as: "user" });
 
 User.hasMany(Comment, { foreignKey: "userId" });
-Comment.belongsTo(User, { foreignKey: "userId" });
+Comment.belongsTo(User, { foreignKey: "userId", as: "user" });
 
-Post.hasMany(Comment, { foreignKey: "postId" });
+Post.hasMany(Comment, { foreignKey: "postId", as: "comments" });
 Comment.belongsTo(Post, { foreignKey: "postId" });
 
 User.belongsToMany(Session, { through: Participation, foreignKey: "userId" });

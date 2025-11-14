@@ -310,6 +310,7 @@ app.post("/api/posts", async (req, res) => {
     const newPost = await createPost(username, content);
     res.status(201).json(newPost);
   } catch (error) {
+    console.error(error);
     if (error.message === "USER_NOT_FOUND") {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
