@@ -13,9 +13,11 @@ const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
 let sessions = [];
 let timers = {};
+let emptySessionTimers = {};
 
 export const getSessions = () => sessions;
 export const getTimers = () => timers;
+export const getEmptySessionTimers = () => emptySessionTimers;
 
 export const getSessionById = (id) => {
   return sessions.find((session) => session.id === id);
@@ -120,7 +122,7 @@ export const saveFinishedSession = async (session) => {
             transaction: t,
           }
         );
-        await updateUserLevel({ id: user.userId, puntos: user.puntos }, t);
+        await updateUserLevel(user, t);
       }
     });
   } catch (error) {

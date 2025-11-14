@@ -4,10 +4,11 @@
       class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-90 backdrop-blur-lg p-4"
     >
       <div class="text-center mb-8">
-        <h1 class="text-5xl sm:text-7xl font-extrabold text-white drop-shadow-lg">
+        <h1
+          class="text-5xl sm:text-7xl mb-6 font-extrabold text-white drop-shadow-lg"
+        >
           Sessió Finalitzada!
         </h1>
-        <p class="text-xl text-gray-300 mt-2">Aquí teniu la classificació final.</p>
       </div>
 
       <!-- Podium Section -->
@@ -101,10 +102,7 @@
       </div>
 
       <!-- Remaining Participants Scoreboard -->
-      <div
-        v-if="remainingParticipants.length > 0"
-        class="w-full max-w-md mt-4"
-      >
+      <div v-if="remainingParticipants.length > 0" class="w-full max-w-md mt-4">
         <SessionScoreboard :sorted-participants="remainingParticipants" />
       </div>
 

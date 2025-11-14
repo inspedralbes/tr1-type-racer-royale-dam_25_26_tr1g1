@@ -39,6 +39,13 @@ export const useWebSocketStore = defineStore("websocket", {
               break;
 
             case "SESSION_UPDATE":
+              const index = this.sessions.findIndex(
+                (s) => s.id === data.payload.id
+              );
+              if (index !== -1) {
+                this.sessions[index] = data.payload;
+              }
+
               if (
                 appStore.currentSession &&
                 appStore.currentSession.id === data.payload.id
@@ -59,6 +66,8 @@ export const useWebSocketStore = defineStore("websocket", {
                   if (userToUpdate) {
                     userToUpdate.nivel =
                       currentUserInSession.levelProgression.newLevel;
+                    // Explicitly trigger reactivity if needed by replacing the object
+                    usersStore.users[appStore.userId] = { ...userToUpdate };
                   }
                 }
               }

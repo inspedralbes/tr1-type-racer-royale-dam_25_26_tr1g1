@@ -1,28 +1,36 @@
 <template>
   <div class="w-full max-w-md p-4 rounded-lg shadow-lg bg-gray-800 text-white">
-    <div class="text-center mb-4">
-      <p class="text-lg font-semibold">Progrés de Nivell</p>
-      <p v-if="points > 0" class="text-sm text-gray-400">Has guanyat {{ points }} punts!</p>
-    </div>
-
     <div class="flex items-center justify-between mb-2">
-      <span class="font-bold text-xl text-yellow-400">Nivell {{ displayLevel }}</span>
-      <span v-if="leveledUp" class="text-lg font-bold text-green-400 animate-pulse">NIVELL PUJAT!</span>
-      <span class="font-bold text-xl text-yellow-400">Nivell {{ displayLevel + 1 }}</span>
+      <span class="font-bold text-xl text-yellow-400"
+        >Nivell {{ displayLevel }}</span
+      >
+      <span
+        v-if="leveledUp"
+        class="text-lg font-bold text-green-400 animate-pulse"
+        >NIVELL PUJAT!</span
+      >
+      <span class="font-bold text-xl text-yellow-400"
+        >Nivell {{ displayLevel + 1 }}</span
+      >
     </div>
 
-    <div class="relative w-full h-6 bg-gray-700 rounded-full overflow-hidden border-2 border-gray-600">
+    <div
+      class="relative w-full h-6 bg-gray-700 rounded-full overflow-hidden border-2 border-gray-600"
+    >
       <div
         class="absolute top-0 left-0 h-full bg-yellow-500 rounded-full transition-all duration-1000 ease-out"
         :style="{ width: progressWidth + '%' }"
       ></div>
-      <span class="absolute inset-0 flex items-center justify-center text-sm font-bold text-black mix-blend-lighten">{{ Math.round(progressWidth) }}%</span>
+      <span
+        class="absolute inset-0 flex items-center justify-center text-sm font-bold text-black mix-blend-lighten"
+        >{{ Math.round(progressWidth) }}%</span
+      >
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from "vue";
 
 const props = defineProps({
   oldLevel: {
@@ -75,9 +83,12 @@ onMounted(() => {
   animateProgressBar();
 });
 
-watch(() => props.newLevel, () => {
-  animateProgressBar();
-});
+watch(
+  () => props.newLevel,
+  () => {
+    animateProgressBar();
+  }
+);
 </script>
 
 <style scoped>
@@ -85,7 +96,8 @@ watch(() => props.newLevel, () => {
   animation: pulse 1.5s infinite;
 }
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }

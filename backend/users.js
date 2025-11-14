@@ -63,11 +63,12 @@ export const updateUser = async (id, updateData) => {
 };
 
 export const updateUserLevel = async (user, transaction) => {
-  const userRecord = await User.findByPk(user.id, { transaction });
+  const userRecord = await User.findByPk(user.userId, { transaction });
   if (userRecord) {
     const oldLevel = userRecord.nivel;
     const currentLevelInt = Math.floor(oldLevel);
-    const xpNeededForNextLevel = (currentLevelInt + 1) * GAME_SETTINGS.XP_PER_LEVEL_MULTIPLIER;
+    const xpNeededForNextLevel =
+      (currentLevelInt + 1) * GAME_SETTINGS.XP_PER_LEVEL_MULTIPLIER;
     const levelIncrease = user.puntos / xpNeededForNextLevel;
     const newLevel = oldLevel + levelIncrease;
     userRecord.nivel = newLevel;
@@ -80,4 +81,4 @@ export const updateUserLevel = async (user, transaction) => {
       points: user.puntos,
     };
   }
-}
+};
