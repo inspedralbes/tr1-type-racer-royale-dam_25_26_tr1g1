@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
     <div class="container mx-auto p-4 pb-20">
-      <div v-if="userData" class="max-w-2xl mx-auto">
+      <div v-if="loggedInUser" class="max-w-2xl mx-auto">
         <!-- Profile Header -->
         <div
           class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm text-center"
@@ -13,7 +13,7 @@
             >
               <img
                 :src="
-                  userData.foto_perfil ||
+                  loggedInUser.foto_perfil ||
                   'https://cdn-icons-png.flaticon.com/512/847/847969.png'
                 "
                 alt="Avatar"
@@ -21,16 +21,16 @@
               />
             </div>
           </div>
-          <h2 class="text-3xl font-bold">{{ userData.username }}</h2>
+          <h2 class="text-3xl font-bold">{{ loggedInUser.username }}</h2>
           <p class="text-md text-gray-400">
-            Nivell: {{ Math.floor(userData.nivel) }}
+            Nivell: {{ Math.floor(loggedInUser.nivel || 0) }}
           </p>
           <div
             class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs mx-auto"
           >
             <div
               class="bg-blue-500 h-2.5 rounded-full"
-              :style="{ width: (userData.nivel % 1) * 100 + '%' }"
+              :style="{ width: ((loggedInUser.nivel || 0) % 1) * 100 + '%' }"
             ></div>
           </div>
           <!-- Action Buttons -->
@@ -64,7 +64,7 @@
         >
           <h3 class="text-xl font-bold mb-4">Biografia</h3>
           <p class="text-gray-300">
-            {{ userData.biografia || "No has afegit cap biografia." }}
+            {{ loggedInUser.biografia || "No has afegit cap biografia." }}
           </p>
         </div>
 
@@ -76,22 +76,22 @@
           <div class="space-y-4">
             <div class="flex items-center">
               <i class="mdi mdi-email-outline text-gray-400 w-6"></i>
-              <span class="ml-3">{{ userData.email }}</span>
+              <span class="ml-3">{{ loggedInUser.email }}</span>
             </div>
             <div class="flex items-center">
               <i class="mdi mdi-calendar-clock text-gray-400 w-6"></i>
-              <span class="ml-3"
-                >Membre des de
-                {{ new Date(userData.date_created).toLocaleDateString() }}</span
+              <span class="ml-3">
+                Membre des de
+                {{ new Date(loggedInUser.date_created).toLocaleDateString() }}</span
               >
             </div>
-            <div v-if="userData.pesoActual" class="flex items-center">
+            <div v-if="loggedInUser.pesoActual" class="flex items-center">
               <i class="mdi mdi-weight-kilogram text-gray-400 w-6"></i>
-              <span class="ml-3">{{ userData.pesoActual }} kg</span>
+              <span class="ml-3">{{ loggedInUser.pesoActual }} kg</span>
             </div>
-            <div v-if="userData.altura" class="flex items-center">
+            <div v-if="loggedInUser.altura" class="flex items-center">
               <i class="mdi mdi-human-male-height text-gray-400 w-6"></i>
-              <span class="ml-3">{{ userData.altura }} cm</span>
+              <span class="ml-3">{{ loggedInUser.altura }} cm</span>
             </div>
           </div>
         </div>
@@ -240,12 +240,14 @@
 import { computed, onMounted, ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAppStore } from "@/stores/app";
+import { useUsersStore } from "@/stores/users";
 import NavBar from "@/components/NavBar.vue";
 
 const router = useRouter();
 const appStore = useAppStore();
+const usersStore = useUsersStore();
 
-const userData = computed(() => appStore.user);
+const loggedInUser = computed(() => usersStore.getUser(appStore.userId));
 const isEditDialogOpen = ref(false);
 const isLogoutDialogOpen = ref(false);
 const editableUserData = reactive({
@@ -258,28 +260,30 @@ const editableUserData = reactive({
 });
 
 const isProfileComplete = computed(() => {
-  if (!userData.value) return false;
+  if (!loggedInUser.value) return false;
   return (
-    userData.value.pesoActual > 0 &&
-    userData.value.altura > 0 &&
-    !!userData.value.biografia
+    loggedInUser.value.pesoActual > 0 &&
+    loggedInUser.value.altura > 0 &&
+    !!loggedInUser.value.biografia
   );
 });
 
-onMounted(() => {
+onMounted(async () => {
   if (!appStore.isAuthenticated) {
     router.push("/");
+  } else if (appStore.userId) {
+    await usersStore.fetchUser(appStore.userId);
   }
 });
 
 const openEditDialog = () => {
-  if (userData.value) {
-    editableUserData.username = userData.value.username;
-    editableUserData.email = userData.value.email;
-    editableUserData.pesoActual = userData.value.pesoActual;
-    editableUserData.altura = userData.value.altura;
-    editableUserData.biografia = userData.value.biografia;
-    editableUserData.foto_perfil = userData.value.foto_perfil;
+  if (loggedInUser.value) {
+    editableUserData.username = loggedInUser.value.username;
+    editableUserData.email = loggedInUser.value.email;
+    editableUserData.pesoActual = loggedInUser.value.pesoActual;
+    editableUserData.altura = loggedInUser.value.altura;
+    editableUserData.biografia = loggedInUser.value.biografia;
+    editableUserData.foto_perfil = loggedInUser.value.foto_perfil;
   }
   isEditDialogOpen.value = true;
 };
@@ -306,4 +310,5 @@ const handleLogout = () => {
 </script>
 
 <style scoped></style>
+
 

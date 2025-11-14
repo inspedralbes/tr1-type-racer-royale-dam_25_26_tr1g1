@@ -13,7 +13,7 @@
     <ul class="space-y-2">
       <li
         v-for="(participant, index) in sortedParticipants"
-        :key="participant.id"
+        :key="participant.userId"
         class="flex items-center py-1 px-2 rounded-md"
         :class="{
           'bg-gray-700': index % 2 === 0,

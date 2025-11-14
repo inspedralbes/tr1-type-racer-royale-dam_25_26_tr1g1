@@ -170,19 +170,23 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import { ref, defineEmits, computed } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 import { useAppStore } from "@/stores/app";
+import { useUsersStore } from "@/stores/users";
 
 const emit = defineEmits(["session-created", "cancel"]);
 
 const websocketStore = useWebSocketStore();
 const appStore = useAppStore();
+const usersStore = useUsersStore();
+
+const loggedInUser = computed(() => usersStore.getUser(appStore.userId));
 
 const selectedRoutine = ref(null);
 
 const session = ref({
-  name: `Sessió de ${appStore.user?.username || "convidat"}`,
+  name: "",
   type: null,
   duration: "Ràpida",
   password: "",
@@ -192,6 +196,9 @@ const session = ref({
 const handleRoutineSelected = () => {
   if (selectedRoutine.value) {
     session.value.type = selectedRoutine.value;
+    session.value.name = `Sessió de ${
+      loggedInUser.value?.username || "convidat"
+    }`;
   }
 };
 

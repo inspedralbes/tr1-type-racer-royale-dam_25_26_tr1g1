@@ -16,14 +16,12 @@ export const joinSession = async (sessionId, userId, password) => {
     throw new Error("Joining user not found");
   }
 
-  if (session.users.some((user) => user.id === userId)) return session;
+  if (session.users.some((user) => user.userId === userId)) return session;
   if (session.users.length >= session.maxUsers) throw new Error("Session full");
 
   session.users.push({
-    id: joiningUser.id,
-    username: joiningUser.username,
+    userId: joiningUser.id,
     puntos: 0,
-    foto_perfil: joiningUser.foto_perfil,
     ready: false,
   });
 
@@ -39,7 +37,7 @@ export const leaveSession = async (sessionId, userId) => {
   if (!session) return null;
 
   const initialUserCount = session.users.length;
-  session.users = session.users.filter((user) => user.id !== userId);
+  session.users = session.users.filter((user) => user.userId !== userId);
 
   if (session.users.length < initialUserCount) {
     if (session.users.length === 0) {
@@ -62,7 +60,7 @@ export const updateUserScore = (sessionId, userId, score) => {
     return null;
   }
 
-  const userInSession = session.users.find((user) => user.id === userId);
+  const userInSession = session.users.find((user) => user.userId === userId);
   if (!userInSession) {
     return null;
   }
@@ -78,7 +76,7 @@ export const setReady = (sessionId, userId) => {
     return { session: null, allReady: false };
   }
 
-  const userInSession = session.users.find((user) => user.id === userId);
+  const userInSession = session.users.find((user) => user.userId === userId);
   if (userInSession) {
     userInSession.ready = true;
   }

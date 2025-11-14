@@ -112,7 +112,7 @@ export const saveFinishedSession = async (session) => {
             replacements: [
               participaId,
               session.id,
-              user.id,
+              user.userId,
               user.puntos,
               new Date(),
               new Date(),
@@ -120,7 +120,7 @@ export const saveFinishedSession = async (session) => {
             transaction: t,
           }
         );
-        await updateUserLevel(user, t);
+        await updateUserLevel({ id: user.userId, puntos: user.puntos }, t);
       }
     });
   } catch (error) {

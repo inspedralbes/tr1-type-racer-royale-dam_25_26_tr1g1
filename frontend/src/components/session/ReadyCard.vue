@@ -7,7 +7,7 @@
       <ul class="space-y-3">
         <li
           v-for="user in users"
-          :key="user.id"
+          :key="user.userId"
           class="flex items-center justify-between bg-gray-700 bg-opacity-50 p-3 rounded-lg"
         >
           <div class="flex items-center">
@@ -59,10 +59,10 @@ const props = defineProps({
 defineEmits(["ready"]);
 
 const appStore = useAppStore();
-const userId = appStore.user.id;
+const userId = appStore.userId;
 
 const isReady = computed(() => {
-  const currentUser = props.users.find((user) => user.id === userId);
+  const currentUser = props.users.find((user) => user.userId === userId);
   return currentUser ? currentUser.ready : false;
 });
 </script>

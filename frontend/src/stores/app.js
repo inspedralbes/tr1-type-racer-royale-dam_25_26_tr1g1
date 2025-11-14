@@ -1,14 +1,15 @@
 import { defineStore } from "pinia";
 import { useWebSocketStore } from "./websocket";
+import { useUsersStore } from "./users"; // Import the new users store
 
 export const useAppStore = defineStore("app", {
   state: () => {
     const isAuthenticated =
       JSON.parse(localStorage.getItem("isAuthenticated")) || false;
-    const user = JSON.parse(localStorage.getItem("user")) || null;
+    const userId = JSON.parse(localStorage.getItem("userId")) || null; // Store only userId
     return {
       isAuthenticated,
-      user,
+      userId, // Use userId instead of user object
       currentSession: null,
       notification: { message: null, type: null },
     };
@@ -16,8 +17,8 @@ export const useAppStore = defineStore("app", {
   actions: {
     listenForStorageChanges() {
       window.addEventListener("storage", (event) => {
-        if (event.key === "user") {
-          this.user = event.newValue ? JSON.parse(event.newValue) : null;
+        if (event.key === "userId") {
+          this.userId = event.newValue ? JSON.parse(event.newValue) : null;
         }
         if (event.key === "isAuthenticated") {
           this.isAuthenticated = event.newValue
@@ -40,7 +41,11 @@ export const useAppStore = defineStore("app", {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
 
-        await this.setLoggedIn(data.user);
+        // Store the full user object in the users store cache
+        const usersStore = useUsersStore();
+        usersStore.users[data.user.id] = data.user;
+
+        await this.setLoggedIn(data.user.id); // Pass only the user ID
 
         this.setNotification("Inicio de sesión correcto", "success");
         return true;
@@ -91,26 +96,27 @@ export const useAppStore = defineStore("app", {
       }
     },
 
-    async setLoggedIn(user) {
+    async setLoggedIn(userId) {
       const websocketStore = useWebSocketStore();
       if (websocketStore.isConnected) {
-        websocketStore.registerWebSocket(user.id);
+        websocketStore.registerWebSocket(userId);
       } else {
         await websocketStore.connect(
           import.meta.env.VITE_WS_URL + "/ws",
-          user.id
+          userId
         );
       }
       this.isAuthenticated = true;
-      this.user = user;
+      this.userId = userId; // Store only userId
       localStorage.setItem("isAuthenticated", JSON.stringify(true));
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("userId", JSON.stringify(userId)); // Store only userId
     },
 
     async updateUser(userData) {
       try {
+        const usersStore = useUsersStore();
         // Determine user id from currently logged in user or from payload
-        const userId = this.user?.id || userData.id;
+        const userId = this.userId || userData.id;
         if (!userId) throw new Error("User ID no disponible per actualitzar");
 
         // Ensure numeric fields are numbers (v-model may provide strings)
@@ -136,8 +142,11 @@ export const useAppStore = defineStore("app", {
         if (!res.ok)
           throw new Error(updatedUser.message || "Error actualitzant usuari");
 
-        this.user = updatedUser;
-        localStorage.setItem("user", JSON.stringify(this.user));
+        // Update the user in the users store cache
+        usersStore.users[userId] = updatedUser;
+        // No need to update this.userId as it remains the same
+        localStorage.setItem("userId", JSON.stringify(this.userId)); // Ensure localStorage is updated with the latest userId
+
         this.setNotification("Perfil actualitzat correctament", "success");
       } catch (err) {
         this.setNotification(err.message, "error");
@@ -146,10 +155,10 @@ export const useAppStore = defineStore("app", {
 
     clearUser() {
       this.isAuthenticated = false;
-      this.user = null;
+      this.userId = null; // Clear userId
       this.notification = { message: null, type: null };
       localStorage.removeItem("isAuthenticated");
-      localStorage.removeItem("user");
+      localStorage.removeItem("userId"); // Remove userId from localStorage
     },
 
     setLoggedOut() {

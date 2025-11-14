@@ -49,7 +49,7 @@ export const broadcastSessionUpdate = (session) => {
     payload: session,
   });
 
-  const userIdsInSession = new Set(session.users.map((u) => u.id));
+  const userIdsInSession = new Set(session.users.map((u) => u.userId));
 
   wssInstance.clients.forEach((client) => {
     if (
@@ -72,7 +72,7 @@ export const broadcastEmojiReaction = (session, emoji, userId) => {
     payload: { emoji, userId },
   });
 
-  const userIdsInSession = new Set(session.users.map((u) => u.id));
+  const userIdsInSession = new Set(session.users.map((u) => u.userId));
 
   wssInstance.clients.forEach((client) => {
     if (

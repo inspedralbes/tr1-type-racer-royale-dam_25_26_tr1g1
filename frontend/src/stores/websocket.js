@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import router from "@/router"; // Importa el router
 import { useAppStore } from "./app";
+import { useUsersStore } from "./users";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
@@ -30,6 +31,7 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
           const appStore = useAppStore();
+          const usersStore = useUsersStore();
 
           switch (data.type) {
             case "SESSIONS_UPDATE":
@@ -47,15 +49,17 @@ export const useWebSocketStore = defineStore("websocket", {
               // Check if session is finished and update user's level in appStore
               if (data.payload.status === "FINISHED") {
                 const currentUserInSession = data.payload.users.find(
-                  (user) => user.id === appStore.user?.id
+                  (user) => user.userId === appStore.userId
                 );
                 if (
                   currentUserInSession &&
                   currentUserInSession.levelProgression
                 ) {
-                  appStore.user.nivel =
-                    currentUserInSession.levelProgression.newLevel;
-                  localStorage.setItem("user", JSON.stringify(appStore.user));
+                  const userToUpdate = usersStore.getUser(appStore.userId);
+                  if (userToUpdate) {
+                    userToUpdate.nivel =
+                      currentUserInSession.levelProgression.newLevel;
+                  }
                 }
               }
               break;

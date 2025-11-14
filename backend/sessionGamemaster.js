@@ -35,7 +35,7 @@ export const updateRepetitions = (sessionId, userId) => {
     return null;
   }
 
-  const userInSession = session.users.find((user) => user.id === userId);
+  const userInSession = session.users.find((user) => user.userId === userId);
   if (!userInSession) {
     return null;
   }

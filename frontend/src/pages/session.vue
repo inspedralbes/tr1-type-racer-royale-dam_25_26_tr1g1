@@ -98,7 +98,7 @@
         v-if="currentSession && currentSession.state.status === 'WAITING'"
         class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
       >
-        <ReadyCard :users="currentSession.users" @ready="setReady" />
+        <ReadyCard :users="participantsWithDetails" @ready="setReady" />
       </div>
     </div>
   </div>
@@ -108,6 +108,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useAppStore } from "@/stores/app";
 import { useWebSocketStore } from "@/stores/websocket";
+import { useUsersStore } from "@/stores/users";
 import { useRoute, useRouter } from "vue-router";
 import PoseSkeleton from "@/components/Ai/PoseSkeleton.vue";
 import FloatingItem from "@/components/FloatingItem.vue";
@@ -123,6 +124,7 @@ import ReadyCard from "@/components/session/ReadyCard.vue";
 
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
+const usersStore = useUsersStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -198,7 +200,7 @@ onMounted(() => {
 
     if (currentUser && sessionUsers) {
       const isUserInSession = sessionUsers.some(
-        (user) => user.id === currentUser.id
+        (user) => user.userId === currentUser.id
       );
       if (isUserInSession) {
         shouldJoin = false;
@@ -234,10 +236,34 @@ const toggleInfo = () => {
   showInfoExercices.value = !showInfoExercices.value;
 };
 
-const sortedParticipants = computed(() => {
+const participantsWithDetails = computed(() => {
   if (!currentSession.value || !currentSession.value.users) return [];
-  return [...currentSession.value.users].sort((a, b) => b.puntos - a.puntos);
+  return currentSession.value.users.map((user) => {
+    const details = usersStore.getUser(user.userId);
+    return {
+      ...user,
+      username: details?.username || "...",
+      foto_perfil: details?.foto_perfil || "",
+    };
+  });
 });
+
+const sortedParticipants = computed(() => {
+  return [...participantsWithDetails.value].sort((a, b) => b.puntos - a.puntos);
+});
+
+watch(
+  () => currentSession.value?.users,
+  (newUsers) => {
+    if (newUsers) {
+      newUsers.forEach((user) => {
+        usersStore.fetchUser(user.userId);
+      });
+    }
+  },
+  { deep: true, immediate: true }
+);
+
 
 const floatingItems = ref([]);
 
@@ -270,7 +296,7 @@ const onFloatingItemAnimationEnd = (id) => {
 
 const currentUserScore = computed(() => {
   const user = currentSession.value?.users.find(
-    (u) => u.id === appStore.user.id
+    (u) => u.userId === appStore.userId
   );
   return user ? user.puntos : 0;
 });
