@@ -1,4 +1,5 @@
 import User from "./models/user.model.js";
+import { GAME_SETTINGS } from "./constants.js";
 
 export const findUserById = async (id) => {
   const user = await User.findByPk(id);
@@ -60,3 +61,23 @@ export const updateUser = async (id, updateData) => {
   const updatedUser = await user.update(updateData);
   return updatedUser;
 };
+
+export const updateUserLevel = async (user, transaction) => {
+  const userRecord = await User.findByPk(user.id, { transaction });
+  if (userRecord) {
+    const oldLevel = userRecord.nivel;
+    const currentLevelInt = Math.floor(oldLevel);
+    const xpNeededForNextLevel = (currentLevelInt + 1) * GAME_SETTINGS.XP_PER_LEVEL_MULTIPLIER;
+    const levelIncrease = user.puntos / xpNeededForNextLevel;
+    const newLevel = oldLevel + levelIncrease;
+    userRecord.nivel = newLevel;
+    await userRecord.save({ transaction });
+
+    // Attach progression data for the frontend
+    user.levelProgression = {
+      oldLevel,
+      newLevel,
+      points: user.puntos,
+    };
+  }
+}

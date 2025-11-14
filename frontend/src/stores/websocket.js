@@ -43,6 +43,21 @@ export const useWebSocketStore = defineStore("websocket", {
               ) {
                 appStore.setCurrentSession(data.payload);
               }
+
+              // Check if session is finished and update user's level in appStore
+              if (data.payload.status === "FINISHED") {
+                const currentUserInSession = data.payload.users.find(
+                  (user) => user.id === appStore.user?.id
+                );
+                if (
+                  currentUserInSession &&
+                  currentUserInSession.levelProgression
+                ) {
+                  appStore.user.nivel =
+                    currentUserInSession.levelProgression.newLevel;
+                  localStorage.setItem("user", JSON.stringify(appStore.user));
+                }
+              }
               break;
 
             case "CREATE_SUCCESS":

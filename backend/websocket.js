@@ -1,16 +1,19 @@
 import {
   getAllSessions,
   createSession,
-  joinSession,
   deleteSession,
+  getSessionById,
+} from "./sessionManager.js";
+import {
+  joinSession,
   leaveSession,
-  updateUserScore,
+  setReady,
+} from "./sessionUserService.js";
+import {
   nextExercise,
   updateRepetitions,
-  setReady,
   startSession,
-  getSessionById,
-} from "./sessions.js";
+} from "./sessionGamemaster.js";
 import { loginUser, registerUser } from "./users.js";
 import { MESSAGE_TYPES } from "./constants.js";
 
@@ -135,7 +138,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
               userId: user.id,
               username: user.username,
             });
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.REGISTER_FAIL, {
               message: error.message,
             });
@@ -153,7 +157,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             console.log(
               `User ${user.username} (${user.id}) logged in via WebSocket.`
             );
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.LOGIN_FAIL, {
               message: error.message,
             });
@@ -171,7 +176,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
             broadcastSessionsUpdate();
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
@@ -194,7 +200,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
               broadcastSessionUpdate(session);
               broadcastSessionsUpdate();
             }
-          } catch (error) {
+          }
+          catch (error) {
             if (error.message === "SESSION_NOT_FOUND") {
               sendMessage(ws, MESSAGE_TYPES.ERROR, {
                 message: "La sessió no existeix o ha sigut eliminada.",
@@ -241,7 +248,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
               ws.currentSession,
               ws.userId
             );
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
@@ -256,7 +264,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             if (updatedSession) {
               broadcastSessionUpdate(updatedSession);
             }
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
@@ -266,7 +275,10 @@ export const setupWebsocketHandlers = (ws, wss) => {
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
               message: "User not logged in or not in a session.",
             });
-          setReady(ws.currentSession, ws.userId);
+          const { allReady } = setReady(ws.currentSession, ws.userId);
+          if (allReady) {
+            startSession(ws.currentSession);
+          }
           break;
 
         case MESSAGE_TYPES.SEND_EMOJI_REACTION:
@@ -279,7 +291,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             if (session) {
               broadcastEmojiReaction(session, payload.emoji, ws.userId);
             }
-          } catch (error) {
+          }
+          catch (error) {
             sendMessage(ws, MESSAGE_TYPES.ERROR, { message: error.message });
           }
           break;
@@ -290,7 +303,8 @@ export const setupWebsocketHandlers = (ws, wss) => {
             message: `Unknown message type: ${type}`,
           });
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.error("Error processing message:", err);
       sendMessage(ws, MESSAGE_TYPES.ERROR, {
         message: "Invalid message format",
@@ -311,3 +325,4 @@ export const setupWebsocketHandlers = (ws, wss) => {
     }
   });
 };
+

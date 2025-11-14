@@ -22,10 +22,13 @@ import {
   getSessionById,
   updateSession,
   deleteSession,
+} from "./sessionManager.js";
+import {
   joinSession,
   leaveSession,
   setReady,
-} from "./sessions.js";
+} from "./sessionUserService.js";
+import { startSession } from "./sessionGamemaster.js";
 import {
   getAllPosts,
   createPost,
@@ -275,7 +278,10 @@ app.post("/api/sessions/:id/ready", async (req, res) => {
     return res.status(400).json({ message: "User ID is required" });
   }
   try {
-    setReady(req.params.id, userId);
+    const { allReady } = setReady(req.params.id, userId);
+    if (allReady) {
+      startSession(req.params.id);
+    }
     res.status(200).json({ message: "User ready status updated" });
   } catch (error) {
     res
