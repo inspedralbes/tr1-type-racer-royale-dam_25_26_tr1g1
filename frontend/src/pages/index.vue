@@ -21,28 +21,27 @@
 
           <!-- Right Column: Form Card -->
           <div class="w-full max-w-md mx-auto">
+            <!-- Notification -->
+            <div
+              v-if="appStore.notification.message"
+              :class="[
+                'p-4 mb-4 rounded-lg shadow-md text-white',
+                appStore.notification.type === 'success'
+                  ? 'bg-green-500/80'
+                  : 'bg-red-500/80',
+              ]"
+            >
+              {{ appStore.notification.message }}
+              <button
+                @click="appStore.clearNotification()"
+                class="float-right font-bold"
+              >
+                &times;
+              </button>
+            </div>
             <div
               class="rounded-xl border border-gray-700 bg-gray-800/50 p-8 shadow-2xl backdrop-blur-lg"
             >
-              <!-- Notification -->
-              <div
-                v-if="appStore.notification.message"
-                :class="[
-                  'p-4 mb-4 rounded-lg shadow-md text-white',
-                  appStore.notification.type === 'success'
-                    ? 'bg-green-500/80'
-                    : 'bg-red-500/80',
-                ]"
-              >
-                {{ appStore.notification.message }}
-                <button
-                  @click="appStore.clearNotification()"
-                  class="float-right font-bold"
-                >
-                  &times;
-                </button>
-              </div>
-
               <!-- Form Components -->
               <div v-if="tab === 'login'">
                 <FormLogin />

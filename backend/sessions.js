@@ -151,7 +151,7 @@ export const saveFinishedSession = async (session) => {
   try {
     await sequelize.transaction(async (t) => {
       await sequelize.query(
-        "INSERT INTO Sessions (id, nombre, fecha, tipo_ejercicio, duracion, password, max_usuarios) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO Sessions (id, nombre, fecha, tipo_ejercicio, duracion, password, max_usuarios, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         {
           replacements: [
             session.id,
@@ -161,6 +161,8 @@ export const saveFinishedSession = async (session) => {
             session.duration,
             session.password,
             session.maxUsers,
+            new Date(),
+            new Date(),
           ],
           transaction: t,
         }
@@ -169,9 +171,16 @@ export const saveFinishedSession = async (session) => {
       for (const user of session.users) {
         const participaId = uuidv4();
         await sequelize.query(
-          "INSERT INTO Participa (id, session_id, user_id, puntuacion) VALUES (?, ?, ?, ?)",
+          "INSERT INTO Participas (id, sessionId, userId, puntuacion, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)",
           {
-            replacements: [participaId, session.id, user.id, user.puntos],
+            replacements: [
+              participaId,
+              session.id,
+              user.id,
+              user.puntos,
+              new Date(),
+              new Date(),
+            ],
             transaction: t,
           }
         );
