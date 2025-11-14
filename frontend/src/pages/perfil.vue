@@ -138,28 +138,30 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label for="peso" class="block text-sm font-medium text-gray-400"
-                >Pes (kg)</label
+                >Pes (kg): {{ editableUserData.pesoActual || 0 }} kg</label
               >
               <input
-                type="number"
+                type="range"
                 id="peso"
+                min="0"
+                max="200"
                 v-model="editableUserData.pesoActual"
-                required
-                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
               />
             </div>
             <div>
               <label
                 for="altura"
                 class="block text-sm font-medium text-gray-400"
-                >Altura (cm)</label
+                >Alçada (cm): {{ editableUserData.altura || 0 }} cm</label
               >
               <input
-                type="number"
+                type="range"
                 id="altura"
+                min="0"
+                max="250"
                 v-model="editableUserData.altura"
-                required
-                class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
               />
             </div>
           </div>
