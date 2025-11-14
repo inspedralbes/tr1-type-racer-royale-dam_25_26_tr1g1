@@ -40,7 +40,7 @@ export const registerUser = async (
 export const loginUser = async (username, password) => {
   const user = await findUserByUsername(username);
 
-  if (!user || user.password !== password) {
+  if (!user || !(await user.validPassword(password))) {
     throw new Error("INVALID_CREDENTIALS");
   }
 
