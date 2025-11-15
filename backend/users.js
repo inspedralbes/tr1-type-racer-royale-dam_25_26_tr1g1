@@ -1,5 +1,6 @@
 import User from "./models/user.model.js";
 import { GAME_SETTINGS } from "./constants.js";
+import { createSystemPost } from "./posts.js";
 
 export const findUserById = async (id) => {
   const user = await User.findByPk(id);
@@ -73,6 +74,13 @@ export const updateUserLevel = async (user, transaction) => {
     const newLevel = oldLevel + levelIncrease;
     userRecord.nivel = newLevel;
     await userRecord.save({ transaction });
+
+    if (Math.floor(newLevel) > Math.floor(oldLevel)) {
+      const postContent = `🚀 ${
+        user.username
+      } ha pujat al nivell ${Math.floor(newLevel)}! Felicitats! 🎉`;
+      await createSystemPost(postContent);
+    }
 
     // Attach progression data for the frontend
     user.levelProgression = {

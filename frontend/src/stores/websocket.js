@@ -1,14 +1,12 @@
 import { defineStore } from "pinia";
-import router from "@/router"; // Importa el router
+import router from "@/router";
 import { useAppStore } from "./app";
-import { useUsersStore } from "./users";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
     socket: null,
     isConnected: false,
     sessions: [],
-    latestReaction: null,
   }),
 
   actions: {
@@ -31,7 +29,6 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
           const appStore = useAppStore();
-          const usersStore = useUsersStore();
 
           switch (data.type) {
             case "SESSIONS_UPDATE":
@@ -52,25 +49,6 @@ export const useWebSocketStore = defineStore("websocket", {
               ) {
                 appStore.setCurrentSession(data.payload);
               }
-
-              // Check if session is finished and update user's level in appStore
-              if (data.payload.status === "FINISHED") {
-                const currentUserInSession = data.payload.users.find(
-                  (user) => user.userId === appStore.userId
-                );
-                if (
-                  currentUserInSession &&
-                  currentUserInSession.levelProgression
-                ) {
-                  const userToUpdate = usersStore.getUser(appStore.userId);
-                  if (userToUpdate) {
-                    userToUpdate.nivel =
-                      currentUserInSession.levelProgression.newLevel;
-                    // Explicitly trigger reactivity if needed by replacing the object
-                    usersStore.users[appStore.userId] = { ...userToUpdate };
-                  }
-                }
-              }
               break;
 
             case "CREATE_SUCCESS":
@@ -88,7 +66,20 @@ export const useWebSocketStore = defineStore("websocket", {
               break;
 
             case "EMOJI_REACTION":
-              this.latestReaction = { ...data.payload, id: Date.now() };
+              const sessionIndex = this.sessions.findIndex(
+                (s) => s.id === data.payload.sessionId
+              );
+              if (sessionIndex !== -1) {
+                const session = this.sessions[sessionIndex];
+                session.latestReaction = { ...data.payload, id: Date.now() };
+
+                if (
+                  appStore.currentSession &&
+                  appStore.currentSession.id === session.id
+                ) {
+                  appStore.setCurrentSession(session);
+                }
+              }
               break;
 
             case "ERROR":

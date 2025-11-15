@@ -1,5 +1,11 @@
-import { getSessionById, getTimers, saveFinishedSession, deleteSession } from "./sessionManager.js";
+import {
+  getSessionById,
+  getTimers,
+  saveFinishedSession,
+  deleteSession,
+} from "./sessionManager.js";
 import { broadcastSessionUpdate } from "./websocket.js";
+import { createSystemPost } from "./posts.js";
 import { GAME_SETTINGS } from "./constants.js";
 
 export const nextExercise = async (sessionId) => {
@@ -20,6 +26,21 @@ export const nextExercise = async (sessionId) => {
     // Last exercise finished, end session
     session.state.status = "FINISHED";
     await saveFinishedSession(session);
+
+    const sortedUsers = [...session.users].sort((a, b) => b.puntos - a.puntos);
+    const top3 = sortedUsers.slice(0, 3);
+
+    let postContent = `La sessió '${session.name}' ha finalitzat!`;
+    if (top3.length > 0) {
+      postContent += `\n\n🏆 Podium 🏆`;
+      top3.forEach((user, index) => {
+        postContent += `\n${index + 1}. ${user.username} - ${
+          user.puntos
+        } punts`;
+      });
+    }
+
+    await createSystemPost(postContent);
 
     broadcastSessionUpdate(session); // Broadcast final state with level progression
 

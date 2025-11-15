@@ -28,6 +28,7 @@
           v-for="post in posts"
           :key="post.id"
           class="p-4 border-b border-gray-700"
+          :class="{ 'bg-sky-500/30': post.authorType === 'system' }"
         >
           <div class="flex">
             <img
@@ -48,7 +49,9 @@
                 </div>
                 <!-- Dropdown for edit/delete -->
                 <div
-                  v-if="appStore.user && appStore.user.username === post.username"
+                  v-if="
+                    currentUser && currentUser.username === post.username
+                  "
                   class="relative"
                 >
                   <button
@@ -192,11 +195,14 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import NavBar from "@/components/NavBar.vue";
 import { useAppStore } from "@/stores/app";
+import { useUsersStore } from "@/stores/users";
 
 const appStore = useAppStore();
+const usersStore = useUsersStore();
+
 const newPost = ref("");
 const posts = ref([]);
 const commentText = ref({});
@@ -206,6 +212,23 @@ const isDeleteDialogOpen = ref(false);
 const postToDeleteId = ref(null);
 
 const API = import.meta.env.VITE_API_URL || "";
+
+const currentUser = computed(() => {
+  if (appStore.userId) {
+    return usersStore.getUser(appStore.userId);
+  }
+  return null;
+});
+
+watch(
+  () => appStore.userId,
+  (newUserId) => {
+    if (newUserId && !usersStore.users[newUserId]) {
+      usersStore.fetchUser(newUserId);
+    }
+  },
+  { immediate: true }
+);
 
 const fetchPosts = async () => {
   try {
@@ -222,13 +245,13 @@ const fetchPosts = async () => {
 };
 
 const addPost = async () => {
-  if (!newPost.value.trim() || !appStore.user) return;
+  if (!newPost.value.trim() || !currentUser.value) return;
 
   const res = await fetch(`${API}/api/posts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: appStore.user.username,
+      username: currentUser.value.username,
       content: newPost.value,
     }),
   });
@@ -240,13 +263,13 @@ const addPost = async () => {
 
 const addComment = async (postId) => {
   const text = commentText.value[postId];
-  if (!text?.trim() || !appStore.user) return;
+  if (!text?.trim() || !currentUser.value) return;
 
   const res = await fetch(`${API}/api/posts/${postId}/comment`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: appStore.user.username,
+      username: currentUser.value.username,
       text,
     }),
   });
@@ -267,12 +290,12 @@ const openDeleteDialog = (postId) => {
 };
 
 const confirmDelete = async () => {
-  if (!appStore.user) return;
+  if (!currentUser.value) return;
 
   const res = await fetch(`${API}/api/posts/${postToDeleteId.value}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: appStore.user.username }),
+    body: JSON.stringify({ username: currentUser.value.username }),
   });
 
   if (res.ok) {
@@ -294,13 +317,13 @@ const cancelEditing = () => {
 };
 
 const updatePost = async (postId) => {
-  if (!editedContent.value.trim() || !appStore.user) return;
+  if (!editedContent.value.trim() || !currentUser.value) return;
 
   const res = await fetch(`${API}/api/posts/${postId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      username: appStore.user.username,
+      username: currentUser.value.username,
       content: editedContent.value,
     }),
   });

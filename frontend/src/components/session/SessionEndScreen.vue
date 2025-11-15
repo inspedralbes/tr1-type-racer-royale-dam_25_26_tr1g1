@@ -127,10 +127,11 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import LevelProgressBar from "@/components/session/LevelProgressBar.vue";
 import { useAppStore } from "@/stores/app";
+import { useUsersStore } from "@/stores/users";
 
 const props = defineProps({
   sortedParticipants: {
@@ -142,7 +143,8 @@ const props = defineProps({
 defineEmits(["exit-session"]);
 
 const appStore = useAppStore();
-const currentUserId = computed(() => appStore.user?.id);
+const usersStore = useUsersStore();
+const currentUserId = computed(() => appStore.userId);
 
 const firstPlace = computed(() => props.sortedParticipants[0]);
 const secondPlace = computed(() => props.sortedParticipants[1]);
@@ -151,9 +153,15 @@ const remainingParticipants = computed(() => props.sortedParticipants.slice(3));
 
 const currentUserProgression = computed(() => {
   const currentUser = props.sortedParticipants.find(
-    (p) => p.id === currentUserId.value
+    (p) => p.userId === currentUserId.value
   );
   return currentUser?.levelProgression;
+});
+
+onMounted(() => {
+  if (appStore.userId) {
+    usersStore.fetchUser(appStore.userId, true);
+  }
 });
 </script>
 

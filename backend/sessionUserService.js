@@ -32,6 +32,7 @@ export const joinSession = async (sessionId, userId, password) => {
 
   session.users.push({
     userId: joiningUser.id,
+    username: joiningUser.username,
     puntos: 0,
     ready: false,
   });

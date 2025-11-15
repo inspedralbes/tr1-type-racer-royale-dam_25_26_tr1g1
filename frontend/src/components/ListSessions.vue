@@ -114,15 +114,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useWebSocketStore } from "@/stores/websocket";
 
-defineProps({
-  sessions: {
-    type: Array,
-    required: true,
-  },
-});
+const websocketStore = useWebSocketStore();
+const sessions = computed(() => websocketStore.sessions);
 
 // En un futuro ya se verá si se usa...
 const getBackgroundImage = (type) => {
@@ -137,8 +133,6 @@ const getBackgroundImage = (type) => {
   }
   return "";
 };
-
-const websocketStore = useWebSocketStore();
 
 const showPasswordDialog = ref(false);
 const passwordInput = ref("");

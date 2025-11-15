@@ -4,12 +4,13 @@ import { findUserByUsername } from "./users.js";
 // 🔹 Obtener todos los posts
 export const getAllPosts = async () => {
   const posts = await db.Post.findAll({
-    attributes: ["id", "content", ["createdAt", "timestamp"]],
+    attributes: ["id", "content", ["createdAt", "timestamp"], "authorType"],
     include: [
       {
         model: db.User,
         as: "user",
         attributes: ["username", "foto_perfil"],
+        required: false,
       },
       {
         model: db.Comment,
@@ -34,8 +35,9 @@ export const getAllPosts = async () => {
       id: plainPost.id,
       content: plainPost.content,
       timestamp: plainPost.timestamp,
-      username: plainPost.user.username,
-      foto_perfil: plainPost.user.foto_perfil,
+      authorType: plainPost.authorType,
+      username: plainPost.user ? plainPost.user.username : "Muvvers",
+      foto_perfil: plainPost.user ? plainPost.user.foto_perfil : `https://robohash.org/Muvvers.png?bgset=bg1`,
       comments: (plainPost.comments || []).map((comment) => ({
         id: comment.id,
         text: comment.text,
@@ -57,6 +59,7 @@ export const createPost = async (username, content) => {
   const newPost = await db.Post.create({
     content: content,
     userId: user.id,
+    authorType: "user",
   });
 
   const postWithUser = await db.Post.findByPk(newPost.id, {
@@ -71,8 +74,28 @@ export const createPost = async (username, content) => {
     id: postWithUser.id,
     content: postWithUser.content,
     timestamp: postWithUser.createdAt,
+    authorType: postWithUser.authorType,
     username: postWithUser.user.username,
     foto_perfil: postWithUser.user.foto_perfil,
+    comments: [],
+  };
+};
+
+// 🔹 Crear un nuevo post del sistema
+export const createSystemPost = async (content) => {
+  const newPost = await db.Post.create({
+    content: content,
+    authorType: 'system',
+    userId: null, // No user for system posts
+  });
+
+  return {
+    id: newPost.id,
+    content: newPost.content,
+    timestamp: newPost.createdAt,
+    authorType: newPost.authorType,
+    username: 'Muvvers',
+    foto_perfil: `https://robohash.org/Muvvers.png?bgset=bg1`,
     comments: [],
   };
 };

@@ -3,7 +3,7 @@
     <!-- Contador -->
     <div
       v-if="count > 0 && !showGo"
-      class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
     >
       <div
         :key="count"
@@ -16,12 +16,14 @@
     <!-- GO! -->
     <div
       v-else-if="showGo"
-      class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-md z-50"
+      class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50"
     >
-      <div
-        class="text-white font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(255,255,255,0.9)]"
-      >
-        GO!
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div
+          class="text-white font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(255,255,255,0.9)]"
+        >
+          GO!
+        </div>
       </div>
     </div>
   </transition>

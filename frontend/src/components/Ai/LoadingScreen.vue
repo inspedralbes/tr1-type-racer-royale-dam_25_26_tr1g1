@@ -1,6 +1,6 @@
 <template>
   <div
-    class="absolute inset-0 bg-gray-900 flex flex-col items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-gray-900 flex flex-col items-center justify-center z-50 p-4"
   >
     <div class="w-full max-w-4xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">

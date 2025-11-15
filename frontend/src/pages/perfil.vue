@@ -82,7 +82,9 @@
               <i class="mdi mdi-calendar-clock text-gray-400 w-6"></i>
               <span class="ml-3">
                 Membre des de
-                {{ new Date(loggedInUser.date_created).toLocaleDateString() }}</span
+                {{
+                  new Date(loggedInUser.date_created).toLocaleDateString()
+                }}</span
               >
             </div>
             <div v-if="loggedInUser.pesoActual" class="flex items-center">
@@ -274,7 +276,7 @@ onMounted(async () => {
   if (!appStore.isAuthenticated) {
     router.push("/");
   } else if (appStore.userId) {
-    await usersStore.fetchUser(appStore.userId);
+    await usersStore.fetchUser(appStore.userId, true);
   }
 });
 
@@ -312,5 +314,3 @@ const handleLogout = () => {
 </script>
 
 <style scoped></style>
-
-

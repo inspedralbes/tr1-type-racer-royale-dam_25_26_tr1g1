@@ -11,6 +11,10 @@ const Post = sequelize.define("Post", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  authorType: {
+    type: DataTypes.STRING,
+    defaultValue: 'user',
+  },
 });
 
 export default Post;

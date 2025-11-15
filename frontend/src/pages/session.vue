@@ -42,7 +42,7 @@
     />
 
     <!-- Overlay content -->
-    <div v-if="!showEndScreen" class="relative z-10 flex flex-col flex-grow">
+    <div v-if="!showEndScreen && !isAiLoading" class="relative z-10 flex flex-col flex-grow">
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
@@ -103,7 +103,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 import { useAppStore } from "@/stores/app";
@@ -193,30 +192,21 @@ const leaveSession = () => {
 onMounted(() => {
   const sessionId = route.params.id;
   if (sessionId) {
-    const currentUser = appStore.user;
-    const sessionUsers = currentSession.value?.users;
-
-    let shouldJoin = true;
-
-    if (currentUser && sessionUsers) {
-      const isUserInSession = sessionUsers.some(
-        (user) => user.userId === currentUser.id
-      );
-      if (isUserInSession) {
-        shouldJoin = false;
-      }
-    }
-
-    if (shouldJoin) {
-      websocketStore.sendMessage({
-        type: "JOIN_SESSION",
-        payload: { sessionId },
-      });
-    }
+    websocketStore.sendMessage({
+      type: "JOIN_SESSION",
+      payload: { sessionId },
+    });
   }
 });
 
-onUnmounted(() => {});
+onUnmounted(() => {
+  if (currentSession.value) {
+    websocketStore.sendMessage({
+      type: "LEAVE_SESSION",
+      payload: { sessionId: currentSession.value.id },
+    });
+  }
+});
 
 const showScoreboard = ref(true);
 const showInfoExercices = ref(true);
@@ -268,7 +258,7 @@ watch(
 const floatingItems = ref([]);
 
 watch(
-  () => websocketStore.latestReaction,
+  () => currentSession.value?.latestReaction,
   (newReaction) => {
     if (newReaction) {
       floatingItems.value.push({
@@ -375,3 +365,4 @@ watch(
   }
 }
 </style>
+

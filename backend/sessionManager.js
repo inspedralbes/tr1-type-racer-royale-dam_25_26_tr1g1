@@ -48,6 +48,7 @@ export const createSession = async (sessionData) => {
     maxUsers,
     exercicis: exercisesWithDetails,
     users: [],
+    latestReaction: null,
     state: {
       status: "WAITING",
       startTime: Date.now(),

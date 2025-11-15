@@ -69,7 +69,7 @@ export const broadcastEmojiReaction = (session, emoji, userId) => {
   if (!wssInstance) return;
   const message = JSON.stringify({
     type: MESSAGE_TYPES.EMOJI_REACTION,
-    payload: { emoji, userId },
+    payload: { emoji, userId, sessionId: session.id },
   });
 
   const userIdsInSession = new Set(session.users.map((u) => u.userId));

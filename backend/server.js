@@ -23,11 +23,7 @@ import {
   updateSession,
   deleteSession,
 } from "./sessionManager.js";
-import {
-  joinSession,
-  leaveSession,
-  setReady,
-} from "./sessionUserService.js";
+import { joinSession, leaveSession, setReady } from "./sessionUserService.js";
 import { startSession } from "./sessionGamemaster.js";
 import {
   getAllPosts,
@@ -86,6 +82,7 @@ app.get("/api/users/:id", async (req, res) => {
     altura: user.altura || null,
     biografia: user.biografia || null,
     foto_perfil: user.foto_perfil || null,
+    nivel: user.nivel || 0,
   });
 });
 
@@ -223,6 +220,7 @@ app.delete("/api/sessions/:id", async (req, res) => {
   try {
     const success = await deleteSession(req.params.id);
     if (success) {
+      broadcastSessionsUpdate(); // Add this line
       res.status(204).send();
     } else {
       res.status(404).json({ message: "Session not found" });
@@ -390,7 +388,7 @@ app.delete("/api/posts/:postId/comments/:commentId", async (req, res) => {
 
 const startServer = async () => {
   try {
-    await db.sequelize.sync();
+    await db.sequelize.sync({ alter: true });
     console.log("Database synchronized");
 
     server.listen(PORT, () =>
