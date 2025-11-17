@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
-    <div class="container mx-auto p-4 pb-20">
+    <div class="container mx-auto p-4 pb-40">
       <div v-if="loggedInUser" class="max-w-2xl mx-auto">
         <!-- Profile Header -->
         <div

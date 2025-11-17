@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <NavBar />
 
-    <div class="container mx-auto p-4" style="max-width: 800px">
+    <div class="container mx-auto p-4 pb-40" style="max-width: 800px">
       <!-- Crear nuevo post -->
       <div
         class="p-4 bg-gray-800/50 rounded-2xl mb-6 border border-gray-700/50 backdrop-blur-sm"
@@ -128,7 +128,6 @@
                   <i class="mdi mdi-comment-processing-outline"></i>
                   <span>{{ post.comments.length }}</span>
                 </button>
-
               </div>
 
               <!-- Comment Section -->
