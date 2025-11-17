@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+  <div class="container mx-auto">
     <!-- Controls -->
     <div
       class="mb-6 flex flex-col items-center justify-between gap-4 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm sm:flex-row"
