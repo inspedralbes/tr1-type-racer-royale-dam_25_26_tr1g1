@@ -1,5 +1,6 @@
 import db from "./models/index.js";
 import { findUserByUsername } from "./users.js";
+import { broadcast } from "./websocket.js";
 
 // 🔹 Obtener todos los posts
 export const getAllPosts = async () => {
@@ -70,7 +71,7 @@ export const createPost = async (username, content) => {
     },
   });
 
-  return {
+  const postData = {
     id: postWithUser.id,
     content: postWithUser.content,
     timestamp: postWithUser.createdAt,
@@ -79,6 +80,10 @@ export const createPost = async (username, content) => {
     foto_perfil: postWithUser.user.foto_perfil,
     comments: [],
   };
+
+  broadcast("NEW_POST", postData);
+
+  return postData;
 };
 
 // 🔹 Crear un nuevo post del sistema
@@ -126,13 +131,17 @@ export const addComment = async (postId, username, text) => {
     },
   });
 
-  return {
+  const commentData = {
     id: commentWithUser.id,
     text: commentWithUser.text,
     timestamp: commentWithUser.createdAt,
     username: commentWithUser.user.username,
     foto_perfil: commentWithUser.user.foto_perfil,
   };
+
+  broadcast("NEW_COMMENT", { ...commentData, postId });
+
+  return commentData;
 };
 
 // 🔹 Actualizar un post

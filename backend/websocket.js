@@ -23,6 +23,21 @@ export const setWssInstance = (wss) => {
   wssInstance = wss;
 };
 
+export const broadcast = (type, payload) => {
+  if (!wssInstance) return;
+  const message = JSON.stringify({ type, payload });
+
+  wssInstance.clients.forEach((client) => {
+    if (client.readyState === client.OPEN) {
+      try {
+        client.send(message);
+      } catch (error) {
+        console.error("Error sending WebSocket message:", error);
+      }
+    }
+  });
+};
+
 export const broadcastSessionsUpdate = () => {
   if (!wssInstance) return;
   const sessions = getAllSessions();

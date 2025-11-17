@@ -7,6 +7,7 @@ export const useWebSocketStore = defineStore("websocket", {
     socket: null,
     isConnected: false,
     sessions: [],
+    listeners: {},
   }),
 
   actions: {
@@ -30,6 +31,14 @@ export const useWebSocketStore = defineStore("websocket", {
           const data = JSON.parse(event.data);
           const appStore = useAppStore();
 
+          // Dispatch to generic listeners
+          if (this.listeners[data.type]) {
+            this.listeners[data.type].forEach((callback) =>
+              callback(data.payload)
+            );
+          }
+
+          // Handle core, global events
           switch (data.type) {
             case "SESSIONS_UPDATE":
               this.sessions = data.payload;
@@ -92,6 +101,11 @@ export const useWebSocketStore = defineStore("websocket", {
               }
               break;
 
+            // Events handled by listeners, no need for default case
+            case "NEW_POST":
+            case "NEW_COMMENT":
+              break;
+
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
           }
@@ -114,6 +128,7 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.close();
         this.socket = null;
         this.isConnected = false;
+        this.listeners = {};
         console.log("WebSocket cerrado");
       }
     },
@@ -128,6 +143,21 @@ export const useWebSocketStore = defineStore("websocket", {
 
     registerWebSocket(userId) {
       this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
+    },
+
+    on(eventType, callback) {
+      if (!this.listeners[eventType]) {
+        this.listeners[eventType] = [];
+      }
+      this.listeners[eventType].push(callback);
+    },
+
+    off(eventType, callback) {
+      if (this.listeners[eventType]) {
+        this.listeners[eventType] = this.listeners[eventType].filter(
+          (cb) => cb !== callback
+        );
+      }
     },
   },
 });
