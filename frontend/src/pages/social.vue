@@ -10,15 +10,12 @@
         <h2 class="text-xl font-semibold mb-4">Crea una publicació</h2>
         <div class="flex items-start">
           <img
-            :src="
-              currentUser?.foto_perfil ||
-              'https://cdn-icons-png.flaticon.com/512/847/847969.png'
-            "
+            :src="currentUser?.foto_perfil || DEFAULT_AVATAR"
             alt="Avatar"
             class="w-12 h-12 rounded-full mr-4 object-cover"
           />
           <textarea
-            v-model="newPost"
+            v-model="newPostContent"
             class="w-full bg-gray-800 text-white p-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             rows="3"
             :placeholder="`Què tens al cap, ${
@@ -29,7 +26,7 @@
         <div class="flex justify-end">
           <button
             @click="addPost"
-            :disabled="!newPost.trim()"
+            :disabled="!newPostContent.trim()"
             class="mt-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800/50 disabled:cursor-not-allowed text-white font-bold py-2 px-6 rounded-full shadow-lg transition-colors"
           >
             Publicar
@@ -47,10 +44,7 @@
         >
           <div class="flex">
             <img
-              :src="
-                post.foto_perfil ||
-                'https://cdn-icons-png.flaticon.com/512/847/847969.png'
-              "
+              :src="post.foto_perfil || DEFAULT_AVATAR"
               alt="Avatar"
               class="w-12 h-12 rounded-full mr-4 object-cover"
             />
@@ -138,10 +132,7 @@
                 <!-- Add comment form -->
                 <div class="flex items-center mb-4">
                   <img
-                    :src="
-                      currentUser?.foto_perfil ||
-                      'https://cdn-icons-png.flaticon.com/512/847/847969.png'
-                    "
+                    :src="currentUser?.foto_perfil || DEFAULT_AVATAR"
                     alt="Avatar"
                     class="w-9 h-9 rounded-full mr-3 object-cover"
                   />
@@ -166,10 +157,7 @@
                     class="flex items-start"
                   >
                     <img
-                      :src="
-                        comment.foto_perfil ||
-                        'https://cdn-icons-png.flaticon.com/512/847/847969.png'
-                      "
+                      :src="comment.foto_perfil || DEFAULT_AVATAR"
                       alt="Avatar"
                       class="w-8 h-8 rounded-full mr-3 object-cover"
                     />
@@ -227,25 +215,29 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
+import { storeToRefs } from "pinia";
 import NavBar from "@/components/NavBar.vue";
 import { useAppStore } from "@/stores/app";
 import { useUsersStore } from "@/stores/users";
 import { useWebSocketStore } from "@/stores/websocket";
+import { usePostsStore } from "@/stores/posts";
+import { timeAgo } from "@/utils/time.js";
+import { DEFAULT_AVATAR } from "@/constants.js";
 
 const appStore = useAppStore();
 const usersStore = useUsersStore();
 const websocketStore = useWebSocketStore();
+const postsStore = usePostsStore();
 
-const newPost = ref("");
-const posts = ref([]);
+const { posts } = storeToRefs(postsStore);
+
+const newPostContent = ref("");
 const commentText = ref({});
 const editingPost = ref(null);
 const editedContent = ref("");
 const isDeleteDialogOpen = ref(false);
 const postToDeleteId = ref(null);
-
-const API = import.meta.env.VITE_API_URL || "";
 
 const currentUser = computed(() => {
   if (appStore.userId) {
@@ -264,69 +256,23 @@ watch(
   { immediate: true }
 );
 
-const timeAgo = (date) => {
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  let interval = seconds / 31536000;
-  if (interval > 1) return Math.floor(interval) + "a";
-  interval = seconds / 2592000;
-  if (interval > 1) return Math.floor(interval) + "m";
-  interval = seconds / 86400;
-  if (interval > 1) return Math.floor(interval) + "d";
-  interval = seconds / 3600;
-  if (interval > 1) return Math.floor(interval) + "h";
-  interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + "min";
-  return Math.floor(seconds) + "s";
-};
-
-const fetchPosts = async () => {
-  try {
-    const res = await fetch(`${API}/api/posts`);
-    const data = await res.json();
-    posts.value = data.map((p) => ({
-      ...p,
-      showComments: false,
-      showDropdown: false,
-    }));
-  } catch (error) {
-    console.error("Error fetching posts:", error);
-  }
-};
-
 const addPost = async () => {
-  if (!newPost.value.trim() || !currentUser.value) return;
-
-  const res = await fetch(`${API}/api/posts`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: currentUser.value.username,
-      content: newPost.value,
-    }),
-  });
-  const data = await res.json();
-  // Manually add for instant feedback; websocket handles others & prevents duplicates.
-  handleNewPost(data);
-  newPost.value = "";
+  const newPost = await postsStore.createPost(newPostContent.value);
+  if (newPost) {
+    // Manually add for instant feedback; websocket handles others & prevents duplicates.
+    postsStore.handleNewPost(newPost);
+    newPostContent.value = "";
+  }
 };
 
 const addComment = async (postId) => {
   const text = commentText.value[postId];
-  if (!text?.trim() || !currentUser.value) return;
-
-  const res = await fetch(`${API}/api/posts/${postId}/comment`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: currentUser.value.username,
-      text,
-    }),
-  });
-
-  const newComment = await res.json();
-  // Manually add for instant feedback; websocket handles others & prevents duplicates.
-  handleNewComment({ ...newComment, postId });
-  commentText.value[postId] = "";
+  const newComment = await postsStore.addComment(postId, text);
+  if (newComment) {
+    // Manually add for instant feedback; websocket handles others & prevents duplicates.
+    postsStore.handleNewComment({ ...newComment, postId });
+    commentText.value[postId] = "";
+  }
 };
 
 const openDeleteDialog = (postId) => {
@@ -339,21 +285,13 @@ const openDeleteDialog = (postId) => {
 };
 
 const confirmDelete = async () => {
-  if (!currentUser.value) return;
-
-  const res = await fetch(`${API}/api/posts/${postToDeleteId.value}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username: currentUser.value.username }),
-  });
-
-  if (res.ok) {
-    posts.value = posts.value.filter((p) => p.id !== postToDeleteId.value);
-  } else {
-    alert("No s'ha pogut eliminar la publicació.");
+  const success = await postsStore.deletePost(postToDeleteId.value);
+  if (success) {
+    postsStore.removePostById(postToDeleteId.value);
   }
   isDeleteDialogOpen.value = false;
 };
+
 const startEditing = (post) => {
   editingPost.value = post;
   editedContent.value = post.content;
@@ -366,55 +304,14 @@ const cancelEditing = () => {
 };
 
 const updatePost = async (postId) => {
-  if (!editedContent.value.trim() || !currentUser.value) return;
-
-  const res = await fetch(`${API}/api/posts/${postId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      username: currentUser.value.username,
-      content: editedContent.value,
-    }),
-  });
-
-  if (res.ok) {
-    const updatedPost = await res.json();
-    const index = posts.value.findIndex((p) => p.id === postId);
-    if (index !== -1) {
-      posts.value[index].content = updatedPost.content;
-    }
+  const updatedPost = await postsStore.updatePost(postId, editedContent.value);
+  if (updatedPost) {
+    postsStore.updatePostContent(postId, updatedPost.content);
     cancelEditing();
-  } else {
-    alert("No s'ha pogut actualitzar la publicació.");
-  }
-};
-
-// --- WebSocket Handlers ---
-const handleNewPost = (post) => {
-  if (!posts.value.some((p) => p.id === post.id)) {
-    posts.value.unshift({
-      ...post,
-      showComments: false,
-      showDropdown: false,
-    });
-  }
-};
-
-const handleNewComment = (comment) => {
-  const post = posts.value.find((p) => p.id === comment.postId);
-  if (post && !post.comments.some((c) => c.id === comment.id)) {
-    post.comments.push(comment);
   }
 };
 
 onMounted(() => {
-  fetchPosts();
-  websocketStore.on("NEW_POST", handleNewPost);
-  websocketStore.on("NEW_COMMENT", handleNewComment);
-});
-
-onUnmounted(() => {
-  websocketStore.off("NEW_POST", handleNewPost);
-  websocketStore.off("NEW_COMMENT", handleNewComment);
+  postsStore.fetchPosts();
 });
 </script>

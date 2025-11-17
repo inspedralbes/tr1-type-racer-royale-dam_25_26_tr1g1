@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import router from "@/router";
 import { useAppStore } from "./app";
+import { usePostsStore } from "./posts";
 
 export const useWebSocketStore = defineStore("websocket", {
   state: () => ({
@@ -30,6 +31,7 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
           const appStore = useAppStore();
+          const postsStore = usePostsStore();
 
           // Dispatch to generic listeners
           if (this.listeners[data.type]) {
@@ -103,7 +105,10 @@ export const useWebSocketStore = defineStore("websocket", {
 
             // Events handled by listeners, no need for default case
             case "NEW_POST":
+              postsStore.handleNewPost(data.payload);
+              break;
             case "NEW_COMMENT":
+              postsStore.handleNewComment(data.payload);
               break;
 
             default:

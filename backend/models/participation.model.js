@@ -1,7 +1,7 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../database/sequelize.js";
+import { DataTypes } from 'sequelize';
+import sequelize from '../database/sequelize.js';
 
-const Participation = sequelize.define("Participa", {
+const Participation = sequelize.define('Participation', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -11,6 +11,8 @@ const Participation = sequelize.define("Participa", {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+}, {
+  tableName: 'Participas'
 });
 
 export default Participation;

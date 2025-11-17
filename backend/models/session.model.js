@@ -1,7 +1,7 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../database/sequelize.js";
+import { DataTypes } from 'sequelize';
+import sequelize from '../database/sequelize.js';
 
-const Session = sequelize.define("Session", {
+const Session = sequelize.define('Session', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
@@ -23,10 +23,13 @@ const Session = sequelize.define("Session", {
   },
   password: {
     type: DataTypes.STRING,
+    allowNull: true,
   },
   max_usuarios: {
     type: DataTypes.INTEGER,
   },
+}, {
+  tableName: 'Sessions'
 });
 
 export default Session;

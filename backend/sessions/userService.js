@@ -4,10 +4,7 @@ import {
   getEmptySessionTimers,
 } from "./manager.js";
 import { findUserById } from "../users.js";
-import {
-  broadcastSessionUpdate,
-  broadcastSessionsUpdate,
-} from "../websocket.js";
+import { broadcastSessionsUpdate } from "../websocket.js";
 import { GAME_SETTINGS } from "../constants.js";
 
 export const joinSession = async (sessionId, userId, password) => {
@@ -40,10 +37,7 @@ export const joinSession = async (sessionId, userId, password) => {
     ready: false,
   });
 
-  console.log(
-    `User ${userId} joined session ${sessionId}. Broadcasting sessions update.`
-  );
-  broadcastSessionUpdate(session);
+  console.log(`User ${userId} joined session ${sessionId}.`);
   return session;
 };
 
@@ -60,16 +54,13 @@ export const leaveSession = async (sessionId, userId) => {
       const emptySessionTimers = getEmptySessionTimers();
       emptySessionTimers[sessionId] = setTimeout(() => {
         deleteSession(sessionId);
-        broadcastSessionsUpdate();
+        broadcastSessionsUpdate(); // This is a special case, a session is deleted, so we need to notify everyone.
         console.log(`Session ${sessionId} deleted after being empty.`);
         delete emptySessionTimers[sessionId];
       }, 60000); // 1 minute
       return null; // Session is now empty, will be deleted
     } else {
-      console.log(
-        `User ${userId} left session ${sessionId}. Broadcasting sessions update.`
-      );
-      broadcastSessionUpdate(session);
+      console.log(`User ${userId} left session ${sessionId}.`);
       return session; // Return updated session
     }
   }
@@ -88,7 +79,6 @@ export const updateUserScore = (sessionId, userId, score) => {
   }
 
   userInSession.puntos += score;
-  broadcastSessionUpdate(session);
   return session;
 };
 
@@ -102,8 +92,6 @@ export const setReady = (sessionId, userId) => {
   if (userInSession) {
     userInSession.ready = true;
   }
-
-  broadcastSessionUpdate(session);
 
   const allReady = session.users.every((user) => user.ready);
   return { session, allReady };

@@ -1,39 +1,13 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../database/sequelize.js";
+import { DataTypes } from 'sequelize';
+import sequelize from '../database/sequelize.js';
 
-const Comment = sequelize.define(
-  "Comment",
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
-    },
-    text: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "Usuaris",
-        key: "id",
-      },
-    },
-    postId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "Posts",
-        key: "id",
-      },
-    },
+const Comment = sequelize.define('Comment', {
+  text: {
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-  {
-    tableName: "Comentaris",
-    timestamps: true,
-  }
-);
+}, {
+  tableName: 'Comments'
+});
 
 export default Comment;
