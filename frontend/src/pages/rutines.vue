@@ -2,7 +2,7 @@
   <div>
     <NavBar />
     <div class="min-h-screen bg-gray-900 text-white">
-      <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+      <div class="container mx-auto p-4 sm:p-6 lg:p-8 pb-32 mb-24">
         <h1 class="text-4xl font-bold text-center mb-2 text-white">Rutines d'Exercicis</h1>
         <p class="text-center text-gray-400 mb-10">Selecciona una rutina per veure els exercicis.</p>
 
