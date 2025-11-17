@@ -1,14 +1,14 @@
-import sequelize from "./database/sequelize.js";
+import sequelize from "../database/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import { SESSION_DURATIONS, GAME_SETTINGS } from "./constants.js";
-import { updateUserLevel } from "./users.js";
+import { SESSION_DURATIONS, GAME_SETTINGS } from "../constants.js";
+import { updateUserLevel } from "../users.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const exercicisPath = path.join(__dirname, "exercicis.json");
+const exercicisPath = path.resolve(process.cwd(), "exercicis.json");
 const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
 let sessions = [];

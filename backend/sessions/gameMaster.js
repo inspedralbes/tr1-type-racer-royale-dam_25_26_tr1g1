@@ -3,10 +3,10 @@ import {
   getTimers,
   saveFinishedSession,
   deleteSession,
-} from "./sessionManager.js";
-import { broadcastSessionUpdate } from "./websocket.js";
-import { createSystemPost } from "./posts.js";
-import { GAME_SETTINGS } from "./constants.js";
+} from "./manager.js";
+import { broadcastSessionUpdate } from "../websocket.js";
+import { createSystemPost } from "../posts.js";
+import { GAME_SETTINGS } from "../constants.js";
 
 export const nextExercise = async (sessionId) => {
   const session = getSessionById(sessionId);

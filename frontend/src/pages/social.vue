@@ -120,19 +120,7 @@
               </p>
 
               <!-- Post Actions -->
-              <div class="flex items-center justify-between mt-4 text-gray-500">
-                <button
-                  @click="toggleLike(post)"
-                  class="flex items-center space-x-2 hover:text-red-500 transition-colors"
-                >
-                  <i
-                    class="mdi"
-                    :class="[
-                      post.liked ? 'mdi-heart text-red-500' : 'mdi-heart-outline',
-                    ]"
-                  ></i>
-                  <span>{{ post.likes || 0 }}</span>
-                </button>
+              <div class="flex items-center justify-end mt-4 text-gray-500">
                 <button
                   @click="post.showComments = !post.showComments"
                   class="flex items-center space-x-2 hover:text-blue-400 transition-colors"
@@ -300,8 +288,6 @@ const fetchPosts = async () => {
       ...p,
       showComments: false,
       showDropdown: false,
-      liked: false,
-      likes: p.likes || Math.floor(Math.random() * 50),
     }));
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -311,8 +297,7 @@ const fetchPosts = async () => {
 const addPost = async () => {
   if (!newPost.value.trim() || !currentUser.value) return;
 
-  // No need to manually add the post here, the websocket will do it
-  await fetch(`${API}/api/posts`, {
+  const res = await fetch(`${API}/api/posts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -320,6 +305,9 @@ const addPost = async () => {
       content: newPost.value,
     }),
   });
+  const data = await res.json();
+  // Manually add for instant feedback; websocket handles others & prevents duplicates.
+  handleNewPost(data);
   newPost.value = "";
 };
 
@@ -327,8 +315,7 @@ const addComment = async (postId) => {
   const text = commentText.value[postId];
   if (!text?.trim() || !currentUser.value) return;
 
-  // No need to manually add the comment here, the websocket will do it
-  await fetch(`${API}/api/posts/${postId}/comment`, {
+  const res = await fetch(`${API}/api/posts/${postId}/comment`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -337,6 +324,9 @@ const addComment = async (postId) => {
     }),
   });
 
+  const newComment = await res.json();
+  // Manually add for instant feedback; websocket handles others & prevents duplicates.
+  handleNewComment({ ...newComment, postId });
   commentText.value[postId] = "";
 };
 
@@ -400,15 +390,6 @@ const updatePost = async (postId) => {
   }
 };
 
-const toggleLike = (post) => {
-  post.liked = !post.liked;
-  if (post.liked) {
-    post.likes++;
-  } else {
-    post.likes--;
-  }
-};
-
 // --- WebSocket Handlers ---
 const handleNewPost = (post) => {
   if (!posts.value.some((p) => p.id === post.id)) {
@@ -416,8 +397,6 @@ const handleNewPost = (post) => {
       ...post,
       showComments: false,
       showDropdown: false,
-      liked: false,
-      likes: post.likes || 0,
     });
   }
 };

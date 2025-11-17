@@ -2,10 +2,13 @@ import {
   getSessionById,
   deleteSession,
   getEmptySessionTimers,
-} from "./sessionManager.js";
-import { findUserById } from "./users.js";
-import { broadcastSessionUpdate, broadcastSessionsUpdate } from "./websocket.js";
-import { GAME_SETTINGS } from "./constants.js";
+} from "./manager.js";
+import { findUserById } from "../users.js";
+import {
+  broadcastSessionUpdate,
+  broadcastSessionsUpdate,
+} from "../websocket.js";
+import { GAME_SETTINGS } from "../constants.js";
 
 export const joinSession = async (sessionId, userId, password) => {
   const session = getSessionById(sessionId);
@@ -53,9 +56,7 @@ export const leaveSession = async (sessionId, userId) => {
 
   if (session.users.length < initialUserCount) {
     if (session.users.length === 0) {
-      console.log(
-        `Session ${sessionId} is empty. Starting deletion timer...`
-      );
+      console.log(`Session ${sessionId} is empty. Starting deletion timer...`);
       const emptySessionTimers = getEmptySessionTimers();
       emptySessionTimers[sessionId] = setTimeout(() => {
         deleteSession(sessionId);

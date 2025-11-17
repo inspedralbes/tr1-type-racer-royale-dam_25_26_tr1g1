@@ -132,9 +132,15 @@ const showCountdown = ref(false);
 const showEndScreen = ref(false);
 const currentSession = computed(() => appStore.currentSession);
 
-const repetitions = computed(
-  () => appStore.currentSession?.state.repetitions || 0
-);
+const repetitions = computed(() => {
+  if (!appStore.currentSession || !appStore.userId) return 0;
+  const currentUser = appStore.currentSession.users.find(
+    (u) => u.userId === appStore.userId
+  );
+  if (!currentUser) return 0;
+  // POINTS_PER_REP is 10
+  return Math.floor(currentUser.puntos / 10);
+});
 
 const currentSerie = computed(
   () => appStore.currentSession?.state.currentSeries || 1

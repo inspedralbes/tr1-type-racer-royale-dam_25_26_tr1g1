@@ -22,9 +22,9 @@ import {
   getSessionById,
   updateSession,
   deleteSession,
-} from "./sessionManager.js";
-import { joinSession, leaveSession, setReady } from "./sessionUserService.js";
-import { startSession } from "./sessionGamemaster.js";
+} from "./sessions/manager.js";
+import { joinSession, leaveSession, setReady } from "./sessions/userService.js";
+import { startSession } from "./sessions/gameMaster.js";
 import {
   getAllPosts,
   createPost,
@@ -157,7 +157,7 @@ app.post("/api/users/login", async (req, res) => {
 });
 
 app.get("/api/exercicis", (req, res) => {
-  const filePath = path.join(__dirname, "exercicis.json");
+  const filePath = path.resolve(process.cwd(), "exercicis.json");
   fs.readFile(filePath, "utf8", (err, data) => {
     if (err) {
       console.error("Error llegint exercicis.json:", err);

@@ -1,25 +1,32 @@
 <template>
   <div class="p-4 w-full max-w-md mx-auto">
     <div
-      class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-xl shadow-2xl p-6 text-white"
+      class="bg-gray-800 bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-xl shadow-2xl p-4 md:p-6 text-white"
     >
-      <h2 class="text-3xl font-bold mb-6 text-center">Sala d'Espera</h2>
-      <ul class="space-y-3">
+      <h2 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
+        Sala d'Espera
+      </h2>
+      <ul class="space-y-2 md:space-y-3">
         <li
           v-for="user in users"
           :key="user.userId"
-          class="flex items-center justify-between bg-gray-700 bg-opacity-50 p-3 rounded-lg"
+          class="flex items-center justify-between bg-gray-700 bg-opacity-50 p-2 md:p-3 rounded-lg"
         >
           <div class="flex items-center">
             <img
-              :src="user.foto_perfil"
+              :src="
+                user.foto_perfil ||
+                'https://cdn-icons-png.flaticon.com/512/847/847969.png'
+              "
               alt="Foto de perfil"
-              class="w-12 h-12 rounded-full mr-4 border-2 border-gray-600"
+              class="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4 border-2 border-gray-600"
             />
-            <span class="font-medium">{{ user.username }}</span>
+            <span class="font-medium text-sm md:text-base">{{
+              user.username
+            }}</span>
           </div>
           <span
-            class="font-bold text-sm py-1 px-3 rounded-full"
+            class="font-bold text-xs md:text-sm py-1 px-2 md:px-3 rounded-full"
             :class="{
               'bg-green-500 text-white': user.ready,
               'bg-yellow-500 text-gray-800': !user.ready,
@@ -32,7 +39,7 @@
       <button
         @click="$emit('ready')"
         :disabled="isReady"
-        class="mt-8 w-full py-3 px-4 rounded-lg font-bold text-lg transition duration-300 ease-in-out transform hover:scale-105"
+        class="mt-6 md:mt-8 w-full py-2 md:py-3 px-4 rounded-lg font-bold text-base md:text-lg transition duration-300 ease-in-out transform hover:scale-105"
         :class="
           isReady
             ? 'bg-gray-600 cursor-not-allowed'
