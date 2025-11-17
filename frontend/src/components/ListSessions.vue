@@ -23,12 +23,12 @@
         <div
           class="flex w-full shrink-0 items-center justify-end gap-4 md:w-auto"
         >
-          <!-- Filter Button and Dropdown -->
+            <!-- Filter Button and Dropdown -->
           <div class="relative z-40" ref="filterMenu">
             <button
               @click="toggleFilterMenu"
-              class="flex items-center gap-2 rounded-full bg-gray-700/50 px-4 py-3 font-semibold text-white transition hover:bg-gray-700"
-            >
+               class="flex items-center gap-2 rounded-full bg-gray-700/50 px-4 py-3 font-semibold text-white transition hover:bg-gray-700 z-50"
+                > 
               <span class="mdi mdi-filter-variant"></span>
               <span>Filtre</span>
               <span
@@ -38,8 +38,10 @@
             </button>
             <div
               v-if="showFilterMenu"
-              class="absolute right-0 top-full z-50 mt-2 w-48 origin-top-right rounded-lg bg-gray-700 py-1 shadow-xl ring-1 ring-black ring-opacity-5"
+              class="absolute left-0 md:right-0 md:left-auto top-full mt-2 w-48 origin-top-left md:origin-top-right rounded-lg bg-gray-800 border border-gray-600 py-1 shadow-2xl"
             >
+
+
               <ul>
                 <li
                   @click="applyFilter('ALL')"
