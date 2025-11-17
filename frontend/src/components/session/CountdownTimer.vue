@@ -1,32 +1,25 @@
 <template>
-  <transition name="fade-zoom">
-    <!-- Contador -->
+  <div
+    v-if="count > 0 && !showGo"
+    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50"
+  >
     <div
-      v-if="count > 0 && !showGo"
-      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50"
+      :key="count"
+      class="font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] text-[clamp(6rem,20vw,18rem)] animate-pop-glow text-white"
     >
-      <div
-        :key="count"
-        class="font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] text-[clamp(6rem,20vw,18rem)] animate-pop-glow text-white"
-      >
-        {{ count }}
-      </div>
+      {{ count }}
     </div>
+  </div>
 
-    <!-- GO! -->
-    <div
-      v-else-if="showGo"
-      class="fixed inset-0 bg-black bg-opacity-80 z-50"
-    >
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div
-          class="text-white font-extrabold uppercase select-none animate-go-explode drop-shadow-[0_0_80px_rgba(255,255,255,0.9)]"
-        >
-          GO!
-        </div>
+  <div v-else-if="showGo" class="fixed inset-0 bg-black bg-opacity-80 z-50">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div
+        class="text-white font-extrabold uppercase select-none drop-shadow-[0_0_80px_rgba(255,255,255,0.9)] text-[clamp(6rem,20vw,18rem)]"
+      >
+        GO!
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <script setup>
@@ -58,6 +51,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* *** ESTE CÓDIGO FUE RESTAURADO PARA EL EFECTO 3, 2, 1 *** */
 div.font-extrabold {
   font-size: clamp(6rem, 20vw, 18rem);
   line-height: 1;
@@ -83,38 +77,5 @@ div.font-extrabold {
 
 .animate-pop-glow {
   animation: pop-glow 0.8s ease-out;
-}
-
-@keyframes go-explode {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  }
-  40% {
-    transform: scale(1.4);
-    opacity: 1;
-    text-shadow: 0 0 100px rgba(255, 255, 255, 0.9);
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-    text-shadow: 0 0 0 rgba(255, 255, 255, 0);
-  }
-}
-
-.animate-go-explode {
-  animation: go-explode 1s ease-out forwards;
-}
-
-.fade-zoom-enter-active,
-.fade-zoom-leave-active {
-  transition: all 0.5s ease;
-}
-
-.fade-zoom-enter-from,
-.fade-zoom-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
 }
 </style>
