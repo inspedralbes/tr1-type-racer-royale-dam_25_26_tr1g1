@@ -1,9 +1,13 @@
 <template>
   <div>
     <NavBar />
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white pb-40">
+    <div
+      class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white pb-40"
+    >
       <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 class="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white">
+        <h1
+          class="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white"
+        >
           Rutines d'Exercicis
         </h1>
         <p class="text-center text-gray-500 dark:text-gray-400 mb-10">
@@ -25,7 +29,7 @@
           <div
             @click="openModal('upper')"
             class="routine-card"
-            style="background-image: url('/Tren_superior.png')"
+            style="background-image: url('./Tren_superior.png')"
           >
             <div class="routine-card-overlay">
               <h3 class="text-2xl font-bold">Tren Superior</h3>
@@ -37,7 +41,7 @@
           <div
             @click="openModal('lower')"
             class="routine-card"
-            style="background-image: url('/Tren_inferior.png')"
+            style="background-image: url('./Tren_inferior.png')"
           >
             <div class="routine-card-overlay">
               <h3 class="text-2xl font-bold">Tren Inferior</h3>
@@ -49,7 +53,7 @@
           <div
             @click="openModal('fullbody')"
             class="routine-card"
-            style="background-image: url('/Cos_complet.png')"
+            style="background-image: url('./Cos_complet.png')"
           >
             <div class="routine-card-overlay">
               <h3 class="text-2xl font-bold">Cos Complet</h3>
@@ -74,7 +78,10 @@
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
             {{ selectedRoutine.title }}
           </h2>
-          <button @click="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+          <button
+            @click="closeModal"
+            class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+          >
             &times;
           </button>
         </div>
@@ -91,10 +98,14 @@
                 :alt="exercise.name + ' gif'"
                 class="w-full rounded-md mb-4"
               />
-              <h4 class="text-lg font-semibold text-blue-600 dark:text-blue-400">
+              <h4
+                class="text-lg font-semibold text-blue-600 dark:text-blue-400"
+              >
                 {{ exercise.name }}
               </h4>
-              <p class="text-gray-700 dark:text-gray-300 mt-1 text-sm flex-grow">
+              <p
+                class="text-gray-700 dark:text-gray-300 mt-1 text-sm flex-grow"
+              >
                 {{ exercise.description }}
               </p>
               <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">

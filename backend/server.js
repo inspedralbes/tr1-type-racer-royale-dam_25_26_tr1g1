@@ -8,6 +8,9 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import db from "./models/index.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const envFile =
   process.env.NODE_ENV === "production"
     ? ".env.production"
@@ -39,9 +42,7 @@ const PORT = process.env.PORT;
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ noServer: true });

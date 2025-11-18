@@ -1,9 +1,7 @@
 <template>
-  <div
-    class="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-black bg-opacity-90 dark:bg-opacity-90 backdrop-blur-lg p-4"
-  >
+  <div class="absolute inset-0 flex flex-col items-center justify-center p-8">
     <div
-      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 sm:p-8 text-center text-gray-900 dark:text-white max-w-md w-full"
+      class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 rounded-xl shadow-2xl p-4 md:p-6 text-center text-gray-900 dark:text-white max-w-md w-full"
     >
       <h2
         class="text-4xl sm:text-5xl font-extrabold text-blue-600 dark:text-blue-400 mb-4"
@@ -13,7 +11,7 @@
 
       <div class="mb-6">
         <p class="text-2xl sm:text-3xl font-bold mb-2">
-          Siguiente ejercicio: {{ nextExercise?.name }}
+          {{ nextExercise?.name }}
         </p>
         <img
           v-if="nextExercise?.gif"

@@ -22,9 +22,8 @@ export const nextExercise = async (sessionId) => {
     session.state.currentExercise++;
     session.state.currentSeries = 1;
     session.state.repetitions = 0;
-    session.state.isResting = false; // Reset resting state
-    const newExercise = session.exercicis[session.state.currentExercise];
-    session.state.timer = newExercise.duration; // Set timer for new exercise
+    session.state.isResting = true; // Rest before next exercise
+    session.state.timer = GAME_SETTINGS.REST_TIME_SECONDS;
     broadcastSessionUpdate(session);
   } else {
     // Last exercise finished, end session
@@ -73,7 +72,8 @@ export const updateRepetitions = (sessionId, userId) => {
   const oldLeaderboard = [...session.users].sort((a, b) => b.puntos - a.puntos);
   const oldRank = oldLeaderboard.findIndex((u) => u.userId === userId);
 
-  userInSession.puntos += GAME_SETTINGS.POINTS_PER_REP;
+  let number_random = Math.floor(Math.random() * 10) - 4;
+  userInSession.puntos += GAME_SETTINGS.POINTS_PER_REP + number_random;
   session.state.repetitions++;
 
   const newLeaderboard = [...session.users].sort((a, b) => b.puntos - a.puntos);
@@ -107,9 +107,8 @@ export const startSession = (sessionId) => {
   }
 
   session.state.status = "IN_PROGRESS";
-  const firstExercise = session.exercicis[session.state.currentExercise];
-  session.state.timer = firstExercise.duration;
-  session.state.isResting = false;
+  session.state.timer = GAME_SETTINGS.REST_TIME_SECONDS; // Start with a rest
+  session.state.isResting = true;
 
   broadcastSessionUpdate(session);
   broadcastSessionsUpdate();
@@ -126,17 +125,20 @@ export const startSession = (sessionId) => {
     if (session.state.timer > 0) {
       session.state.timer--;
     } else {
-      if (!session.state.isResting) {
-        // Transition to rest
-        session.state.isResting = true;
-        session.state.timer = GAME_SETTINGS.REST_TIME_SECONDS;
+      if (session.state.isResting) {
+        // Rest finished, start exercise
+        session.state.isResting = false;
+        session.state.timer = currentExercise.duration;
       } else {
+        // Exercise finished
         if (session.state.currentSeries >= currentExercise.series) {
+          // Last series
           nextExercise(sessionId);
         } else {
+          // More series for this exercise, start a rest
           session.state.currentSeries++;
-          session.state.timer = currentExercise.duration;
-          session.state.isResting = false;
+          session.state.isResting = true;
+          session.state.timer = GAME_SETTINGS.REST_TIME_SECONDS;
         }
       }
     }

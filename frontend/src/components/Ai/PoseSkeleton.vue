@@ -227,7 +227,7 @@ onBeforeUnmount(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #000;
+  background: transparent;
   overflow: hidden;
 }
 

@@ -2,7 +2,7 @@
   <div
     class="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col"
   >
-    <NotificationCenter v-if="!isResting" />
+    <NotificationCenter />
     <!-- Session End Screen -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -55,7 +55,7 @@
             v-if="
               !isResting &&
               currentExercise &&
-              currentSession.state.status !== 'WAITING' &&
+              currentSession?.state?.status !== 'WAITING' &&
               !showCountdown
             "
             :timer="timer"
@@ -67,23 +67,11 @@
           />
 
           <transition name="slide-fade">
-            <SessionExerciseInfo
-              v-if="
-                !isResting &&
-                currentExercise &&
-                currentSession.state.status !== 'WAITING' &&
-                !showCountdown
-              "
-              :current-exercise="currentExercise"
-            />
-          </transition>
-
-          <transition name="slide-fade">
             <SessionScoreboard
               v-if="
                 showScoreboard &&
                 !isResting &&
-                currentSession.state.status !== 'WAITING' &&
+                currentSession?.state?.status !== 'WAITING' &&
                 !showCountdown
               "
               :sorted-participants="sortedParticipants"
@@ -94,8 +82,8 @@
 
       <transition name="fade">
         <RestScreen
-          v-if="isResting"
-          :next-exercise="nextExercise"
+          v-if="isResting && !showCountdown"
+          :next-exercise="currentExercise"
           :remaining-rest-time="timer"
           :current-serie="currentSerie"
           :total-series="totalSeries"
@@ -103,6 +91,7 @@
       </transition>
       <!-- Bottom bar -->
       <SessionBottomBar
+        v-if="!showCountdown"
         :cameras="cameras"
         @leave-session="leaveSession"
         @send-reaction="sendReaction"
@@ -134,7 +123,6 @@ import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
 import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
 import NotificationCenter from "@/components/session/NotificationCenter.vue";
 
-import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import SessionProgressInfo from "@/components/session/ProgressInfo.vue";
 import ReadyCard from "@/components/session/ReadyCard.vue";
@@ -157,7 +145,6 @@ const repetitions = computed(() => {
     (u) => u.userId === appStore.userId
   );
   if (!currentUser) return 0;
-  // POINTS_PER_REP is 10
   return Math.floor(currentUser.puntos / 10);
 });
 
@@ -219,8 +206,6 @@ const leaveSession = () => {
       type: "LEAVE_SESSION",
       payload: { sessionId: currentSession.value.id },
     });
-    router.push("/sessions");
-  } else {
     router.push("/sessions");
   }
 };
@@ -398,3 +383,4 @@ watch(
   }
 }
 </style>
+

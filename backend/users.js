@@ -55,10 +55,6 @@ export const updateUser = async (id, updateData) => {
     throw new Error("USER_NOT_FOUND");
   }
 
-  if (updateData.foto_perfil === "") {
-    delete updateData.foto_perfil;
-  }
-
   const updatedUser = await user.update(updateData);
   return updatedUser;
 };

@@ -1,14 +1,53 @@
 {
   "name": "frontend",
+  "productName": "Muvv",
   "private": true,
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Aplicació d'exercici en temps real amb AI",
+  "homepage": "https://github.com/inspedralbes/tr1-type-racer-royale-dam_25_26_tr1g1",
+  "author": {
+    "name": "InsPedralbes Team",
+    "email": "marticastanorodriguez@gmail.com"
+  },
+  "main": "electron-main.js",
   "scripts": {
     "dev": "vite --mode development",
     "build": "vite build --mode production",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "electron:dev": "npm run build && electron .",
+    "electron:build": "npm run build && electron-builder"
+  },
+  "build": {
+    "appId": "com.inspedralbes.muvv",
+    "productName": "Muvv",
+    "directories": {
+      "output": "electron-dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron-main.js",
+      "package.json"
+    ],
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "icon": "build/icons"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icons/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "build/icons/icon.icns"
+    }
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
@@ -26,6 +65,8 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.0.0",
+    "electron": "^39.2.2",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.35.0",
     "postcss": "^8.0.0",
     "sass-embedded": "^1.92.1",

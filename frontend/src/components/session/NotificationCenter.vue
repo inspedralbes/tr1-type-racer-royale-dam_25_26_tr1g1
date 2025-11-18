@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed top-10 left-1/2 -translate-x-1/2 w-full max-w-md p-4 z-50 pointer-events-none"
+    class="fixed top-10 left-4 w-11/12 sm:w-full max-w-md p-2 sm:p-4 z-5 pointer-events-none"
   >
     <div class="flex flex-col items-center space-y-3">
       <transition-group
@@ -17,7 +17,7 @@
         <GameNotification
           v-for="notification in notifications"
           :key="notification.id"
-          :text="notification.text"
+          :text="notification.id"
           :gif="notification.gif"
           @destroy="removeNotification(notification.id)"
           class="w-full"

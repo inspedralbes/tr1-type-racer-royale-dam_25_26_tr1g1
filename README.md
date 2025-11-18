@@ -20,6 +20,11 @@
 
 A MUVV, has de fer exercicis físics que el sistema detecta amb la càmera i **TensorFlow.js (Pose Detection)**. Pots crear partides, convidar amics i competir per demostrar qui és el més en forma. En resum: **mou-te, juga i guanya!**
 
+<div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
+  <img src="content/761shots_so.png" alt="MUVV screenshots" style="max-width: 49%; height: auto;"/>
+  <img src="content/648shots_so.png" alt="MUVV screenshots" style="max-width: 49%; height: auto;"/>
+</div>
+
 ## 📜 Taula de Continguts
 
 - [📜 Taula de Continguts](#-taula-de-continguts)
