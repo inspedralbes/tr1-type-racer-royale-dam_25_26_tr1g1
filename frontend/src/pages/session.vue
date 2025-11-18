@@ -2,7 +2,7 @@
   <div
     class="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col"
   >
-    <NotificationCenter />
+    <NotificationCenter v-if="!isResting" />
     <!-- Session End Screen -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -53,6 +53,7 @@
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
             v-if="
+              !isResting &&
               currentExercise &&
               currentSession.state.status !== 'WAITING' &&
               !showCountdown
@@ -68,7 +69,7 @@
           <transition name="slide-fade">
             <SessionExerciseInfo
               v-if="
-                showInfoExercices &&
+                !isResting &&
                 currentExercise &&
                 currentSession.state.status !== 'WAITING' &&
                 !showCountdown
@@ -81,6 +82,7 @@
             <SessionScoreboard
               v-if="
                 showScoreboard &&
+                !isResting &&
                 currentSession.state.status !== 'WAITING' &&
                 !showCountdown
               "
@@ -90,6 +92,15 @@
         </div>
       </div>
 
+      <transition name="fade">
+        <RestScreen
+          v-if="isResting"
+          :next-exercise="nextExercise"
+          :remaining-rest-time="timer"
+          :current-serie="currentSerie"
+          :total-series="totalSeries"
+        />
+      </transition>
       <!-- Bottom bar -->
       <SessionBottomBar
         :cameras="cameras"
@@ -127,6 +138,7 @@ import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import SessionProgressInfo from "@/components/session/ProgressInfo.vue";
 import ReadyCard from "@/components/session/ReadyCard.vue";
+import RestScreen from "@/components/session/RestScreen.vue"; // Import RestScreen
 
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
@@ -160,6 +172,17 @@ const currentExerciseIndex = computed(
 const currentExercise = computed(
   () => currentSession.value?.exercicis[currentExerciseIndex.value]
 );
+
+const nextExercise = computed(() => {
+  const nextIndex = currentExerciseIndex.value + 1;
+  if (
+    currentSession.value &&
+    nextIndex < currentSession.value.exercicis.length
+  ) {
+    return currentSession.value.exercicis[nextIndex];
+  }
+  return null;
+});
 
 const timer = computed(() => appStore.currentSession?.state.timer || 0);
 const isResting = computed(
@@ -212,7 +235,7 @@ onUnmounted(() => {
 });
 
 const showScoreboard = ref(true);
-const showInfoExercices = ref(true);
+// const showInfoExercices = ref(true); // Removed as SessionExerciseInfo is always shown during active exercise
 
 const poseSkeletonRef = ref(null);
 const cameras = ref([]);
@@ -226,7 +249,7 @@ const handleCameraSelected = (deviceId) => {
 
 const toggleInfo = () => {
   showScoreboard.value = !showScoreboard.value;
-  showInfoExercices.value = !showInfoExercices.value;
+  // showInfoExercices.value = !showInfoExercices.value; // Removed
 };
 
 const participantsWithDetails = computed(() => {
@@ -333,6 +356,16 @@ watch(
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateX(-20px);
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
