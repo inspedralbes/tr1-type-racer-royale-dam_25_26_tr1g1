@@ -230,5 +230,6 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   object-fit: cover; /* Default to cover */
+  transform: scaleX(-1);
 }
 </style>
