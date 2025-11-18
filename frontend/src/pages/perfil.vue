@@ -1,11 +1,11 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
     <NavBar />
     <div class="container mx-auto p-4 pb-40">
       <div v-if="loggedInUser" class="max-w-2xl mx-auto">
         <!-- Profile Header -->
         <div
-          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm text-center"
+          class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm text-center"
         >
           <div class="flex justify-center mb-4">
             <div
@@ -22,11 +22,11 @@
             </div>
           </div>
           <h2 class="text-3xl font-bold">{{ loggedInUser.username }}</h2>
-          <p class="text-md text-gray-400">
+          <p class="text-md text-gray-500 dark:text-gray-400">
             Nivell: {{ Math.floor(loggedInUser.nivel || 0) }}
           </p>
           <div
-            class="w-full bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs mx-auto"
+            class="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2.5 mt-2 max-w-xs mx-auto"
           >
             <div
               class="bg-blue-500 h-2.5 rounded-full"
@@ -38,7 +38,7 @@
             <button
               v-if="isProfileComplete"
               @click="openEditDialog"
-              class="border border-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+              class="border border-gray-300 dark:border-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold py-2 px-4 rounded-full"
             >
               Editar perfil
             </button>
@@ -60,26 +60,26 @@
 
         <!-- User Biography -->
         <div
-          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
+          class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
         >
           <h3 class="text-xl font-bold mb-4">Biografia</h3>
-          <p class="text-gray-300">
+          <p class="text-gray-700 dark:text-gray-300">
             {{ loggedInUser.biografia || "No has afegit cap biografia." }}
           </p>
         </div>
 
         <!-- User Details -->
         <div
-          class="mb-6 rounded-xl border border-gray-700 bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
+          class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
         >
           <h3 class="text-xl font-bold mb-4">Detalls</h3>
           <div class="space-y-4">
             <div class="flex items-center">
-              <i class="mdi mdi-email-outline text-gray-400 w-6"></i>
+              <i class="mdi mdi-email-outline text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">{{ loggedInUser.email }}</span>
             </div>
             <div class="flex items-center">
-              <i class="mdi mdi-calendar-clock text-gray-400 w-6"></i>
+              <i class="mdi mdi-calendar-clock text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">
                 Membre des de
                 {{
@@ -88,11 +88,11 @@
               >
             </div>
             <div v-if="loggedInUser.pesoActual" class="flex items-center">
-              <i class="mdi mdi-weight-kilogram text-gray-400 w-6"></i>
+              <i class="mdi mdi-weight-kilogram text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">{{ loggedInUser.pesoActual }} kg</span>
             </div>
             <div v-if="loggedInUser.altura" class="flex items-center">
-              <i class="mdi mdi-human-male-height text-gray-400 w-6"></i>
+              <i class="mdi mdi-human-male-height text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">{{ loggedInUser.altura }} cm</span>
             </div>
           </div>
@@ -106,7 +106,7 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center p-4"
     >
       <div
-        class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-lg"
+        class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-lg p-6 w-full max-w-lg"
       >
         <h2 class="text-2xl font-bold mb-4">Editar Perfil</h2>
 
@@ -114,7 +114,7 @@
           <div>
             <label
               for="username"
-              class="block text-sm font-medium text-gray-400"
+              class="block text-sm font-medium text-gray-500 dark:text-gray-400"
               >Nom d'usuari</label
             >
             <input
@@ -122,11 +122,11 @@
               id="username"
               v-model="editableUserData.username"
               required
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-400"
+            <label for="email" class="block text-sm font-medium text-gray-500 dark:text-gray-400"
               >Email</label
             >
             <input
@@ -134,12 +134,12 @@
               id="email"
               v-model="editableUserData.email"
               required
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label for="peso" class="block text-sm font-medium text-gray-400"
+              <label for="peso" class="block text-sm font-medium text-gray-500 dark:text-gray-400"
                 >Pes (kg): {{ editableUserData.pesoActual || 0 }} kg</label
               >
               <input
@@ -148,13 +148,13 @@
                 min="0"
                 max="200"
                 v-model="editableUserData.pesoActual"
-                class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                class="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
               />
             </div>
             <div>
               <label
                 for="altura"
-                class="block text-sm font-medium text-gray-400"
+                class="block text-sm font-medium text-gray-500 dark:text-gray-400"
                 >Alçada (cm): {{ editableUserData.altura || 0 }} cm</label
               >
               <input
@@ -163,34 +163,34 @@
                 min="0"
                 max="250"
                 v-model="editableUserData.altura"
-                class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+                class="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
               />
             </div>
           </div>
           <div>
             <label
               for="biografia"
-              class="block text-sm font-medium text-gray-400"
+              class="block text-sm font-medium text-gray-500 dark:text-gray-400"
               >Biografia</label
             >
             <textarea
               id="biografia"
               v-model="editableUserData.biografia"
               rows="3"
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
           </div>
           <div>
             <label
               for="foto_perfil"
-              class="block text-sm font-medium text-gray-400"
+              class="block text-sm font-medium text-gray-500 dark:text-gray-400"
               >Foto de perfil (URL)</label
             >
             <input
               type="text"
               id="foto_perfil"
               v-model="editableUserData.foto_perfil"
-              class="mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
@@ -198,7 +198,7 @@
         <div class="mt-6 flex justify-end space-x-4">
           <button
             @click="isEditDialogOpen = false"
-            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold py-2 px-4 rounded"
           >
             Cancel·lar
           </button>
@@ -218,14 +218,14 @@
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
     >
       <div
-        class="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-sm"
+        class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-lg p-6 w-full max-w-sm"
       >
         <h2 class="text-xl font-bold mb-4">Tancar Sessió</h2>
         <p>Estàs segur que vols tancar la sessió?</p>
         <div class="mt-6 flex justify-end space-x-4">
           <button
             @click="isLogoutDialogOpen = false"
-            class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full"
+            class="bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold py-2 px-4 rounded-full"
           >
             Cancel·lar
           </button>

@@ -1,12 +1,12 @@
 <template>
   <div
-    class="bg-gray-800 bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 text-center"
+    class="bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 text-center text-gray-900 dark:text-white"
   >
     <h2
       class="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 flex items-center justify-center"
     >
       <span
-        class="mdi mdi-trophy text-amber-400 text-xl sm:text-2xl mr-2"
+        class="mdi mdi-trophy text-amber-500 dark:text-amber-400 text-xl sm:text-2xl mr-2"
       ></span>
       Marcador
     </h2>
@@ -16,13 +16,13 @@
         :key="participant.userId"
         class="flex items-center py-1 px-2 rounded-md"
         :class="{
-          'bg-gray-700': index % 2 === 0,
-          'bg-gray-600': index % 2 !== 0,
+          'bg-gray-100 dark:bg-gray-700': index % 2 === 0,
+          'bg-gray-200 dark:bg-gray-600': index % 2 !== 0,
         }"
       >
         <div
           class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mr-2 sm:mr-3 overflow-hidden"
-          :class="index === 0 ? 'bg-amber-400' : 'bg-gray-400'"
+          :class="index === 0 ? 'bg-amber-400' : 'bg-gray-300 dark:bg-gray-400'"
         >
           <img
             v-if="participant.foto_perfil"
@@ -32,7 +32,7 @@
           />
           <span
             v-else
-            class="mdi mdi-crown text-white text-base sm:text-lg"
+            class="mdi mdi-crown text-gray-700 dark:text-white text-base sm:text-lg"
           ></span>
         </div>
         <span class="font-medium text-xs sm:text-sm flex-grow">{{

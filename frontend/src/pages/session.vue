@@ -1,5 +1,7 @@
 <template>
-  <div class="relative min-h-screen bg-gray-900 text-white flex flex-col">
+  <div
+    class="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col"
+  >
     <NotificationCenter />
     <!-- Session End Screen -->
     <SessionEndScreen
@@ -43,7 +45,10 @@
     />
 
     <!-- Overlay content -->
-    <div v-if="!showEndScreen && !isAiLoading" class="relative z-10 flex flex-col flex-grow">
+    <div
+      v-if="!showEndScreen && !isAiLoading"
+      class="relative z-10 flex flex-col flex-grow"
+    >
       <div class="flex-grow flex justify-end items-start p-4">
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
@@ -97,7 +102,7 @@
       <!-- Ready Card -->
       <div
         v-if="currentSession && currentSession.state.status === 'WAITING'"
-        class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        class="absolute inset-0 flex items-center justify-center bg-black/50"
       >
         <ReadyCard :users="participantsWithDetails" @ready="setReady" />
       </div>
@@ -252,7 +257,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-
 const floatingItems = ref([]);
 
 watch(
@@ -318,8 +322,6 @@ watch(
     }
   }
 );
-
-
 </script>
 
 <style scoped>
@@ -363,4 +365,3 @@ watch(
   }
 }
 </style>
-

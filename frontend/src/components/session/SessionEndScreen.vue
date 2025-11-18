@@ -1,11 +1,11 @@
 <template>
   <transition name="fade-zoom">
     <div
-      class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-90 backdrop-blur-lg p-4"
+      class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-gray-100 dark:bg-black bg-opacity-90 dark:bg-opacity-90 backdrop-blur-lg p-4"
     >
       <div class="text-center mb-8">
         <h1
-          class="text-5xl sm:text-7xl mb-6 font-extrabold text-white drop-shadow-lg"
+          class="text-5xl sm:text-7xl mb-6 font-extrabold text-gray-900 dark:text-white drop-shadow-lg"
         >
           Sessió Finalitzada!
         </h1>
@@ -16,10 +16,10 @@
         <!-- Second Place -->
         <div
           v-if="secondPlace"
-          class="flex flex-col items-center text-white relative"
+          class="flex flex-col items-center text-gray-900 dark:text-white relative"
         >
           <div
-            class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-500 flex items-center justify-center mb-2 border-4 border-gray-400 shadow-lg"
+            class="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-300 dark:bg-gray-500 flex items-center justify-center mb-2 border-4 border-gray-400 dark:border-gray-400 shadow-lg"
           >
             <img
               v-if="secondPlace.foto_perfil"
@@ -27,17 +27,17 @@
               alt="2nd Place"
               class="w-full h-full object-cover rounded-full"
             />
-            <span v-else class="mdi mdi-medal text-6xl text-white"></span>
+            <span v-else class="mdi mdi-medal text-6xl text-gray-700 dark:text-white"></span>
           </div>
           <span class="text-lg font-semibold">{{ secondPlace.username }}</span>
-          <span class="text-xl font-bold text-gray-200">{{
+          <span class="text-xl font-bold text-gray-600 dark:text-gray-200">{{
             secondPlace.puntos
           }}</span>
           <div
-            class="bg-gray-500 h-24 w-32 sm:h-32 sm:w-40 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-gray-400"
+            class="bg-gray-300 dark:bg-gray-500 h-24 w-32 sm:h-32 sm:w-40 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-gray-400 dark:border-gray-400"
           ></div>
           <span
-            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-extrabold text-gray-300 drop-shadow-lg"
+            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-5xl font-extrabold text-gray-500 dark:text-gray-300 drop-shadow-lg"
             >2</span
           >
         </div>
@@ -45,10 +45,10 @@
         <!-- First Place -->
         <div
           v-if="firstPlace"
-          class="flex flex-col items-center text-white relative z-10"
+          class="flex flex-col items-center text-gray-900 dark:text-white relative z-10"
         >
           <div
-            class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-amber-400 flex items-center justify-center mb-2 border-4 border-amber-300 shadow-lg"
+            class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-amber-300 dark:bg-amber-400 flex items-center justify-center mb-2 border-4 border-amber-200 dark:border-amber-300 shadow-lg"
           >
             <img
               v-if="firstPlace.foto_perfil"
@@ -56,17 +56,17 @@
               alt="1st Place"
               class="w-full h-full object-cover rounded-full"
             />
-            <span v-else class="mdi mdi-crown text-7xl text-white"></span>
+            <span v-else class="mdi mdi-crown text-7xl text-gray-700 dark:text-white"></span>
           </div>
           <span class="text-xl font-bold">{{ firstPlace.username }}</span>
-          <span class="text-2xl font-extrabold text-amber-200">{{
+          <span class="text-2xl font-extrabold text-amber-500 dark:text-amber-200">{{
             firstPlace.puntos
           }}</span>
           <div
-            class="bg-amber-400 h-32 w-40 sm:h-40 sm:w-52 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-amber-300"
+            class="bg-amber-300 dark:bg-amber-400 h-32 w-40 sm:h-40 sm:w-52 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-amber-200 dark:border-amber-300"
           ></div>
           <span
-            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-extrabold text-amber-200 drop-shadow-lg"
+            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-6xl font-extrabold text-amber-500 dark:text-amber-200 drop-shadow-lg"
             >1</span
           >
         </div>
@@ -74,10 +74,10 @@
         <!-- Third Place -->
         <div
           v-if="thirdPlace"
-          class="flex flex-col items-center text-white relative"
+          class="flex flex-col items-center text-gray-900 dark:text-white relative"
         >
           <div
-            class="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-yellow-700 flex items-center justify-center mb-2 border-4 border-yellow-600 shadow-lg"
+            class="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-yellow-600 dark:bg-yellow-700 flex items-center justify-center mb-2 border-4 border-yellow-500 dark:border-yellow-600 shadow-lg"
           >
             <img
               v-if="thirdPlace.foto_perfil"
@@ -85,17 +85,17 @@
               alt="3rd Place"
               class="w-full h-full object-cover rounded-full"
             />
-            <span v-else class="mdi mdi-medal text-5xl text-white"></span>
+            <span v-else class="mdi mdi-medal text-5xl text-gray-700 dark:text-white"></span>
           </div>
           <span class="text-md font-medium">{{ thirdPlace.username }}</span>
-          <span class="text-lg font-bold text-yellow-300">{{
+          <span class="text-lg font-bold text-yellow-400 dark:text-yellow-300">{{
             thirdPlace.puntos
           }}</span>
           <div
-            class="bg-yellow-700 h-16 w-28 sm:h-24 sm:w-36 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-yellow-600"
+            class="bg-yellow-600 dark:bg-yellow-700 h-16 w-28 sm:h-24 sm:w-36 rounded-t-lg absolute -bottom-2 left-1/2 -translate-x-1/2 z-[-1] border-t-4 border-x-4 border-yellow-500 dark:border-yellow-600"
           ></div>
           <span
-            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-extrabold text-yellow-400 drop-shadow-lg"
+            class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-extrabold text-yellow-500 dark:text-yellow-400 drop-shadow-lg"
             >3</span
           >
         </div>

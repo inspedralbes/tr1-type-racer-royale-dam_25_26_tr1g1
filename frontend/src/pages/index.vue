@@ -1,11 +1,12 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-white">
+  <div
+    class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+  >
     <div
       class="relative z-10 flex items-center justify-center min-h-screen p-4"
     >
       <div class="w-full max-w-6xl mx-auto">
         <div class="grid items-center gap-8 md:grid-cols-2">
-          <!-- Left Column: Branding -->
           <div class="text-center md:text-left">
             <img
               src="@/assets/logo.png"
@@ -13,15 +14,13 @@
               class="w-32 h-32 mx-auto md:mx-0 mb-4"
             />
             <h1
-              class="text-4xl font-bold tracking-tight text-white sm:text-5xl"
+              class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl"
             >
               MUVV
             </h1>
           </div>
 
-          <!-- Right Column: Form Card -->
           <div class="w-full max-w-md mx-auto">
-            <!-- Notification -->
             <div
               v-if="appStore.notification.message"
               :class="[
@@ -40,7 +39,7 @@
               </button>
             </div>
             <div
-              class="rounded-xl border border-gray-700 bg-gray-800/50 p-8 shadow-2xl backdrop-blur-lg"
+              class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-8 shadow-2xl backdrop-blur-lg"
             >
               <!-- Form Components -->
               <div v-if="tab === 'login'">
@@ -54,7 +53,7 @@
             <div class="text-center mt-6">
               <button
                 @click="tab = tab === 'login' ? 'register' : 'login'"
-                class="text-blue-400 hover:text-blue-300 transition duration-300"
+                class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition duration-300"
               >
                 {{
                   tab === "login"

@@ -1,20 +1,20 @@
 <template>
   <div
     v-if="count > 0 && !showGo"
-    class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-80 z-50"
+    class="fixed inset-0 flex items-center justify-center bg-gray-100 dark:bg-black bg-opacity-80 dark:bg-opacity-80 z-50"
   >
     <div
       :key="count"
-      class="font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] text-[clamp(6rem,20vw,18rem)] animate-pop-glow text-white"
+      class="font-extrabold select-none drop-shadow-[0_0_40px_rgba(255,255,255,0.8)] text-[clamp(6rem,20vw,18rem)] animate-pop-glow text-gray-900 dark:text-white"
     >
       {{ count }}
     </div>
   </div>
 
-  <div v-else-if="showGo" class="fixed inset-0 bg-black bg-opacity-80 z-50">
+  <div v-else-if="showGo" class="fixed inset-0 bg-gray-100 dark:bg-black bg-opacity-80 dark:bg-opacity-80 z-50">
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
       <div
-        class="text-white font-extrabold uppercase select-none drop-shadow-[0_0_80px_rgba(255,255,255,0.9)] text-[clamp(6rem,20vw,18rem)]"
+        class="text-gray-900 dark:text-white font-extrabold uppercase select-none drop-shadow-[0_0_80px_rgba(255,255,255,0.9)] text-[clamp(6rem,20vw,18rem)]"
       >
         GO!
       </div>

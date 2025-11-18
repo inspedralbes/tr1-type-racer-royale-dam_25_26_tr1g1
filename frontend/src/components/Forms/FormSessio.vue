@@ -1,11 +1,11 @@
 <template>
-  <div class="p-6 bg-gray-800 shadow-lg rounded-lg text-white">
+  <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-gray-900 dark:text-white">
     <h2 class="text-2xl font-bold mb-6 text-center">Crear Nova Sessió</h2>
 
     <form @submit.prevent="submitForm" class="space-y-6">
       <!-- Routine Selection -->
       <div>
-        <label class="block text-sm font-medium text-gray-300 mb-2"
+        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2"
           >Què vols entrenar?</label
         >
         <div class="grid grid-cols-3 gap-3">
@@ -17,8 +17,8 @@
             :class="[
               'flex flex-col items-center justify-center p-4 rounded-lg transition-all duration-200 border-2',
               session.type === routine.type
-                ? 'bg-blue-600 border-blue-500 shadow-lg'
-                : 'bg-gray-700/50 border-gray-600 hover:bg-gray-700 hover:border-gray-500',
+                ? 'bg-blue-500 dark:bg-blue-600 border-blue-500 shadow-lg'
+                : 'bg-gray-100 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500',
             ]"
           >
             <span class="text-3xl">{{ routine.emoji }}</span>
@@ -29,7 +29,7 @@
 
       <!-- Session Name -->
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-300"
+        <label for="name" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Nom de la sessió</label
         >
         <div class="relative mt-2">
@@ -40,7 +40,7 @@
             type="text"
             id="name"
             v-model="session.name"
-            class="w-full rounded-lg border-transparent bg-gray-700/50 py-2 pl-10 pr-4 text-white placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
+            class="w-full rounded-lg border-transparent bg-gray-100 dark:bg-gray-700/50 py-2 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-200 dark:focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
             required
           />
         </div>
@@ -51,7 +51,7 @@
         <div>
           <label
             for="duration"
-            class="block text-sm font-medium text-gray-300"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-300"
             >Duració</label
           >
           <div class="relative mt-2">
@@ -61,7 +61,7 @@
             <select
               id="duration"
               v-model="session.duration"
-              class="w-full appearance-none rounded-lg border-transparent bg-gray-700/50 py-2 pl-10 pr-4 text-white placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
+              class="w-full appearance-none rounded-lg border-transparent bg-gray-100 dark:bg-gray-700/50 py-2 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-200 dark:focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
               required
             >
               <option value="Ràpida">Ràpida (10 min)</option>
@@ -73,7 +73,7 @@
         <div>
           <label
             for="maxUsers"
-            class="block text-sm font-medium text-gray-300"
+            class="block text-sm font-medium text-gray-600 dark:text-gray-300"
             >Màxim d'usuaris</label
           >
           <div class="relative mt-2">
@@ -86,7 +86,7 @@
               v-model.number="session.maxUsers"
               min="1"
               max="10"
-              class="w-full rounded-lg border-transparent bg-gray-700/50 py-2 pl-10 pr-4 text-white placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
+              class="w-full rounded-lg border-transparent bg-gray-100 dark:bg-gray-700/50 py-2 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-200 dark:focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
               required
             />
           </div>
@@ -95,7 +95,7 @@
 
       <!-- Password -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-300"
+        <label for="password" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Contrasenya (opcional)</label
         >
         <div class="relative mt-2">
@@ -107,7 +107,7 @@
             id="password"
             v-model="session.password"
             placeholder="Deixar buit per a sessió pública"
-            class="w-full rounded-lg border-transparent bg-gray-700/50 py-2 pl-10 pr-4 text-white placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
+            class="w-full rounded-lg border-transparent bg-gray-100 dark:bg-gray-700/50 py-2 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 ring-2 ring-transparent transition focus:bg-gray-200 dark:focus:bg-gray-700 focus:outline-none focus:ring-blue-500"
           />
         </div>
       </div>
@@ -117,7 +117,7 @@
         <button
           type="button"
           @click="emit('cancel')"
-          class="rounded-lg px-6 py-2 font-semibold text-gray-300 transition-colors duration-300 hover:bg-gray-700"
+          class="rounded-lg px-6 py-2 font-semibold text-gray-600 dark:text-gray-300 transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700"
         >
           Cancel·lar
         </button>

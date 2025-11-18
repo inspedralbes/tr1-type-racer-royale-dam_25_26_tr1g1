@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed bottom-4 left-1/2 w-11/12 max-w-md bg-gray-800 bg-opacity-80 backdrop-blur-md text-white rounded-xl shadow-lg z-50 bottom-bar transform -translate-x-1/2"
+    class="fixed bottom-4 left-1/2 w-11/12 max-w-md border border-gray-200 dark:border-transparent bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-900 dark:text-white rounded-xl shadow-lg z-50 bottom-bar transform -translate-x-1/2"
   >
     <div v-if="showCameras" class="p-2 flex flex-col items-center">
       <h3 class="text-lg font-semibold mb-2">Selecciona una càmera</h3>
@@ -9,7 +9,7 @@
           <button
             @touchstart.stop.prevent="selectCamera(camera.deviceId)"
             @click.stop="selectCamera(camera.deviceId)"
-            class="w-full text-left p-2 hover:bg-gray-700"
+            class="w-full text-left p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             {{ camera.label || `Càmera ${camera.deviceId.substring(0, 6)}` }}
           </button>
@@ -69,16 +69,16 @@
   </nav>
   <div
   v-if="isLeaveDialogOpen"
-  class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50"
+  class="fixed inset-0 bg-gray-100 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center z-50"
   @click.self="isLeaveDialogOpen = false"
 >
-  <div class="bg-gray-800 text-white p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
+  <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white p-6 rounded-lg shadow-2xl max-w-sm w-full mx-4">
     <h3 class="text-xl font-bold mb-4">Segur que vols sortir?</h3>
     <p class="mb-6">Aquesta acció finalitzarà la teva sessió actual.</p>
     <div class="flex justify-end space-x-3">
       <button
         @click="isLeaveDialogOpen = false"
-        class="px-4 py-2 bg-gray-700 text-gray-200 rounded-lg hover:bg-gray-600 transition duration-150"
+        class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-150"
       >
         Cancel·lar
       </button>

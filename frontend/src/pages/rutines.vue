@@ -1,19 +1,19 @@
 <template>
   <div>
     <NavBar />
-    <div class="min-h-screen bg-gray-900 text-white pb-40">
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white pb-40">
       <div class="container mx-auto p-4 sm:p-6 lg:p-8">
-        <h1 class="text-4xl font-bold text-center mb-2 text-white">
+        <h1 class="text-4xl font-bold text-center mb-2 text-gray-900 dark:text-white">
           Rutines d'Exercicis
         </h1>
-        <p class="text-center text-gray-400 mb-10">
+        <p class="text-center text-gray-500 dark:text-gray-400 mb-10">
           Selecciona una rutina per veure els exercicis.
         </p>
 
         <div v-if="loading" class="text-center">
-          <p class="text-gray-300">Carregant rutines...</p>
+          <p class="text-gray-700 dark:text-gray-300">Carregant rutines...</p>
         </div>
-        <div v-if="error" class="text-center text-red-500">
+        <div v-if="error" class="text-center text-red-600 dark:text-red-500">
           <p>Error en carregar les rutines: {{ error }}</p>
         </div>
 
@@ -66,15 +66,15 @@
       class="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center p-4"
     >
       <div
-        class="bg-gray-800 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] flex flex-col"
+        class="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] flex flex-col"
       >
         <div
-          class="flex justify-between items-center p-4 border-b border-gray-700"
+          class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
         >
-          <h2 class="text-2xl font-bold text-white">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
             {{ selectedRoutine.title }}
           </h2>
-          <button @click="closeModal" class="text-gray-400 hover:text-white">
+          <button @click="closeModal" class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             &times;
           </button>
         </div>
@@ -83,7 +83,7 @@
             <div
               v-for="exercise in selectedRoutine.exercises"
               :key="exercise.name"
-              class="bg-gray-700 rounded-lg p-4 flex flex-col"
+              class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 flex flex-col"
             >
               <img
                 :src="exercise.gif"
@@ -91,13 +91,13 @@
                 :alt="exercise.name + ' gif'"
                 class="w-full rounded-md mb-4"
               />
-              <h4 class="text-lg font-semibold text-blue-400">
+              <h4 class="text-lg font-semibold text-blue-600 dark:text-blue-400">
                 {{ exercise.name }}
               </h4>
-              <p class="text-gray-300 mt-1 text-sm flex-grow">
+              <p class="text-gray-700 dark:text-gray-300 mt-1 text-sm flex-grow">
                 {{ exercise.description }}
               </p>
-              <div class="mt-3 text-xs text-gray-400">
+              <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
                 <span v-if="exercise.repetitions"
                   >{{ exercise.repetitions }} repeticions</span
                 >

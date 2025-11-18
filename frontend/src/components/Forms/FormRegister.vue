@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <h2 class="text-2xl font-bold text-center text-white">Registra't</h2>
+    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white">Registra't</h2>
     <form @submit.prevent="register" class="space-y-6 mt-4">
       <!-- Step 1: Core Credentials -->
       <div v-if="step === 1" class="space-y-4">
@@ -8,7 +8,7 @@
           <input
             type="text"
             placeholder="Nom d'usuari"
-            class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 mt-2 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             v-model="username"
             required
           />
@@ -17,7 +17,7 @@
           <input
             type="email"
             placeholder="Email"
-            class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 mt-2 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             v-model="email"
             required
           />
@@ -26,7 +26,7 @@
           <input
             type="password"
             placeholder="Contrasenya"
-            class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 mt-2 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             v-model="password"
             required
           />
@@ -39,14 +39,14 @@
           <input
             type="text"
             placeholder="URL de la teva foto de perfil"
-            class="w-full px-4 py-2 mt-2 text-white bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 mt-2 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             v-model="foto_perfil"
           />
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label
-              class="block text-sm font-medium text-gray-300"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300"
               for="pesoActual"
               >Pes actual (kg): {{ pesoActual || 0 }} kg</label
             >
@@ -56,11 +56,11 @@
               min="0"
               max="200"
               v-model="pesoActual"
-              class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              class="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-300" for="altura"
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="altura"
               >Altura (cm): {{ altura || 0 }} cm</label
             >
             <input
@@ -69,7 +69,7 @@
               min="0"
               max="250"
               v-model="altura"
-              class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+              class="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
         </div>
@@ -81,7 +81,7 @@
           type="button"
           v-if="step > 1"
           @click="prevStep"
-          class="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
+          class="px-6 py-2 text-gray-900 dark:text-white bg-gray-300 dark:bg-gray-600 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-700"
         >
           Anterior
         </button>
