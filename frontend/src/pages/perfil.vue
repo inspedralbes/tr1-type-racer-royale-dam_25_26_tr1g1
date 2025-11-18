@@ -179,6 +179,12 @@
               rows="3"
               class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             ></textarea>
+            <div class="mt-1 text-right text-sm" :class="{ 'text-red-500': isBioOverLimit }">
+              {{ wordCount }} / {{ BIO_WORD_LIMIT }} palabras
+            </div>
+            <p v-if="isBioOverLimit" class="text-red-500 text-xs mt-1">
+              La biografía no puede tener más de {{ BIO_WORD_LIMIT }} palabras.
+            </p>
           </div>
           <div>
             <label
@@ -204,7 +210,9 @@
           </button>
           <button
             @click="handleUpdateProfile"
+            :disabled="isBioOverLimit"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            :class="{ 'opacity-50 cursor-not-allowed': isBioOverLimit }"
           >
             Guardar
           </button>
@@ -251,6 +259,8 @@ const router = useRouter();
 const appStore = useAppStore();
 const usersStore = useUsersStore();
 
+const BIO_WORD_LIMIT = 50;
+
 const loggedInUser = computed(() => usersStore.getUser(appStore.userId));
 const isEditDialogOpen = ref(false);
 const isLogoutDialogOpen = ref(false);
@@ -262,6 +272,13 @@ const editableUserData = reactive({
   biografia: null,
   foto_perfil: null,
 });
+
+const wordCount = computed(() => {
+  if (!editableUserData.biografia) return 0;
+  return editableUserData.biografia.trim().split(/\s+/).filter(Boolean).length;
+});
+
+const isBioOverLimit = computed(() => wordCount.value > BIO_WORD_LIMIT);
 
 const isProfileComplete = computed(() => {
   if (!loggedInUser.value) return false;
@@ -293,6 +310,7 @@ const openEditDialog = () => {
 };
 
 const handleUpdateProfile = async () => {
+  if (isBioOverLimit.value) return;
   try {
     await appStore.updateUser(editableUserData);
     isEditDialogOpen.value = false;
