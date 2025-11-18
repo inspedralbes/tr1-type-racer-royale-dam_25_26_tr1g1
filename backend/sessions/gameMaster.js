@@ -4,7 +4,11 @@ import {
   saveFinishedSession,
   deleteSession,
 } from "./manager.js";
-import { broadcastSessionUpdate } from "../websocket.js";
+import {
+  broadcastSessionUpdate,
+  broadcastGameEvent,
+  broadcastSessionsUpdate,
+} from "../websocket.js";
 import { createSystemPost } from "../posts.js";
 import { GAME_SETTINGS } from "../constants.js";
 
@@ -42,9 +46,10 @@ export const nextExercise = async (sessionId) => {
 
     await createSystemPost(postContent);
 
-    broadcastSessionUpdate(session); // Broadcast final state with level progression
+    broadcastSessionUpdate(session);
 
     deleteSession(sessionId);
+    broadcastSessionsUpdate(); // Notify all clients that a session was removed
   }
 
   return session;
@@ -52,7 +57,11 @@ export const nextExercise = async (sessionId) => {
 
 export const updateRepetitions = (sessionId, userId) => {
   const session = getSessionById(sessionId);
-  if (!session || session.state.isResting) {
+  if (
+    !session ||
+    session.state.isResting ||
+    session.state.status !== "IN_PROGRESS"
+  ) {
     return null;
   }
 
@@ -61,8 +70,26 @@ export const updateRepetitions = (sessionId, userId) => {
     return null;
   }
 
-  userInSession.puntos += GAME_SETTINGS.POINTS_PER_REP; // Add points for each rep
+  const oldLeaderboard = [...session.users].sort((a, b) => b.puntos - a.puntos);
+  const oldRank = oldLeaderboard.findIndex((u) => u.userId === userId);
+
+  userInSession.puntos += GAME_SETTINGS.POINTS_PER_REP;
   session.state.repetitions++;
+
+  const newLeaderboard = [...session.users].sort((a, b) => b.puntos - a.puntos);
+  const newRank = newLeaderboard.findIndex((u) => u.userId === userId);
+
+  if (newRank === 0 && oldRank !== 0) {
+    broadcastGameEvent(session, {
+      text: `¡${userInSession.username} se ha puesto en cabeza!`,
+      gif: "/emojis_gif/1f451.gif",
+    });
+  } else if (oldRank - newRank >= 2) {
+    broadcastGameEvent(session, {
+      text: `¡${userInSession.username} está remontando!`,
+      gif: "/emojis_gif/1f525.gif",
+    });
+  }
 
   broadcastSessionUpdate(session);
   return session;
@@ -84,6 +111,9 @@ export const startSession = (sessionId) => {
   session.state.timer = firstExercise.duration;
   session.state.isResting = false;
 
+  broadcastSessionUpdate(session);
+  broadcastSessionsUpdate();
+
   timers[sessionId] = setInterval(() => {
     if (session.state.status !== "IN_PROGRESS") {
       clearInterval(timers[sessionId]);
@@ -101,11 +131,9 @@ export const startSession = (sessionId) => {
         session.state.isResting = true;
         session.state.timer = GAME_SETTINGS.REST_TIME_SECONDS;
       } else {
-        // Rest is over, check for next series or exercise
         if (session.state.currentSeries >= currentExercise.series) {
           nextExercise(sessionId);
         } else {
-          // Start next series
           session.state.currentSeries++;
           session.state.timer = currentExercise.duration;
           session.state.isResting = false;

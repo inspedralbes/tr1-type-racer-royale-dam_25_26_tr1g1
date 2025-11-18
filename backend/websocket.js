@@ -99,6 +99,29 @@ export const broadcastEmojiReaction = (session, emoji, userId) => {
   });
 };
 
+export const broadcastGameEvent = (session, payload) => {
+  if (!wssInstance || !session) return;
+  const message = JSON.stringify({
+    type: MESSAGE_TYPES.GAME_EVENT,
+    payload,
+  });
+
+  const userIdsInSession = new Set(session.users.map((u) => u.userId));
+
+  wssInstance.clients.forEach((client) => {
+    if (
+      client.readyState === client.OPEN &&
+      userIdsInSession.has(client.userId)
+    ) {
+      try {
+        client.send(message);
+      } catch (error) {
+        console.error("Error sending game event message:", error);
+      }
+    }
+  });
+};
+
 /**
  * Sends a message to a single client.
  * @param {WebSocket} ws - The WebSocket client instance.
@@ -181,7 +204,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
               message: "User not logged in.",
             });
           try {
-            const newSession = await createSession(payload);
+            const newSession = await createSession(payload, ws.userId);
             ws.currentSession = newSession.id;
             sendMessage(ws, MESSAGE_TYPES.CREATE_SUCCESS, newSession);
             broadcastSessionsUpdate();
@@ -207,6 +230,21 @@ export const setupWebsocketHandlers = (ws, wss) => {
               sendMessage(ws, MESSAGE_TYPES.JOIN_SUCCESS, session);
               broadcastSessionUpdate(session);
               broadcastSessionsUpdate();
+
+              // New logic with delay to prevent race condition on joining client
+              if (session.state.status === "IN_PROGRESS") {
+                const joiningUser = session.users.find(
+                  (u) => u.userId === ws.userId
+                );
+                if (joiningUser) {
+                  setTimeout(() => {
+                    broadcastGameEvent(session, {
+                      text: `${joiningUser.username} se ha unido a la partida.`,
+                      gif: "/emojis_gif/1f44b.gif",
+                    });
+                  }, 500);
+                }
+              }
             }
           } catch (error) {
             if (error.message === "SESSION_NOT_FOUND") {

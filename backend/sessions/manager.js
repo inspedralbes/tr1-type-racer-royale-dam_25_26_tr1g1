@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { SESSION_DURATIONS, GAME_SETTINGS } from "../constants.js";
-import { updateUserLevel } from "../users.js";
+import { updateUserLevel, findUserById } from "../users.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,8 +27,13 @@ export const getAllSessions = () => {
   return sessions;
 };
 
-export const createSession = async (sessionData) => {
+export const createSession = async (sessionData, creatorId) => {
   const { name, type, duration, password, maxUsers } = sessionData;
+  const creator = await findUserById(creatorId);
+  if (!creator) {
+    throw new Error("CREATOR_NOT_FOUND");
+  }
+
   const allExercises = exercicisData.routine[type];
 
   const series = SESSION_DURATIONS[duration.toUpperCase()] || 2;
@@ -47,7 +52,14 @@ export const createSession = async (sessionData) => {
     password,
     maxUsers,
     exercicis: exercisesWithDetails,
-    users: [],
+    users: [
+      {
+        userId: creator.id,
+        username: creator.username,
+        puntos: 0,
+        ready: false,
+      },
+    ],
     latestReaction: null,
     state: {
       status: "WAITING",

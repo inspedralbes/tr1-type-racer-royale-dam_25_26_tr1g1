@@ -4,7 +4,11 @@ import {
   getEmptySessionTimers,
 } from "./manager.js";
 import { findUserById } from "../users.js";
-import { broadcastSessionsUpdate } from "../websocket.js";
+import {
+  broadcastSessionsUpdate,
+  broadcastGameEvent,
+  broadcastSessionUpdate,
+} from "../websocket.js";
 import { GAME_SETTINGS } from "../constants.js";
 
 export const joinSession = async (sessionId, userId, password) => {
@@ -37,7 +41,6 @@ export const joinSession = async (sessionId, userId, password) => {
     ready: false,
   });
 
-  console.log(`User ${userId} joined session ${sessionId}.`);
   return session;
 };
 
@@ -45,26 +48,38 @@ export const leaveSession = async (sessionId, userId) => {
   const session = getSessionById(sessionId);
   if (!session) return null;
 
-  const initialUserCount = session.users.length;
-  session.users = session.users.filter((user) => user.userId !== userId);
-
-  if (session.users.length < initialUserCount) {
-    if (session.users.length === 0) {
-      console.log(`Session ${sessionId} is empty. Starting deletion timer...`);
-      const emptySessionTimers = getEmptySessionTimers();
-      emptySessionTimers[sessionId] = setTimeout(() => {
-        deleteSession(sessionId);
-        broadcastSessionsUpdate(); // This is a special case, a session is deleted, so we need to notify everyone.
-        console.log(`Session ${sessionId} deleted after being empty.`);
-        delete emptySessionTimers[sessionId];
-      }, 60000); // 1 minute
-      return null; // Session is now empty, will be deleted
-    } else {
-      console.log(`User ${userId} left session ${sessionId}.`);
-      return session; // Return updated session
-    }
+  const userIndex = session.users.findIndex((user) => user.userId === userId);
+  if (userIndex === -1) {
+    return session; // User not in session, do nothing.
   }
-  return session; // User not found, return original session
+
+  const userLeaving = session.users[userIndex];
+
+  if (session.state.status === "IN_PROGRESS") {
+    broadcastGameEvent(session, {
+      text: `${userLeaving.username} ha salido de la partida.`,
+      gif: "/emojis_gif/1f44b.gif",
+    });
+  }
+
+  // Now, remove the user
+  session.users.splice(userIndex, 1);
+
+  // Handle empty session logic
+  if (session.users.length === 0) {
+    console.log(`Session ${sessionId} is empty. Starting deletion timer...`);
+    const emptySessionTimers = getEmptySessionTimers();
+    emptySessionTimers[sessionId] = setTimeout(() => {
+      deleteSession(sessionId);
+      broadcastSessionsUpdate();
+      console.log(`Session ${sessionId} deleted after being empty.`);
+      delete emptySessionTimers[sessionId];
+    }, 60000); // 1 minute
+    return null; // Session is now empty, will be deleted
+  }
+
+  console.log(`User ${userId} left session ${sessionId}.`);
+  return session; // Return updated session
 };
 
 export const updateUserScore = (sessionId, userId, score) => {
@@ -91,6 +106,7 @@ export const setReady = (sessionId, userId) => {
   const userInSession = session.users.find((user) => user.userId === userId);
   if (userInSession) {
     userInSession.ready = true;
+    broadcastSessionUpdate(session); // Notify all clients of the change
   }
 
   const allReady = session.users.every((user) => user.ready);

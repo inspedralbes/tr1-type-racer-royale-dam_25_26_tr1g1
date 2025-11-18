@@ -1,5 +1,6 @@
 <template>
   <div class="relative min-h-screen bg-gray-900 text-white flex flex-col">
+    <NotificationCenter />
     <!-- Session End Screen -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -115,6 +116,7 @@ import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CountdownTimer from "@/components/session/CountdownTimer.vue";
 import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
 import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
+import NotificationCenter from "@/components/session/NotificationCenter.vue";
 
 import SessionExerciseInfo from "@/components/session/SessionExerciseInfo.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
@@ -194,16 +196,6 @@ const leaveSession = () => {
     router.push("/sessions");
   }
 };
-
-onMounted(() => {
-  const sessionId = route.params.id;
-  if (sessionId) {
-    websocketStore.sendMessage({
-      type: "JOIN_SESSION",
-      payload: { sessionId },
-    });
-  }
-});
 
 onUnmounted(() => {
   if (currentSession.value) {

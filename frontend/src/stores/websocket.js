@@ -9,6 +9,7 @@ export const useWebSocketStore = defineStore("websocket", {
     isConnected: false,
     sessions: [],
     listeners: {},
+    lastMessage: null,
   }),
 
   actions: {
@@ -30,6 +31,7 @@ export const useWebSocketStore = defineStore("websocket", {
 
         this.socket.onmessage = (event) => {
           const data = JSON.parse(event.data);
+          this.lastMessage = data;
           const appStore = useAppStore();
           const postsStore = usePostsStore();
 
