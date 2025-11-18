@@ -8,7 +8,7 @@
         <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2"
           >Què vols entrenar?</label
         >
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-4 gap-3">
           <button
             type="button"
             v-for="routine in routines"
@@ -151,6 +151,7 @@ const routines = [
   { type: "fullbody", name: "Cos Complet", emoji: "🏋🏽‍♂️" },
   { type: "upper", name: "Tren Superior", emoji: "💪🏻" },
   { type: "lower", name: "Tren Inferior", emoji: "🦵🏻" },
+  { type: "prova", name: "Prova", emoji: "⚙️" },
 ];
 
 const session = ref({

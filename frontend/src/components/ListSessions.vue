@@ -340,6 +340,8 @@ const getRoutineEmoji = (type) => {
     return "🦵🏻";
   } else if (typeLower.includes("upper")) {
     return "💪🏻";
+  } else if (typeLower.includes("prova")) {
+    return "🏋🏽‍♂️";
   }
   return "🏋🏽‍♂️"; // Default emoji
 };

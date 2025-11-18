@@ -38,6 +38,30 @@
         "description": "Dempeus, peus a l'ample de les espatlles, baixa el cos flexionant genolls i torna a pujar.",
         "keypoints_detected": ["malucs", "genolls", "turmells"],
         "gif": "/exercicis_gif/Squat.gif"
+      },
+      {
+        "name": "Lunges",
+        "description": "Fa un pas endavant, baixa fins que tots dos genolls formin 90° i torna a la posició inicial.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/Lunges.gif"
+      },
+      {
+        "name": "Jump Squats",
+        "description": "Realitza una gatzoneta i en pujar salta explosivament cap amunt, aterra suaument i repeteix.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/Jump-Squat.gif"
+      },
+      {
+        "name": "Fire Hydrants",
+        "description": "A quatre grapes, aixeca una cama lateralment mantenint el genoll flexionat a 90 graus, com un gos en un hidrant.",
+        "keypoints_detected": ["malucs", "genolls", "esquena"],
+        "gif": "/exercicis_gif/Fire-Hydrant.gif"
+      },
+      {
+        "name": "Glute Bridge",
+        "description": "Tombat boca amunt, eleva els malucs fins a formar una línia recta espatlles-genolls.",
+        "keypoints_detected": ["espatlles", "malucs", "genolls"],
+        "gif": "/exercicis_gif/Glute-Bridges.gif"
       }
     ],
     "fullbody": [
@@ -52,6 +76,56 @@
           "turmells"
         ],
         "gif": "/exercicis_gif/Jumping-Jacks.gif"
+      },
+      {
+        "name": "Mountain Climbers",
+        "description": "En posició de planxa, porta un genoll al pit i alterna ràpidament les cames. ",
+        "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/Mountain-Climbers.gif"
+      },
+      {
+        "name": "Burpees",
+        "description": "Des de posició dempeus, baixa a planxa, realitza una flexió, salta i torna a començar.",
+        "keypoints_detected": [
+          "espatlles",
+          "colzes",
+          "malucs",
+          "genolls",
+          "turmells"
+        ],
+        "gif": "/exercicis_gif/Burpees.gif"
+      },
+      {
+        "name": "Plank",
+        "description": "Mantingues el cos recte en posició de planxa sobre avantbraços o mans.",
+        "keypoints_detected": ["espatlles", "malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/Plank.gif"
+      },
+      {
+        "name": "High Knees",
+        "description": "Corre en el lloc aixecant els genolls el més alt possible.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/High-Knees.gif"
+      }
+    ],
+    "prova": [
+      {
+        "name": "Jumping Jacks",
+        "description": "Salta obrint cames i braços als costats i torna a la posició inicial.",
+        "keypoints_detected": [
+          "espatlles",
+          "colzes",
+          "malucs",
+          "genolls",
+          "turmells"
+        ],
+        "gif": "/exercicis_gif/Jumping-Jacks.gif"
+      },
+      {
+        "name": "Squat",
+        "description": "Dempeus, peus a l'ample de les espatlles, baixa el cos flexionant genolls i torna a pujar.",
+        "keypoints_detected": ["malucs", "genolls", "turmells"],
+        "gif": "/exercicis_gif/Squat.gif"
       }
     ]
   }
