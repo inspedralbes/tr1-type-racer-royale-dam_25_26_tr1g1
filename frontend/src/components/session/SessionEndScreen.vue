@@ -101,10 +101,7 @@
         </div>
       </div>
 
-      <!-- Remaining Participants Scoreboard -->
-      <div v-if="remainingParticipants.length > 0" class="w-full max-w-md mt-4">
-        <SessionScoreboard :sorted-participants="remainingParticipants" />
-      </div>
+
 
       <!-- Level Progression -->
       <div v-if="currentUserProgression" class="w-full max-w-md mt-8">

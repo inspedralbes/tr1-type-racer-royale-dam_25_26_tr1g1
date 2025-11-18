@@ -1,13 +1,31 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { countSquats, estimatePose, drawSkeleton, countPushups, countJumpingJacks, countGluteBridges, countMountainClimbers, countHighKnees, countFireHydrants, checkPlank, checkSupermanHold } from "./analysis.js";
+import {
+  countSquats,
+  estimatePose,
+  drawSkeleton,
+  countPushups,
+  countJumpingJacks,
+  countGluteBridges,
+  countMountainClimbers,
+  countHighKnees,
+  countFireHydrants,
+  checkPlank,
+  checkSupermanHold,
+} from "./analysis.js";
 import { useWebSocketStore } from "@/stores/websocket";
 
 import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
-const emit = defineEmits(["rep", "cameras", "in-pose", "loading-model", "model-loaded"]);
+const emit = defineEmits([
+  "rep",
+  "cameras",
+  "in-pose",
+  "loading-model",
+  "model-loaded",
+]);
 
 const props = defineProps({
   currentExercise: {
@@ -80,50 +98,41 @@ function detectExercise(keypoints) {
     case "Squat":
     case "Jump Squats":
     case "Lunges":
-      ({
-        newState,
-        repDone
-      } = countSquats(keypoints, exerciseState.value));
+      ({ newState, repDone } = countSquats(keypoints, exerciseState.value));
       break;
     case "Push-Up":
     case "Triceps Dips":
     case "Wall Push-ups":
     case "Burpees":
     case "Diamond Push-ups":
-      ({
-        newState,
-        repDone
-      } = countPushups(keypoints, exerciseState.value));
+      ({ newState, repDone } = countPushups(keypoints, exerciseState.value));
       break;
     case "Jumping Jacks":
-      ({
-        newState,
-        repDone
-      } = countJumpingJacks(keypoints, exerciseState.value));
+      ({ newState, repDone } = countJumpingJacks(
+        keypoints,
+        exerciseState.value
+      ));
       break;
     case "Glute Bridge":
-      ({
-        newState,
-        repDone
-      } = countGluteBridges(keypoints, exerciseState.value));
+      ({ newState, repDone } = countGluteBridges(
+        keypoints,
+        exerciseState.value
+      ));
       break;
     case "Mountain Climbers":
-      ({
-        newState,
-        repDone
-      } = countMountainClimbers(keypoints, exerciseState.value));
+      ({ newState, repDone } = countMountainClimbers(
+        keypoints,
+        exerciseState.value
+      ));
       break;
     case "High Knees":
-      ({
-        newState,
-        repDone
-      } = countHighKnees(keypoints, exerciseState.value));
+      ({ newState, repDone } = countHighKnees(keypoints, exerciseState.value));
       break;
     case "Fire Hydrants":
-      ({
-        newState,
-        repDone
-      } = countFireHydrants(keypoints, exerciseState.value));
+      ({ newState, repDone } = countFireHydrants(
+        keypoints,
+        exerciseState.value
+      ));
       break;
     case "Plank":
       inPose = checkPlank(keypoints);
@@ -231,5 +240,9 @@ onBeforeUnmount(() => {
   height: 100%;
   object-fit: cover; /* Default to cover */
   transform: scaleX(-1);
+}
+
+.overlay {
+  z-index: -1;
 }
 </style>
