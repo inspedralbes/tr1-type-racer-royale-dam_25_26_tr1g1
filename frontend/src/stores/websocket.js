@@ -112,7 +112,9 @@ export const useWebSocketStore = defineStore("websocket", {
             case "NEW_COMMENT":
               postsStore.handleNewComment(data.payload);
               break;
-
+            case "GAME_EVENT":
+              // Handled by listeners
+              break;
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
           }

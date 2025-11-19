@@ -89,7 +89,7 @@
         />
       </transition>
       <!-- Bottom bar -->
-      <SessionBottomBar
+      <BottomBar
         v-if="!showCountdown"
         :cameras="cameras"
         @leave-session="leaveSession"
@@ -119,7 +119,7 @@ import FloatingItem from "@/components/FloatingItem.vue";
 import LoadingScreen from "@/components/Ai/LoadingScreen.vue";
 import CountdownTimer from "@/components/session/CountdownTimer.vue";
 import SessionEndScreen from "@/components/session/SessionEndScreen.vue";
-import SessionBottomBar from "@/components/session/SessionBottomBar.vue";
+import BottomBar from "@/components/session/BottomBar.vue";
 import NotificationCenter from "@/components/session/NotificationCenter.vue";
 
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";

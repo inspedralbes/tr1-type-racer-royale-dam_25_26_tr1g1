@@ -18,7 +18,7 @@
         <GameNotification
           v-for="notification in notifications"
           :key="notification.id"
-          :text="notification.id"
+          :text="notification.text"
           :gif="notification.gif"
           @destroy="removeNotification(notification.id)"
           class="w-full"
@@ -29,9 +29,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import { useWebSocketStore } from '@/stores/websocket';
-import GameNotification from './GameNotification.vue';
+import { ref, onMounted, onUnmounted } from "vue";
+import { useWebSocketStore } from "@/stores/websocket";
+import GameNotification from "./GameNotification.vue";
 
 const websocketStore = useWebSocketStore();
 const notifications = ref([]);
@@ -40,19 +40,25 @@ const notifications = ref([]);
 const addNotification = (text, gif = null) => {
   const id = Date.now() + Math.random();
   notifications.value.unshift({ id, text, gif });
+  console.log("Notifications array:", notifications.value);
 };
 // Funció per eliminar una notificació
 const removeNotification = (id) => {
   notifications.value = notifications.value.filter((n) => n.id !== id);
 };
 
-watch(
-  () => websocketStore.lastMessage,
-  (newMessage) => {
-    if (newMessage && newMessage.type === 'GAME_EVENT' && newMessage.payload.text) {
-      addNotification(newMessage.payload.text, newMessage.payload.gif);
-    }
-  },
-  { deep: true }
-);
+const handleGameEvent = (payload) => {
+  console.log("Game event received in NotificationCenter:", payload);
+  if (payload.text) {
+    addNotification(payload.text, payload.gif);
+  }
+};
+
+onMounted(() => {
+  websocketStore.on("GAME_EVENT", handleGameEvent);
+});
+
+onUnmounted(() => {
+  websocketStore.off("GAME_EVENT", handleGameEvent);
+});
 </script>
