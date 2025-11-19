@@ -1,48 +1,54 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 bg-opacity-70 dark:bg-opacity-70 rounded-lg shadow-xl p-2 sm:p-4 w-48 sm:w-72 text-center text-gray-900 dark:text-white"
+    class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 w-44 sm:w-64 text-gray-900 dark:text-white transition-all duration-300"
   >
     <h2
-      class="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 flex items-center justify-center"
+      class="text-sm sm:text-lg font-bold mb-3 flex items-center justify-center text-gray-800 dark:text-gray-100"
     >
-      <span
-        class="mdi mdi-trophy text-amber-500 dark:text-amber-400 text-xl sm:text-2xl mr-2"
-      ></span>
+      <i class="mdi mdi-trophy text-amber-500 mr-1.5 text-lg sm:text-xl"></i>
       Marcador
     </h2>
-    <ul class="space-y-2">
+
+    <ul class="space-y-1.5">
       <li
         v-for="(participant, index) in sortedParticipants"
         :key="participant.userId"
-        class="flex items-center py-1 px-2 rounded-md"
-        :class="{
-          'bg-gray-100 dark:bg-gray-700': index % 2 === 0,
-          'bg-gray-200 dark:bg-gray-600': index % 2 !== 0,
-        }"
+        class="flex items-center justify-between p-1.5 rounded-lg transition-colors"
+        :class="
+          index === 0
+            ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800/30'
+            : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
+        "
       >
-        <div
-          class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center mr-2 sm:mr-3 overflow-hidden"
-          :class="index === 0 ? 'bg-amber-400' : 'bg-gray-300 dark:bg-gray-400'"
-        >
-          <img
-            v-if="participant.foto_perfil"
-            :src="participant.foto_perfil"
-            alt="Avatar"
-            class="w-full h-full object-cover"
-          />
+        <div class="flex items-center min-w-0 gap-2">
+          <div
+            class="relative flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center overflow-hidden shadow-sm"
+            :class="
+              index === 0
+                ? 'bg-amber-100 ring-1 ring-amber-300'
+                : 'bg-gray-200 dark:bg-gray-600'
+            "
+          >
+            <img
+              v-if="participant.foto_perfil"
+              :src="participant.foto_perfil"
+              alt="Avatar"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
           <span
-            v-else
-            class="mdi mdi-crown text-gray-700 dark:text-white text-base sm:text-lg"
-          ></span>
+            class="text-xs sm:text-sm font-medium truncate max-w-[80px] sm:max-w-[120px]"
+          >
+            {{ participant.username }}
+          </span>
         </div>
-        <span class="font-medium text-xs sm:text-sm flex-grow">{{
-          participant.username
-        }}</span>
+
         <span
-          class="px-2 py-1 sm:px-3 rounded-full text-xs font-bold"
+          class="flex-shrink-0 px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow-sm"
           :class="
             index === 0
-              ? 'bg-amber-400 text-gray-900'
+              ? 'bg-amber-400 text-white dark:text-gray-900'
               : 'bg-blue-500 text-white'
           "
         >
