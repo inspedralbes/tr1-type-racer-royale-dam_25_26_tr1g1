@@ -1,6 +1,6 @@
-// analysis.js
 import * as poseDetection from "@tensorflow-models/pose-detection";
 
+// Funció per calcular l'angle 
 export function calculateAngle(pointA, pointB, pointC) {
   if (!pointA || !pointB || !pointC) {
     return 0;
@@ -100,6 +100,7 @@ export function countSquats(keypoints, exerciseState) {
   return { newState, repDone };
 }
 
+// Funció per comptar les flexions de braços (push-ups)
 export function countPushups(keypoints, exerciseState) {
   if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -158,6 +159,7 @@ export function countPushups(keypoints, exerciseState) {
   return { newState, repDone };
 }
 
+//Funció per detectar la posició del cos
 export async function estimatePose(detector, video) {
   if (!detector || !video) return null;
 
@@ -169,6 +171,7 @@ export async function estimatePose(detector, video) {
   return poses[0] || null;
 }
 
+// Funció   **********
 export function drawSkeleton(ctx, keypoints) {
   // Neteja el canvas
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -198,7 +201,7 @@ export function drawSkeleton(ctx, keypoints) {
     ctx.fill();
   }
 }
-
+//Funció per comptar repeticions (Jumping Jack)
 export function countJumpingJacks(keypoints, exerciseState) {
   if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -220,8 +223,8 @@ export function countJumpingJacks(keypoints, exerciseState) {
   const leftShoulderAngle = calculateAngle(leftHip, leftShoulder, leftWrist);
   const rightShoulderAngle = calculateAngle(rightHip, rightShoulder, rightWrist);
 
-  const downThreshold = 60; // Arms up
-  const upThreshold = 140; // Arms down
+  const downThreshold = 60; // braços a dalt 
+  const upThreshold = 140; // Braços a baix 
 
   let newState = exerciseState;
   let repDone = false;
@@ -235,7 +238,7 @@ export function countJumpingJacks(keypoints, exerciseState) {
 
   return { newState, repDone };
 }
-
+//Funció per comptar les repeticions (Glute bridge)
 export function countGluteBridges(keypoints, exerciseState) {
     if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -271,7 +274,7 @@ export function countGluteBridges(keypoints, exerciseState) {
     }
     return { newState, repDone };
 }
-
+//Funció per comptar les repeticions ( Mountain climbers)
 export function countMountainClimbers(keypoints, exerciseState) {
     if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -307,7 +310,7 @@ export function countMountainClimbers(keypoints, exerciseState) {
     }
     return { newState, repDone };
 }
-
+//Funció per comptar les repeticions (Pujar genolls)
 export function countHighKnees(keypoints, exerciseState) {
     if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -329,8 +332,8 @@ export function countHighKnees(keypoints, exerciseState) {
     const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
     const rightAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
 
-    const downThreshold = 100; // Knee up
-    const upThreshold = 150;   // Knee down
+    const downThreshold = 100; // genoll a dalt 
+    const upThreshold = 150;   // genoll a baix 
 
     let newState = exerciseState;
     let repDone = false;
@@ -343,7 +346,7 @@ export function countHighKnees(keypoints, exerciseState) {
     }
     return { newState, repDone };
 }
-
+//Funció per comptar les repeticions de (Fire hydrants)
 export function countFireHydrants(keypoints, exerciseState) {
     if (!keypoints) return { newState: exerciseState, repDone: false };
 
@@ -365,8 +368,8 @@ export function countFireHydrants(keypoints, exerciseState) {
     const leftAngle = calculateAngle(leftShoulder, leftHip, leftKnee);
     const rightAngle = calculateAngle(rightShoulder, rightHip, rightKnee);
 
-    const downThreshold = 120; // leg lifted
-    const upThreshold = 100;   // leg down
+    const downThreshold = 120; // cama aixecada 
+    const upThreshold = 100;   // cama abaixada 
 
     let newState = exerciseState;
     let repDone = false;
@@ -379,7 +382,7 @@ export function countFireHydrants(keypoints, exerciseState) {
     }
     return { newState, repDone };
 }
-
+// Funció per detectar si la posició actual és una planxa correcta
 export function checkPlank(keypoints) {
     if (!keypoints) return false;
 
@@ -401,11 +404,11 @@ export function checkPlank(keypoints) {
     const leftBodyAngle = calculateAngle(leftShoulder, leftHip, leftAnkle);
     const rightBodyAngle = calculateAngle(rightShoulder, rightHip, rightAnkle);
 
-    const plankThreshold = 160;
+    const plankThreshold = 160;// Angle necessari per una planxa recta
 
     return leftBodyAngle > plankThreshold && rightBodyAngle > plankThreshold;
 }
-
+// Funció per detectar la posició de "Superman Hold" 
 export function checkSupermanHold(keypoints) {
     if (!keypoints) return false;
 
@@ -425,8 +428,8 @@ export function checkSupermanHold(keypoints) {
     if (leftShoulder.score < 0.3 || rightShoulder.score < 0.3 || leftHip.score < 0.3 || rightHip.score < 0.3 || leftWrist.score < 0.3 || rightWrist.score < 0.3 || leftAnkle.score < 0.3 || rightAnkle.score < 0.3) {
         return false;
     }
-
-    // Check if wrists are above shoulders and ankles are above hips
+    // Comprovem si els braços estan aixecats 
+    // i les cames també
     const armsUp = leftWrist.y < leftShoulder.y && rightWrist.y < rightShoulder.y;
     const legsUp = leftAnkle.y < leftHip.y && rightAnkle.y < rightHip.y;
 
