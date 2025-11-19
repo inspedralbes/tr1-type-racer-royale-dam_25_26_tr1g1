@@ -28,8 +28,8 @@ app.use(GTag, {
   },
   pageTrackerTemplate(to) {
     return {
-      page_title: to.name,
-      page_path: to.path,
+      page_title: to.name || to.path,
+      page_path: to.fullPath,
     }
   },
 }, router);
