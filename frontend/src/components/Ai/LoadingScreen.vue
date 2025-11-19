@@ -2,52 +2,72 @@
   <div
     class="fixed inset-0 bg-gray-100 dark:bg-gray-900 flex flex-col items-center justify-center z-50 p-4"
   >
-    <div class="w-full max-w-4xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-        <!-- Tip 1: Il·luminació -->
-        <div class="flex flex-col items-center text-gray-700 dark:text-gray-300">
+    <div class="w-full max-w-4xl mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+        <div
+          class="flex flex-row md:flex-col items-center md:items-center p-4 rounded-lg md:bg-transparent md:p-0"
+        >
           <div
-            class="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mb-4"
+            class="w-16 h-16 md:w-32 md:h-32 flex-shrink-0 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mr-4 md:mr-0 md:mb-4"
           >
             <i
-              class="mdi mdi-lightbulb text-yellow-500 dark:text-yellow-400 text-5xl md:text-7xl"
+              class="mdi mdi-lightbulb text-yellow-500 dark:text-yellow-400 text-3xl md:text-7xl"
             ></i>
           </div>
-          <h3 class="text-lg md:text-xl font-semibold mb-2">
-            Habitació Il·luminada
-          </h3>
-          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Assegura't que la teva habitació està ben il·luminada per a un
-            seguiment precís.
-          </p>
+          <div class="text-left md:text-center">
+            <h3
+              class="text-base md:text-xl font-semibold mb-1 md:mb-2 text-gray-800 dark:text-gray-200"
+            >
+              Habitació Il·luminada
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-tight">
+              Assegura't que la teva habitació està ben il·luminada.
+            </p>
+          </div>
         </div>
 
-        <!-- Tip 2: Espai -->
-        <div class="flex flex-col items-center text-gray-700 dark:text-gray-300">
+        <div
+          class="flex flex-row md:flex-col items-center md:items-center p-4 rounded-lg md:bg-transparent md:p-0"
+        >
           <div
-            class="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mb-4"
+            class="w-16 h-16 md:w-32 md:h-32 flex-shrink-0 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mr-4 md:mr-0 md:mb-4"
           >
-            <i class="mdi mdi-arrow-expand text-blue-500 dark:text-blue-400 text-5xl md:text-7xl"></i>
+            <i
+              class="mdi mdi-arrow-expand text-blue-500 dark:text-blue-400 text-3xl md:text-7xl"
+            ></i>
           </div>
-          <h3 class="text-lg md:text-xl font-semibold mb-2">Espai Lliure</h3>
-          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Tingues prou espai al teu voltant per moure't amb seguretat.
-          </p>
+          <div class="text-left md:text-center">
+            <h3
+              class="text-base md:text-xl font-semibold mb-1 md:mb-2 text-gray-800 dark:text-gray-200"
+            >
+              Espai Lliure
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-tight">
+              Tingues prou espai al teu voltant per moure't.
+            </p>
+          </div>
         </div>
 
-        <!-- Tip 3: Cos Sencer -->
-        <div class="flex flex-col items-center text-gray-700 dark:text-gray-300">
+        <div
+          class="flex flex-row md:flex-col items-center md:items-center p-4 rounded-lg md:bg-transparent md:p-0"
+        >
           <div
-            class="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mb-4"
+            class="w-16 h-16 md:w-32 md:h-32 flex-shrink-0 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800 mr-4 md:mr-0 md:mb-4"
           >
-            <i class="mdi mdi-human text-green-500 dark:text-green-400 text-5xl md:text-7xl"></i>
+            <i
+              class="mdi mdi-human text-green-500 dark:text-green-400 text-3xl md:text-7xl"
+            ></i>
           </div>
-          <h3 class="text-lg md:text-xl font-semibold mb-2">
-            Cos Sencer Visible
-          </h3>
-          <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Col·loca la càmera de manera que es vegi tot el teu cos.
-          </p>
+          <div class="text-left md:text-center">
+            <h3
+              class="text-base md:text-xl font-semibold mb-1 md:mb-2 text-gray-800 dark:text-gray-200"
+            >
+              Cos Sencer Visible
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 leading-tight">
+              Col·loca la càmera de manera que es vegi tot el teu cos.
+            </p>
+          </div>
         </div>
       </div>
     </div>

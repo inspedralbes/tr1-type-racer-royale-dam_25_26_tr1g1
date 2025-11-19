@@ -3,6 +3,7 @@
     class="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col"
   >
     <NotificationCenter />
+
     <!-- Session End Screen -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -53,7 +54,6 @@
         <div class="flex flex-col space-y-4">
           <SessionProgressInfo
             v-if="
-              !isResting &&
               currentExercise &&
               currentSession?.state?.status !== 'WAITING' &&
               !showCountdown
@@ -70,7 +70,6 @@
             <SessionScoreboard
               v-if="
                 showScoreboard &&
-                !isResting &&
                 currentSession?.state?.status !== 'WAITING' &&
                 !showCountdown
               "
@@ -383,4 +382,3 @@ watch(
   }
 }
 </style>
-
