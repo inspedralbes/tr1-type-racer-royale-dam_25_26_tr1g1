@@ -3,7 +3,7 @@
     <NavBar />
     <div class="container mx-auto p-4 pb-40">
       <div v-if="loggedInUser" class="max-w-2xl mx-auto">
-        <!-- Profile Header -->
+        <!-- capçalera del perfil -->
         <div
           class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm text-center"
         >
@@ -22,6 +22,7 @@
             </div>
           </div>
           <h2 class="text-3xl font-bold">{{ loggedInUser.username }}</h2>
+          <!-- Barra de progrés del nivell -->
           <p class="text-md text-gray-500 dark:text-gray-400">
             Nivell: {{ Math.floor(loggedInUser.nivel || 0) }}
           </p>
@@ -33,7 +34,7 @@
               :style="{ width: ((loggedInUser.nivel || 0) % 1) * 100 + '%' }"
             ></div>
           </div>
-          <!-- Action Buttons -->
+         <!-- Botons d'acció -->
           <div class="mt-6 flex justify-center gap-4">
             <button
               v-if="isProfileComplete"
@@ -58,7 +59,7 @@
           </div>
         </div>
 
-        <!-- User Biography -->
+        <!-- Biografia-->
         <div
           class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
         >
@@ -68,7 +69,7 @@
           </p>
         </div>
 
-        <!-- User Details -->
+        <!--Detalls del usuari -->
         <div
           class="mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm"
         >
@@ -220,7 +221,7 @@
       </div>
     </div>
 
-    <!-- Logout Confirmation Dialog -->
+    <!-- Confirmació de tancar sessió -->
     <div
       v-if="isLogoutDialogOpen"
       class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center"
@@ -272,7 +273,7 @@ const editableUserData = reactive({
   biografia: null,
   foto_perfil: null,
 });
-
+/* Comptador de paraules de la biografia */
 const wordCount = computed(() => {
   if (!editableUserData.biografia) return 0;
   return editableUserData.biografia.trim().split(/\s+/).filter(Boolean).length;
@@ -312,7 +313,6 @@ const handleUpdateProfile = async () => {
     isEditDialogOpen.value = false;
   } catch (error) {
     console.error("Error en actualitzar el perfil:", error);
-    // Aquí podries mostrar un missatge d'error a l'usuari
   }
 };
 

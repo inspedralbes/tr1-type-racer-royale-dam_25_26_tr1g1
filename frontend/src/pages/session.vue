@@ -4,23 +4,23 @@
   >
     <NotificationCenter />
 
-    <!-- Session End Screen -->
+    <!-- Pantalla de finalització de sessió -->
     <SessionEndScreen
       v-if="showEndScreen"
       :sorted-participants="sortedParticipants"
       @exit-session="leaveSession"
     />
 
-    <!-- AI Loading Overlay -->
+   <!-- Pantalla de càrrega de la IA -->
     <LoadingScreen v-if="isAiLoading && !showEndScreen" />
 
-    <!-- Countdown Timer -->
+   <!-- Compta enrere abans de començar -->
     <CountdownTimer
       v-if="showCountdown && !showEndScreen"
       @countdown-finished="handleCountdownFinished"
     />
 
-    <!-- Floating Items -->
+   <!-- Reaccions flotants (emojis, punts) -->
     <FloatingItem
       v-for="item in floatingItems"
       :key="item.id"
@@ -45,7 +45,7 @@
       class="absolute inset-0 w-full h-full object-cover z-0"
     />
 
-    <!-- Overlay content -->
+   <!-- Contingut principal per sobre de la càmera -->
     <div
       v-if="!showEndScreen && !isAiLoading"
       class="relative z-10 flex flex-col flex-grow"
@@ -79,6 +79,7 @@
         </div>
       </div>
 
+       <!-- Pantalla de descans -->
       <transition name="fade">
         <RestScreen
           v-if="isResting && !showCountdown"
@@ -88,7 +89,7 @@
           :total-series="totalSeries"
         />
       </transition>
-      <!-- Bottom bar -->
+      <!-- Barra inferior (-->
       <BottomBar
         v-if="!showCountdown"
         :cameras="cameras"
@@ -98,7 +99,7 @@
         @toggle-info="toggleInfo"
       />
 
-      <!-- Ready Card -->
+       <!-- Pantalla de "llest per començar" -->
       <div
         v-if="currentSession && currentSession.state.status === 'WAITING'"
         class="absolute inset-0 flex items-center justify-center bg-black/50"
@@ -191,7 +192,7 @@ const setReady = () => {
 };
 
 const handleInPose = () => {
-  // Logic for when the user is in pose
+
 };
 
 const leaveSession = () => {
@@ -219,7 +220,7 @@ onUnmounted(() => {
 });
 
 const showScoreboard = ref(true);
-// const showInfoExercices = ref(true); // Removed as SessionExerciseInfo is always shown during active exercise
+
 
 const poseSkeletonRef = ref(null);
 const cameras = ref([]);
@@ -233,7 +234,7 @@ const handleCameraSelected = (deviceId) => {
 
 const toggleInfo = () => {
   showScoreboard.value = !showScoreboard.value;
-  // showInfoExercices.value = !showInfoExercices.value; // Removed
+
 };
 
 const participantsWithDetails = computed(() => {

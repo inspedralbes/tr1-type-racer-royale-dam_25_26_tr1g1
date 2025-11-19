@@ -21,11 +21,12 @@
           <p>Error en carregar les rutines: {{ error }}</p>
         </div>
 
+           <!-- Targetes de rutines -->
         <div
           v-if="!loading && !error"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <!-- Card Tren Superior -->
+          <!-- Targeta Tren Superior -->
           <div
             @click="openModal('upper')"
             class="routine-card"
@@ -37,7 +38,7 @@
             </div>
           </div>
 
-          <!-- Card Tren Inferior -->
+          <!-- Targeta Tren Inferior -->
           <div
             @click="openModal('lower')"
             class="routine-card"
@@ -49,7 +50,7 @@
             </div>
           </div>
 
-          <!-- Card Cos Complet -->
+            <!-- Targeta Cos Complet -->
           <div
             @click="openModal('fullbody')"
             class="routine-card"
@@ -64,7 +65,7 @@
       </div>
     </div>
 
-    <!-- Modal per als Exercicis -->
+     <!-- Modal amb la llista d'exercicis -->
     <div
       v-if="isModalOpen"
       class="fixed inset-0 bg-black bg-opacity-75 z-50 flex justify-center items-center p-4"

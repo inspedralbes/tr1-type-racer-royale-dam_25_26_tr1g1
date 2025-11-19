@@ -3,7 +3,7 @@
     <NavBar />
 
     <div class="container mx-auto p-4 pb-40" style="max-width: 800px">
-      <!-- Crear nuevo post -->
+      <!-- Crear nou post -->
       <div
         class="p-4 bg-white dark:bg-gray-800/50 rounded-2xl mb-6 border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm"
       >
@@ -56,7 +56,7 @@
                     · {{ timeAgo(post.timestamp) }}
                   </p>
                 </div>
-                <!-- Dropdown for edit/delete -->
+                <!-- Menú d'edició / eliminació si és el mateix usuari -->
                 <div
                   v-if="currentUser && currentUser.username === post.username"
                   class="relative"
@@ -86,7 +86,7 @@
                 </div>
               </div>
 
-              <!-- Edit mode -->
+              <!-- Mode edició -->
               <div v-if="editingPost && editingPost.id === post.id">
                 <textarea
                   v-model="editedContent"
@@ -108,12 +108,12 @@
                   </button>
                 </div>
               </div>
-              <!-- Normal mode -->
+              <!-- Mode normal -->
               <p v-else class="text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">
                 {{ post.content }}
               </p>
 
-              <!-- Post Actions -->
+              <!-- Accions del post-->
               <div class="flex items-center justify-end mt-4 text-gray-500 dark:text-gray-500">
                 <button
                   @click="post.showComments = !post.showComments"
@@ -124,12 +124,12 @@
                 </button>
               </div>
 
-              <!-- Comment Section -->
+              <!-- Secció comentaris -->
               <div
                 v-if="post.showComments"
                 class="mt-4 border-t border-gray-200 dark:border-gray-700/50 pt-4"
               >
-                <!-- Add comment form -->
+                <!-- Formulari de comentari-->
                 <div class="flex items-center mb-4">
                   <img
                     :src="currentUser?.foto_perfil || DEFAULT_AVATAR"
@@ -149,7 +149,7 @@
                     <i class="mdi mdi-send"></i>
                   </button>
                 </div>
-                <!-- List of comments -->
+                <!-- Llista de comentaris-->
                 <div class="space-y-3">
                   <div
                     v-for="comment in post.comments"
@@ -184,7 +184,7 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Dialog -->
+    <!-- Confirmació de eliminació-->
     <div
       v-if="isDeleteDialogOpen"
       class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center backdrop-blur-sm"
@@ -259,7 +259,6 @@ watch(
 const addPost = async () => {
   const newPost = await postsStore.createPost(newPostContent.value);
   if (newPost) {
-    // Manually add for instant feedback; websocket handles others & prevents duplicates.
     postsStore.handleNewPost(newPost);
     newPostContent.value = "";
   }
@@ -269,7 +268,6 @@ const addComment = async (postId) => {
   const text = commentText.value[postId];
   const newComment = await postsStore.addComment(postId, text);
   if (newComment) {
-    // Manually add for instant feedback; websocket handles others & prevents duplicates.
     postsStore.handleNewComment({ ...newComment, postId });
     commentText.value[postId] = "";
   }
