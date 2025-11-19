@@ -26,5 +26,5 @@ app.use(GTag, {
   property: {
     id: import.meta.env.VITE_GA_MEASUREMENT_ID,
   },
-});
+}, router);
 app.mount("#app");
