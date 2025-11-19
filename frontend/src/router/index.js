@@ -44,7 +44,7 @@ router.isReady().then(() => {
 
 router.beforeEach((to, from, next) => {
   const appStore = useAppStore();
-  const publicPages = ["/"]; // Add other public pages here if any, e.g., '/register'
+  const publicPages = ["/"]; 
   const authRequired = !publicPages.includes(to.path);
 
   if (authRequired && !appStore.isAuthenticated) {
