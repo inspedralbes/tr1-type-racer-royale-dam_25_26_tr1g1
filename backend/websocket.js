@@ -15,10 +15,12 @@ import { MESSAGE_TYPES } from "./constants.js";
 
 let wssInstance = null;
 
+// Estableix la instància del servidor WebSocket.
 export const setWssInstance = (wss) => {
   wssInstance = wss;
 };
 
+// Difon un missatge a tots els clients connectats.
 export const broadcast = (type, payload) => {
   if (!wssInstance) return;
   const message = JSON.stringify({ type, payload });
@@ -28,12 +30,13 @@ export const broadcast = (type, payload) => {
       try {
         client.send(message);
       } catch (error) {
-        console.error("Error sending WebSocket message:", error);
+        console.error("Error enviant missatge WebSocket:", error);
       }
     }
   });
 };
 
+// Difon l'actualització de la llista de sessions a tots els clients.
 export const broadcastSessionsUpdate = () => {
   if (!wssInstance) return;
   const sessions = getAllSessions();
@@ -47,12 +50,13 @@ export const broadcastSessionsUpdate = () => {
       try {
         client.send(message);
       } catch (error) {
-        console.error("Error enviando mensaje WebSocket:", error);
+        console.error("Error enviant missatge WebSocket:", error);
       }
     }
   });
 };
 
+// Difon l'actualització d'una sessió específica als usuaris d'aquesta sessió.
 export const broadcastSessionUpdate = (session) => {
   if (!wssInstance) return;
   const message = JSON.stringify({
@@ -70,12 +74,13 @@ export const broadcastSessionUpdate = (session) => {
       try {
         client.send(message);
       } catch (error) {
-        console.error("Error sending WebSocket message:", error);
+        console.error("Error enviant missatge WebSocket:", error);
       }
     }
   });
 };
 
+// Difon una reacció amb emoji als usuaris d'una sessió.
 export const broadcastEmojiReaction = (session, emoji, userId) => {
   if (!wssInstance) return;
   const message = JSON.stringify({
@@ -93,12 +98,13 @@ export const broadcastEmojiReaction = (session, emoji, userId) => {
       try {
         client.send(message);
       } catch (error) {
-        console.error("Error sending WebSocket message:", error);
+        console.error("Error enviant missatge WebSocket:", error);
       }
     }
   });
 };
 
+// Difon un esdeveniment de joc als usuaris d'una sessió.
 export const broadcastGameEvent = (session, payload) => {
   if (!wssInstance || !session) return;
   const message = JSON.stringify({
@@ -116,29 +122,29 @@ export const broadcastGameEvent = (session, payload) => {
       try {
         client.send(message);
       } catch (error) {
-        console.error("Error sending game event message:", error);
+        console.error("Error enviant missatge d'esdeveniment de joc:", error);
       }
     }
   });
 };
 
 /**
- * Sends a message to a single client.
- * @param {WebSocket} ws - The WebSocket client instance.
- * @param {string} type - The message type.
- * @param {Object} payload - The data payload.
+ * Envia un missatge a un sol client.
+ * @param {WebSocket} ws - La instància del client WebSocket.
+ * @param {string} type - El tipus de missatge.
+ * @param {Object} payload - La càrrega útil de dades.
  */
 const sendMessage = (ws, type, payload) => {
   ws.send(JSON.stringify({ type, payload }));
 };
 
 /**
- * Sets up the message and event handlers for a new WebSocket connection.
- * @param {WebSocket} ws - The newly connected client.
- * @param {WebSocketServer} wss - The WebSocket server instance.
+ * Configura els gestors de missatges i esdeveniments per a una nova connexió WebSocket.
+ * @param {WebSocket} ws - El client acabat de connectar.
+ * @param {WebSocketServer} wss - La instància del servidor WebSocket.
  */
 export const setupWebsocketHandlers = (ws, wss) => {
-  // On connect, send the initial list of sessions
+  // En connectar, envia la llista inicial de sessions
   sendMessage(ws, MESSAGE_TYPES.SESSIONS_UPDATE, getAllSessions());
 
   ws.on("message", async (message) => {
@@ -147,12 +153,12 @@ export const setupWebsocketHandlers = (ws, wss) => {
       const { type, payload } = data;
 
       switch (type) {
-        // USER MANAGEMENT
+        // GESTIÓ D'USUARIS
         case MESSAGE_TYPES.REGISTER_WEBSOCKET:
           if (payload.userId) {
             ws.userId = payload.userId;
             console.log(
-              `WebSocket connection registered for existing user: ${ws.userId}`
+              `Connexió WebSocket registrada per a l'usuari existent: ${ws.userId}`
             );
           }
           break;
@@ -182,13 +188,13 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.LOGIN_USER:
           try {
             const { user } = loginUser(payload.username, payload.password);
-            ws.userId = user.id; // Associate userId with the connection
+            ws.userId = user.id; // Associa l'ID d'usuari amb la connexió
             sendMessage(ws, MESSAGE_TYPES.LOGIN_SUCCESS, {
               userId: user.id,
               username: user.username,
             });
             console.log(
-              `User ${user.username} (${user.id}) logged in via WebSocket.`
+              `L'usuari ${user.username} (${user.id}) ha iniciat sessió via WebSocket.`
             );
           } catch (error) {
             sendMessage(ws, MESSAGE_TYPES.LOGIN_FAIL, {
@@ -197,11 +203,11 @@ export const setupWebsocketHandlers = (ws, wss) => {
           }
           break;
 
-        // SESSION MANAGEMENT
+        // GESTIÓ DE SESSIONS
         case MESSAGE_TYPES.CREATE_SESSION:
           if (!ws.userId)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in.",
+              message: "L'usuari no ha iniciat sessió.",
             });
           try {
             const newSession = await createSession(payload, ws.userId);
@@ -216,7 +222,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.JOIN_SESSION:
           if (!ws.userId) {
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in.",
+              message: "L'usuari no ha iniciat sessió.",
             });
           }
           try {
@@ -231,7 +237,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
               broadcastSessionUpdate(session);
               broadcastSessionsUpdate();
 
-              // New logic with delay to prevent race condition on joining client
+              // Nova lògica amb retard per evitar condicions de cursa en el client que s'uneix
               if (session.state.status === "IN_PROGRESS") {
                 const joiningUser = session.users.find(
                   (u) => u.userId === ws.userId
@@ -239,7 +245,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
                 if (joiningUser) {
                   setTimeout(() => {
                     broadcastGameEvent(session, {
-                      text: `${joiningUser.username} se ha unido a la partida.`,
+                      text: `${joiningUser.username} s'ha unit a la partida.`,
                       gif: "/emojis_gif/1f44b.gif",
                     });
                   }, 500);
@@ -260,7 +266,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.DELETE_SESSION:
           if (!ws.userId)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in.",
+              message: "L'usuari no ha iniciat sessió.",
             });
           deleteSession(payload.sessionId);
           broadcastSessionsUpdate();
@@ -269,7 +275,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.LEAVE_SESSION:
           if (!ws.userId)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in.",
+              message: "L'usuari no ha iniciat sessió.",
             });
           const updatedSession = await leaveSession(
             payload.sessionId,
@@ -286,7 +292,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.UPDATE_SCORE:
           if (!ws.userId || !ws.currentSession)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in or not in a session.",
+              message: "L'usuari no ha iniciat sessió o no està en una sessió.",
             });
           try {
             updateRepetitions(ws.currentSession, ws.userId);
@@ -298,7 +304,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.NEXT_EXERCISE:
           if (!ws.userId || !ws.currentSession)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in or not in a session.",
+              message: "L'usuari no ha iniciat sessió o no està en una sessió.",
             });
           try {
             const updatedSession = nextExercise(ws.currentSession);
@@ -313,7 +319,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case "SET_READY":
           if (!ws.userId || !ws.currentSession)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in or not in a session.",
+              message: "L'usuari no ha iniciat sessió o no està en una sessió.",
             });
           const { allReady } = setReady(ws.currentSession, ws.userId);
           if (allReady) {
@@ -324,7 +330,7 @@ export const setupWebsocketHandlers = (ws, wss) => {
         case MESSAGE_TYPES.SEND_EMOJI_REACTION:
           if (!ws.userId || !ws.currentSession)
             return sendMessage(ws, MESSAGE_TYPES.ERROR, {
-              message: "User not logged in or not in a session.",
+              message: "L'usuari no ha iniciat sessió o no està en una sessió.",
             });
           try {
             const session = getSessionById(ws.currentSession);
@@ -337,22 +343,22 @@ export const setupWebsocketHandlers = (ws, wss) => {
           break;
 
         default:
-          console.log("Unknown message type:", type);
+          console.log("Tipus de missatge desconegut:", type);
           sendMessage(ws, MESSAGE_TYPES.ERROR, {
-            message: `Unknown message type: ${type}`,
+            message: `Tipus de missatge desconegut: ${type}`,
           });
       }
     } catch (err) {
-      console.error("Error processing message:", err);
+      console.error("Error processant el missatge:", err);
       sendMessage(ws, MESSAGE_TYPES.ERROR, {
-        message: "Invalid message format",
+        message: "Format de missatge invàlid",
       });
     }
   });
 
   ws.on("close", async () => {
     if (ws.userId) {
-      console.log(`User ${ws.userId} disconnected.`);
+      console.log(`L'usuari ${ws.userId} s'ha desconnectat.`);
       if (ws.currentSession) {
         const updatedSession = await leaveSession(ws.currentSession, ws.userId);
         if (updatedSession) {

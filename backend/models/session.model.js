@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../database/sequelize.js';
 
+// Model 'Session' per a sessions d'entrenament.
 const Session = sequelize.define('Session', {
   id: {
     type: DataTypes.UUID,

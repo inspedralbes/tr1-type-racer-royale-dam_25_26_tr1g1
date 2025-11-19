@@ -1,3 +1,4 @@
+// Importa la instància de sequelize i els models de la base de dades.
 import sequelize from "../database/sequelize.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
@@ -5,7 +6,7 @@ import Post from "./post.model.js";
 import Comment from "./comment.model.js";
 import Participation from "./participation.model.js";
 
-// Associations
+// Defineix les associacions entre els models.
 User.hasMany(Post, { foreignKey: "userId" });
 Post.belongsTo(User, { foreignKey: "userId", as: "user" });
 
@@ -18,6 +19,7 @@ Comment.belongsTo(Post, { foreignKey: "postId" });
 User.belongsToMany(Session, { through: Participation, foreignKey: "userId" });
 Session.belongsToMany(User, { through: Participation, foreignKey: "sessionId" });
 
+// Agrupa la instància de sequelize i tots els models en un objecte 'db'.
 const db = {
   sequelize,
   User,
@@ -26,5 +28,6 @@ const db = {
   Comment,
   Participation,
 };
+
 
 export default db;

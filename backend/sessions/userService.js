@@ -11,6 +11,7 @@ import {
 } from "../websocket.js";
 import { GAME_SETTINGS } from "../constants.js";
 
+// Permet a un usuari unir-se a una sessió.
 export const joinSession = async (sessionId, userId, password) => {
   const session = getSessionById(sessionId);
   if (!session) throw new Error("SESSION_NOT_FOUND");
@@ -44,13 +45,14 @@ export const joinSession = async (sessionId, userId, password) => {
   return session;
 };
 
+// Permet a un usuari sortir d'una sessió.
 export const leaveSession = async (sessionId, userId) => {
   const session = getSessionById(sessionId);
   if (!session) return null;
 
   const userIndex = session.users.findIndex((user) => user.userId === userId);
   if (userIndex === -1) {
-    return session; // User not in session, do nothing.
+    return session; // L'usuari no és a la sessió, no fa res.
   }
 
   const userLeaving = session.users[userIndex];
@@ -62,10 +64,10 @@ export const leaveSession = async (sessionId, userId) => {
     });
   }
 
-  // Now, remove the user
+  // Ara, elimina l'usuari
   session.users.splice(userIndex, 1);
 
-  // Handle empty session logic
+  // Gestiona la lògica de sessió buida
   if (session.users.length === 0) {
     console.log(`Session ${sessionId} is empty. Starting deletion timer...`);
     const emptySessionTimers = getEmptySessionTimers();
@@ -75,13 +77,14 @@ export const leaveSession = async (sessionId, userId) => {
       console.log(`Session ${sessionId} deleted after being empty.`);
       delete emptySessionTimers[sessionId];
     }, 60000); // 1 minute
-    return null; // Session is now empty, will be deleted
+    return null; // La sessió ara està buida, s'eliminarà
   }
 
   console.log(`User ${userId} left session ${sessionId}.`);
-  return session; // Return updated session
+  return session; // Retorna la sessió actualitzada
 };
 
+// Actualitza la puntuació d'un usuari en una sessió.
 export const updateUserScore = (sessionId, userId, score) => {
   const session = getSessionById(sessionId);
   if (!session) {
@@ -97,6 +100,7 @@ export const updateUserScore = (sessionId, userId, score) => {
   return session;
 };
 
+// Estableix l'estat de "llest" per a un usuari en una sessió.
 export const setReady = (sessionId, userId) => {
   const session = getSessionById(sessionId);
   if (!session) {
@@ -106,7 +110,7 @@ export const setReady = (sessionId, userId) => {
   const userInSession = session.users.find((user) => user.userId === userId);
   if (userInSession) {
     userInSession.ready = true;
-    broadcastSessionUpdate(session); // Notify all clients of the change
+    broadcastSessionUpdate(session); // Notifica a tots els clients el canvi
   }
 
   const allReady = session.users.every((user) => user.ready);

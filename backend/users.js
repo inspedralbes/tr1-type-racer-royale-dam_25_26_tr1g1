@@ -2,16 +2,19 @@ import User from "./models/user.model.js";
 import { GAME_SETTINGS } from "./constants.js";
 import { createSystemPost } from "./posts.js";
 
+// Cerca un usuari per la seva ID.
 export const findUserById = async (id) => {
   const user = await User.findByPk(id);
   return user;
 };
 
+// Cerca un usuari pel seu nom d'usuari.
 export const findUserByUsername = async (username) => {
   const user = await User.findOne({ where: { username } });
   return user;
 };
 
+// Registra un nou usuari.
 export const registerUser = async (
   username,
   email,
@@ -39,6 +42,7 @@ export const registerUser = async (
   return { user: newUser };
 };
 
+// Inicia la sessió d'un usuari.
 export const loginUser = async (username, password) => {
   const user = await findUserByUsername(username);
 
@@ -49,6 +53,7 @@ export const loginUser = async (username, password) => {
   return { user };
 };
 
+// Actualitza les dades d'un usuari.
 export const updateUser = async (id, updateData) => {
   const user = await findUserById(id);
   if (!user) {
@@ -59,6 +64,7 @@ export const updateUser = async (id, updateData) => {
   return updatedUser;
 };
 
+// Actualitza el nivell d'un usuari basat en la seva puntuació.
 export const updateUserLevel = async (user, transaction) => {
   const userRecord = await User.findByPk(user.userId, { transaction });
   if (userRecord) {
@@ -78,7 +84,7 @@ export const updateUserLevel = async (user, transaction) => {
       await createSystemPost(postContent);
     }
 
-    // Attach progression data for the frontend
+    // Adjunta dades de progressió per al frontend
     user.levelProgression = {
       oldLevel,
       newLevel,

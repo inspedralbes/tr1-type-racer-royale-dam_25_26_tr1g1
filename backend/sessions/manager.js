@@ -11,22 +11,25 @@ const __dirname = path.dirname(__filename);
 const exercicisPath = path.resolve(process.cwd(), "exercicis.json");
 const exercicisData = JSON.parse(fs.readFileSync(exercicisPath, "utf-8"));
 
-let sessions = [];
-let timers = {};
-let emptySessionTimers = {};
+let sessions = []; // Array per emmagatzemar les sessions actives.
+let timers = {}; // Objecte per gestionar els temporitzadors de les sessions.
+let emptySessionTimers = {}; // Objecte per gestionar temporitzadors de sessions buides.
 
-export const getSessions = () => sessions;
-export const getTimers = () => timers;
-export const getEmptySessionTimers = () => emptySessionTimers;
+export const getSessions = () => sessions; // Retorna totes les sessions actives.
+export const getTimers = () => timers; // Retorna els temporitzadors de les sessions.
+export const getEmptySessionTimers = () => emptySessionTimers; // Retorna els temporitzadors de sessions buides.
 
+// Obté una sessió per la seva ID.
 export const getSessionById = (id) => {
   return sessions.find((session) => session.id === id);
 };
 
+// Obté totes les sessions.
 export const getAllSessions = () => {
   return sessions;
 };
 
+// Crea una nova sessió de joc.
 export const createSession = async (sessionData, creatorId) => {
   const { name, type, duration, password, maxUsers } = sessionData;
   const creator = await findUserById(creatorId);
@@ -76,6 +79,7 @@ export const createSession = async (sessionData, creatorId) => {
   return newSession;
 };
 
+// Actualitza una sessió existent.
 export const updateSession = async (id, updateData) => {
   const index = sessions.findIndex((session) => session.id === id);
   if (index > -1) {
@@ -85,6 +89,7 @@ export const updateSession = async (id, updateData) => {
   return null;
 };
 
+// Elimina una sessió i el seu temporitzador associat.
 export const deleteSession = async (id) => {
   const initialLength = sessions.length;
   sessions = sessions.filter((session) => session.id !== id);
@@ -98,6 +103,7 @@ export const deleteSession = async (id) => {
   return false;
 };
 
+// Guarda una sessió finalitzada a la base de dades.
 export const saveFinishedSession = async (session) => {
   try {
     await sequelize.transaction(async (t) => {

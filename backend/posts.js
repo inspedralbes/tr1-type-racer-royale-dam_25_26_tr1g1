@@ -2,7 +2,7 @@ import pool from "./database/mysql.js";
 import { findUserByUsername } from "./users.js";
 import { broadcast } from "./websocket.js";
 
-// Helper function to process SQL results into nested post structure
+// Funció auxiliar per processar resultats SQL en una estructura de publicació niuada
 const mapPosts = (rows) => {
   const posts = new Map();
 
@@ -34,7 +34,7 @@ const mapPosts = (rows) => {
 };
 
 
-// 🔹 Obtener todos los posts
+// 🔹 Obté totes les publicacions
 export const getAllPosts = async () => {
   const sql = `
     SELECT
@@ -59,7 +59,7 @@ export const getAllPosts = async () => {
   return mapPosts(rows);
 };
 
-// 🔹 Crear un nuevo post
+// 🔹 Crea una nova publicació
 export const createPost = async (username, content) => {
   const user = await findUserByUsername(username);
   if (!user) {
@@ -85,7 +85,7 @@ export const createPost = async (username, content) => {
   return postData;
 };
 
-// 🔹 Crear un nuevo post del sistema
+// 🔹 Crea una nova publicació del sistema
 export const createSystemPost = async (content) => {
     const sql = "INSERT INTO Posts (content, authorType, userId, createdAt, updatedAt) VALUES (?, 'system', NULL, NOW(), NOW())";
     const [result] = await pool.query(sql, [content]);
@@ -100,12 +100,12 @@ export const createSystemPost = async (content) => {
         comments: [],
     };
 
-    broadcast("NEW_POST", postData); // Also broadcast system posts
+    broadcast("NEW_POST", postData); // També difon les publicacions del sistema
     return postData;
 };
 
 
-// 🔹 Añadir comentario
+// 🔹 Afegeix un comentari
 export const addComment = async (postId, username, text) => {
   const user = await findUserByUsername(username);
   if (!user) {
@@ -134,7 +134,7 @@ export const addComment = async (postId, username, text) => {
   return commentData;
 };
 
-// 🔹 Actualizar un post
+// 🔹 Actualitza una publicació
 export const updatePost = async (postId, username, content) => {
   const user = await findUserByUsername(username);
   if (!user) {
@@ -154,7 +154,7 @@ export const updatePost = async (postId, username, content) => {
   return updatedPosts[0];
 };
 
-// 🔹 Eliminar post (solo autor)
+// 🔹 Elimina una publicació (només l'autor)
 export const deletePost = async (postId, username) => {
   const user = await findUserByUsername(username);
   if (!user) {
@@ -166,7 +166,7 @@ export const deletePost = async (postId, username) => {
     return false;
   }
 
-  // Assuming ON DELETE CASCADE for comments
+  // Assumint ON DELETE CASCADE per als comentaris
   const [result] = await pool.query("DELETE FROM Posts WHERE id = ? AND userId = ?", [postId, user.id]);
   
   if (result.affectedRows > 0) {
@@ -176,7 +176,7 @@ export const deletePost = async (postId, username) => {
   return false;
 };
 
-// 🔹 Eliminar comentario (solo autor)
+// 🔹 Elimina un comentari (només l'autor)
 export const deleteComment = async (postId, commentId, username) => {
   const user = await findUserByUsername(username);
   if (!user) {

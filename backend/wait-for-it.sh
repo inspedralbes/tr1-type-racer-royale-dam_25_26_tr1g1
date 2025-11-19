@@ -1,23 +1,24 @@
 #!/usr/bin/env bash
-# Use this script to test if a given TCP host/port are available
+# Utilitza bash com a intèrpret de comandes
+# Utilitza aquest script per comprovar si un host/port TCP està disponible
 
 WAITFORIT_cmdname=${0##*/}
 
-echoerr() { if [[ $WAITFORIT_QUIET -ne 1 ]]; then echo "$@" 1>&2; fi }
+echoerr() { if [[ $WAITFORIT_QUIET -ne 1 ]]; then echo "$@" 1>&2; fi } # Funció per imprimir missatges d'error a stderr.
 
 usage()
 {
     cat << USAGE >&2
-Usage:
+Ús:
     $WAITFORIT_cmdname host:port [-s] [-t timeout] [-- command args]
-    -h HOST | --host=HOST       Host or IP under test
-    -p PORT | --port=PORT       TCP port under test
-                                Alternatively, you specify the host and port as host:port
-    -s | --strict               Only execute subcommand if the test succeeds
-    -q | --quiet                Don't output any status messages
+    -h HOST | --host=HOST       Host o IP a provar
+    -p PORT | --port=PORT       Port TCP a provar
+                                Alternativament, pots especificar l'host i el port com a host:port
+    -s | --strict               Executa la subcomanda només si la prova té èxit
+    -q | --quiet                No mostra cap missatge d'estat
     -t TIMEOUT | --timeout=TIMEOUT
-                                Timeout in seconds, zero for no timeout
-    -- COMMAND ARGS             Execute command with args after the test finishes
+                                Temps d'espera en segons, zero per a cap temps d'espera
+    -- COMMAND ARGS             Executa la comanda amb arguments un cop finalitzada la prova
 USAGE
     exit 1
 }
@@ -25,9 +26,9 @@ USAGE
 wait_for()
 {
     if [[ $WAITFORIT_TIMEOUT -gt 0 ]]; then
-        echoerr "$WAITFORIT_cmdname: waiting $WAITFORIT_TIMEOUT seconds for $WAITFORIT_HOST:$WAITFORIT_PORT"
+        echoerr "$WAITFORIT_cmdname: esperant $WAITFORIT_TIMEOUT segons per $WAITFORIT_HOST:$WAITFORIT_PORT"
     else
-        echoerr "$WAITFORIT_cmdname: waiting for $WAITFORIT_HOST:$WAITFORIT_PORT without a timeout"
+        echoerr "$WAITFORIT_cmdname: esperant $WAITFORIT_HOST:$WAITFORIT_PORT sense temps d'espera"
     fi
     WAITFORIT_start_ts=$(date +%s)
     while :
@@ -41,7 +42,7 @@ wait_for()
         fi
         if [[ $WAITFORIT_result -eq 0 ]]; then
             WAITFORIT_end_ts=$(date +%s)
-            echoerr "$WAITFORIT_cmdname: $WAITFORIT_HOST:$WAITFORIT_PORT is available after $((WAITFORIT_end_ts - WAITFORIT_start_ts)) seconds"
+            echoerr "$WAITFORIT_cmdname: $WAITFORIT_HOST:$WAITFORIT_PORT està disponible després de $((WAITFORIT_end_ts - WAITFORIT_start_ts)) segons"
             break
         fi
         sleep 1
@@ -51,7 +52,7 @@ wait_for()
 
 wait_for_wrapper()
 {
-    # In order to support SIGINT during timeout: http://unix.stackexchange.com/a/57692
+    # Per donar suport a SIGINT durant el temps d'espera: http://unix.stackexchange.com/a/57692
     if [[ $WAITFORIT_QUIET -eq 1 ]]; then
         timeout $WAITFORIT_BUSYTIMEFLAG $WAITFORIT_TIMEOUT $0 --quiet --child --host=$WAITFORIT_HOST --port=$WAITFORIT_PORT --timeout=$WAITFORIT_TIMEOUT &
     else
@@ -62,12 +63,12 @@ wait_for_wrapper()
     wait $WAITFORIT_PID
     WAITFORIT_RESULT=$?
     if [[ $WAITFORIT_RESULT -ne 0 ]]; then
-        echoerr "$WAITFORIT_cmdname: timeout occurred after waiting $WAITFORIT_TIMEOUT seconds for $WAITFORIT_HOST:$WAITFORIT_PORT"
+        echoerr "$WAITFORIT_cmdname: s'ha produït un temps d'espera després d'esperar $WAITFORIT_TIMEOUT segons per $WAITFORIT_HOST:$WAITFORIT_PORT"
     fi
     return $WAITFORIT_RESULT
 }
 
-# process arguments
+# Processa els arguments
 while [[ $# -gt 0 ]]
 do
     case "$1" in
@@ -125,14 +126,14 @@ do
         usage
         ;;
         *)
-        echoerr "Unknown argument: $1"
+        echoerr "Argument desconegut: $1"
         usage
         ;;
     esac
 done
 
 if [[ "$WAITFORIT_HOST" == "" || "$WAITFORIT_PORT" == "" ]]; then
-    echoerr "Error: you need to provide a host and port to test."
+    echoerr "Error: has de proporcionar un host i un port per provar."
     usage
 fi
 
@@ -141,15 +142,15 @@ WAITFORIT_STRICT=${WAITFORIT_STRICT:-0}
 WAITFORIT_CHILD=${WAITFORIT_CHILD:-0}
 WAITFORIT_QUIET=${WAITFORIT_QUIET:-0}
 
-# Check to see if timeout is from busybox?
+# Comprova si el temps d'espera és de busybox?
 WAITFORIT_TIMEOUT_PATH=$(type -p timeout)
 WAITFORIT_TIMEOUT_PATH=$(realpath $WAITFORIT_TIMEOUT_PATH 2>/dev/null || readlink -f $WAITFORIT_TIMEOUT_PATH)
 
 WAITFORIT_BUSYTIMEFLAG=""
 if [[ $WAITFORIT_TIMEOUT_PATH =~ "busybox" ]]; then
     WAITFORIT_ISBUSY=1
-    # Check if busybox timeout uses -t flag
-    # (recent Alpine versions don't support -t anymore)
+    # Comprova si el temps d'espera de busybox utilitza la bandera -t
+    # (les versions recents d'Alpine ja no admeten -t)
     if timeout &>/dev/stdout | grep -q -e '-t '; then
         WAITFORIT_BUSYTIMEFLAG="-t"
     fi
@@ -173,7 +174,7 @@ fi
 
 if [[ $WAITFORIT_CLI != "" ]]; then
     if [[ $WAITFORIT_RESULT -ne 0 && $WAITFORIT_STRICT -eq 1 ]]; then
-        echoerr "$WAITFORIT_cmdname: strict mode, refusing to execute subprocess"
+        echoerr "$WAITFORIT_cmdname: mode estricte, rebutjant executar el subprocés"
         exit $WAITFORIT_RESULT
     fi
     exec "${WAITFORIT_CLI[@]}"
