@@ -26,5 +26,11 @@ app.use(GTag, {
   property: {
     id: import.meta.env.VITE_GA_MEASUREMENT_ID,
   },
+  pageTrackerTemplate(to) {
+    return {
+      page_title: to.name,
+      page_path: to.path,
+    }
+  },
 }, router);
 app.mount("#app");
