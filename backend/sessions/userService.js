@@ -59,7 +59,7 @@ export const leaveSession = async (sessionId, userId) => {
 
   if (session.state.status === "IN_PROGRESS") {
     broadcastGameEvent(session, {
-      text: `${userLeaving.username} ha salido de la partida.`,
+      text: `${userLeaving.username} ha sortit de la partida.`,
       gif: "/emojis_gif/1f44b.gif",
     });
   }

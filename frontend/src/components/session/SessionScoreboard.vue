@@ -1,7 +1,7 @@
 <!-- Marcador  -->
 <template>
   <div
-    class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 w-44 sm:w-64 text-gray-900 dark:text-white transition-all duration-300"
+    class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-filter backdrop-blur-sm text-gray-900 dark:text-white rounded-2xl shadow-lg p-3 sm:p-4 w-44 sm:w-64 transition-all duration-300"
   >
     <h2
       class="text-sm sm:text-lg font-bold mb-3 flex items-center justify-center text-gray-800 dark:text-gray-100"
@@ -9,7 +9,7 @@
       <i class="mdi mdi-trophy text-amber-500 mr-1.5 text-lg sm:text-xl"></i>
       Marcador
     </h2>
-     <!-- Llista de participants ordenats per punts -->
+    <!-- Llista de participants ordenats per punts -->
     <ul class="space-y-2">
       <li
         v-for="(participant, index) in sortedParticipants"

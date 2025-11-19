@@ -243,12 +243,10 @@ export const setupWebsocketHandlers = (ws, wss) => {
                   (u) => u.userId === ws.userId
                 );
                 if (joiningUser) {
-                  setTimeout(() => {
-                    broadcastGameEvent(session, {
-                      text: `${joiningUser.username} s'ha unit a la partida.`,
-                      gif: "/emojis_gif/1f44b.gif",
-                    });
-                  }, 500);
+                  broadcastGameEvent(session, {
+                    text: `${joiningUser.username} s'ha unit a la partida.`,
+                    gif: "/emojis_gif/1f44b.gif",
+                  });
                 }
               }
             }

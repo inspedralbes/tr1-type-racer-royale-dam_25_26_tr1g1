@@ -2,7 +2,7 @@
 <template>
   <div class="p-4 w-full max-w-md mx-auto">
     <div
-      class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-filter backdrop-blur-sm rounded-xl shadow-2xl p-4 md:p-6 text-gray-900 dark:text-white"
+      class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-filter backdrop-blur-sm text-gray-900 dark:text-white rounded-xl shadow-2xl p-4 md:p-6"
     >
       <h2 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
         Sala d'Espera
@@ -14,7 +14,7 @@
           :key="user.userId"
           class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 bg-opacity-50 dark:bg-opacity-50 p-2 md:p-3 rounded-lg"
         >
-         <!-- Contenidor amb la foto i nom d'usuari -->
+          <!-- Contenidor amb la foto i nom d'usuari -->
           <div class="flex items-center">
             <img
               :src="

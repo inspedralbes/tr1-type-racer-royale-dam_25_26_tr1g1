@@ -8,7 +8,6 @@ export const useWebSocketStore = defineStore("websocket", {
     socket: null,
     isConnected: false,
     sessions: [],
-    listeners: {},
     lastMessage: null,
   }),
 
@@ -34,13 +33,6 @@ export const useWebSocketStore = defineStore("websocket", {
           this.lastMessage = data;
           const appStore = useAppStore();
           const postsStore = usePostsStore();
-
-          // Dispatch to generic listeners
-          if (this.listeners[data.type]) {
-            this.listeners[data.type].forEach((callback) =>
-              callback(data.payload)
-            );
-          }
 
           // Handle core, global events
           switch (data.type) {
@@ -113,7 +105,7 @@ export const useWebSocketStore = defineStore("websocket", {
               postsStore.handleNewComment(data.payload);
               break;
             case "GAME_EVENT":
-              // Handled by listeners
+              appStore.setLastGameEvent(data.payload);
               break;
             default:
               console.warn("Tipo de mensaje desconocido:", data.type);
@@ -137,7 +129,6 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.close();
         this.socket = null;
         this.isConnected = false;
-        this.listeners = {};
         console.log("WebSocket cerrado");
       }
     },
@@ -152,21 +143,6 @@ export const useWebSocketStore = defineStore("websocket", {
 
     registerWebSocket(userId) {
       this.sendMessage({ type: "REGISTER_WEBSOCKET", payload: { userId } });
-    },
-
-    on(eventType, callback) {
-      if (!this.listeners[eventType]) {
-        this.listeners[eventType] = [];
-      }
-      this.listeners[eventType].push(callback);
-    },
-
-    off(eventType, callback) {
-      if (this.listeners[eventType]) {
-        this.listeners[eventType] = this.listeners[eventType].filter(
-          (cb) => cb !== callback
-        );
-      }
     },
   },
 });

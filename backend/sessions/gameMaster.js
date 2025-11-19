@@ -83,12 +83,12 @@ export const updateRepetitions = (sessionId, userId) => {
 
   if (newRank === 0 && oldRank !== 0) {
     broadcastGameEvent(session, {
-      text: `¡${userInSession.username} se ha puesto en cabeza!`,
+      text: `${userInSession.username} s'ha posat al capdavant!`,
       gif: "/emojis_gif/1f451.gif",
     });
   } else if (oldRank - newRank >= 2) {
     broadcastGameEvent(session, {
-      text: `¡${userInSession.username} está remontando!`,
+      text: `${userInSession.username} està remuntant!`,
       gif: "/emojis_gif/1f525.gif",
     });
   }

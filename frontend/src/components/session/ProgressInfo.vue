@@ -1,7 +1,7 @@
 <!-- Temporitzador -->
 <template>
   <div
-    class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-5 w-44 sm:w-64 text-center text-gray-900 dark:text-white transition-all duration-300"
+    class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-filter backdrop-blur-sm text-gray-900 dark:text-white rounded-2xl shadow-lg p-3 sm:p-5 w-44 sm:w-64 text-center transition-all duration-300"
   >
     <div class="flex justify-center mb-2 sm:mb-4">
       <div

@@ -1,4 +1,4 @@
- <!-- Notificacions -->
+<!-- Notificacions -->
 <template>
   <transition
     appear
@@ -10,7 +10,7 @@
     leave-to-class="opacity-0"
   >
     <div
-      class="bg-black bg-opacity-50 text-white text-center text-lg font-semibold p-3 rounded-lg shadow-lg backdrop-blur-sm border border-gray-700 flex items-center justify-center space-x-2"
+      class="bg-white dark:bg-gray-800 bg-opacity-80 dark:bg-opacity-80 backdrop-filter backdrop-blur-sm text-gray-900 dark:text-white text-center text-lg font-semibold p-3 rounded-lg shadow-lg flex items-center justify-center space-x-2"
     >
       <img v-if="gif" :src="gif" alt="notification gif" class="h-8 w-8" />
       <p>{{ text }}</p>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from "vue";
 
 const props = defineProps({
   text: {
@@ -28,7 +28,7 @@ const props = defineProps({
   },
   duration: {
     type: Number,
-    default: 4000, 
+    default: 4000,
   },
   gif: {
     type: String,
@@ -36,11 +36,11 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['destroy']);
+const emit = defineEmits(["destroy"]);
 
 onMounted(() => {
   setTimeout(() => {
-    emit('destroy');
+    emit("destroy");
   }, props.duration);
 });
 </script>

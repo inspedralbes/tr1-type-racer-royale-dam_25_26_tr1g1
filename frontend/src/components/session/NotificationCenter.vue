@@ -1,15 +1,12 @@
-<!-- Contenidor de les notificacions -->
 <template>
-  <div
-    class="fixed top-10 left-4 w-11/12 sm:w-full max-w-md p-2 sm:p-4 z-5 pointer-events-none"
-  >
-    <div class="flex flex-col items-center space-y-3">
+  <div class="w-56 sm:w-80 md:w-96 transition-all duration-300">
+    <div class="flex flex-col items-start space-y-1 sm:space-y-2">
       <transition-group
         tag="div"
-        class="w-full"
+        class="w-full flex flex-col items-start"
         enter-active-class="transition-all duration-500 ease-out"
-        enter-from-class="opacity-0 -translate-y-4"
-        enter-to-class="opacity-100 translate-y-0"
+        enter-from-class="opacity-0 -translate-x-4"
+        enter-to-class="opacity-100 translate-x-0"
         leave-active-class="transition-all duration-500 ease-in"
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
@@ -21,7 +18,7 @@
           :text="notification.text"
           :gif="notification.gif"
           @destroy="removeNotification(notification.id)"
-          class="w-full"
+          class="w-full origin-top-left transform scale-75 sm:scale-100 transition-transform"
         />
       </transition-group>
     </div>
@@ -29,36 +26,29 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { useWebSocketStore } from "@/stores/websocket";
+import { ref, watch } from "vue";
+import { useAppStore } from "@/stores/app";
 import GameNotification from "./GameNotification.vue";
 
-const websocketStore = useWebSocketStore();
+const appStore = useAppStore();
 const notifications = ref([]);
 
-// // Funció per afegir una nova notificació
 const addNotification = (text, gif = null) => {
   const id = Date.now() + Math.random();
   notifications.value.unshift({ id, text, gif });
-  console.log("Notifications array:", notifications.value);
 };
-// Funció per eliminar una notificació
+
 const removeNotification = (id) => {
   notifications.value = notifications.value.filter((n) => n.id !== id);
 };
 
-const handleGameEvent = (payload) => {
-  console.log("Game event received in NotificationCenter:", payload);
-  if (payload.text) {
-    addNotification(payload.text, payload.gif);
-  }
-};
-
-onMounted(() => {
-  websocketStore.on("GAME_EVENT", handleGameEvent);
-});
-
-onUnmounted(() => {
-  websocketStore.off("GAME_EVENT", handleGameEvent);
-});
+watch(
+  () => appStore.lastGameEvent,
+  (newEvent) => {
+    if (newEvent && newEvent.text) {
+      addNotification(newEvent.text, newEvent.gif);
+    }
+  },
+  { deep: true }
+);
 </script>

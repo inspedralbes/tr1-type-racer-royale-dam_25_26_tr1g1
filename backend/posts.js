@@ -14,7 +14,9 @@ const mapPosts = (rows) => {
         timestamp: row.post_timestamp,
         authorType: row.post_authorType,
         username: row.post_author_username || "Muvvers",
-        foto_perfil: row.post_author_foto_perfil || `https://robohash.org/Muvvers.png?bgset=bg1`,
+        foto_perfil:
+          row.post_author_foto_perfil ||
+          `https://robohash.org/Muvvers.png?bgset=bg1`,
         comments: [],
       });
     }
@@ -33,8 +35,6 @@ const mapPosts = (rows) => {
   return Array.from(posts.values());
 };
 
-
-// 🔹 Obté totes les publicacions
 export const getAllPosts = async () => {
   const sql = `
     SELECT
@@ -59,14 +59,14 @@ export const getAllPosts = async () => {
   return mapPosts(rows);
 };
 
-// 🔹 Crea una nova publicació
 export const createPost = async (username, content) => {
   const user = await findUserByUsername(username);
   if (!user) {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const sql = "INSERT INTO Posts (content, userId, authorType, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())";
+  const sql =
+    "INSERT INTO Posts (content, userId, authorType, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())";
   const [result] = await pool.query(sql, [content, user.id, "user"]);
   const newPostId = result.insertId;
 
@@ -85,39 +85,40 @@ export const createPost = async (username, content) => {
   return postData;
 };
 
-// 🔹 Crea una nova publicació del sistema
 export const createSystemPost = async (content) => {
-    const sql = "INSERT INTO Posts (content, authorType, userId, createdAt, updatedAt) VALUES (?, 'system', NULL, NOW(), NOW())";
-    const [result] = await pool.query(sql, [content]);
+  const sql =
+    "INSERT INTO Posts (content, authorType, userId, createdAt, updatedAt) VALUES (?, 'system', NULL, NOW(), NOW())";
+  const [result] = await pool.query(sql, [content]);
 
-    const postData = {
-        id: result.insertId,
-        content: content,
-        timestamp: new Date(),
-        authorType: 'system',
-        username: 'Muvvers',
-        foto_perfil: `https://robohash.org/Muvvers.png?bgset=bg1`,
-        comments: [],
-    };
+  const postData = {
+    id: result.insertId,
+    content: content,
+    timestamp: new Date(),
+    authorType: "system",
+    username: "Muvvers",
+    foto_perfil: `https://robohash.org/Muvvers.png?bgset=bg1`,
+    comments: [],
+  };
 
-    broadcast("NEW_POST", postData); // També difon les publicacions del sistema
-    return postData;
+  broadcast("NEW_POST", postData); // També difon les publicacions del sistema
+  return postData;
 };
 
-
-// 🔹 Afegeix un comentari
 export const addComment = async (postId, username, text) => {
   const user = await findUserByUsername(username);
   if (!user) {
     throw new Error("USER_NOT_FOUND");
   }
 
-  const [posts] = await pool.query("SELECT id FROM Posts WHERE id = ?", [postId]);
+  const [posts] = await pool.query("SELECT id FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   if (posts.length === 0) {
     throw new Error("POST_NOT_FOUND");
   }
 
-  const sql = "INSERT INTO Comments (text, userId, postId, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())";
+  const sql =
+    "INSERT INTO Comments (text, userId, postId, createdAt, updatedAt) VALUES (?, ?, ?, NOW(), NOW())";
   const [result] = await pool.query(sql, [text, user.id, postId]);
   const newCommentId = result.insertId;
 
@@ -134,41 +135,49 @@ export const addComment = async (postId, username, text) => {
   return commentData;
 };
 
-// 🔹 Actualitza una publicació
 export const updatePost = async (postId, username, content) => {
   const user = await findUserByUsername(username);
   if (!user) {
     return null;
   }
 
-  const [posts] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [postId]);
+  const [posts] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   if (posts.length === 0 || posts[0].userId !== user.id) {
     return null;
   }
 
-  const sql = "UPDATE Posts SET content = ?, updatedAt = NOW() WHERE id = ? AND userId = ?";
+  const sql =
+    "UPDATE Posts SET content = ?, updatedAt = NOW() WHERE id = ? AND userId = ?";
   await pool.query(sql, [content, postId, user.id]);
 
   // Returning the updated post data
-  const [updatedPosts] = await pool.query("SELECT * FROM Posts WHERE id = ?", [postId]);
+  const [updatedPosts] = await pool.query("SELECT * FROM Posts WHERE id = ?", [
+    postId,
+  ]);
   return updatedPosts[0];
 };
 
-// 🔹 Elimina una publicació (només l'autor)
 export const deletePost = async (postId, username) => {
   const user = await findUserByUsername(username);
   if (!user) {
     return false;
   }
 
-  const [posts] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [postId]);
-   if (posts.length === 0 || posts[0].userId !== user.id) {
+  const [posts] = await pool.query("SELECT userId FROM Posts WHERE id = ?", [
+    postId,
+  ]);
+  if (posts.length === 0 || posts[0].userId !== user.id) {
     return false;
   }
 
   // Assumint ON DELETE CASCADE per als comentaris
-  const [result] = await pool.query("DELETE FROM Posts WHERE id = ? AND userId = ?", [postId, user.id]);
-  
+  const [result] = await pool.query(
+    "DELETE FROM Posts WHERE id = ? AND userId = ?",
+    [postId, user.id]
+  );
+
   if (result.affectedRows > 0) {
     broadcast("DELETE_POST", { postId });
     return true;
@@ -176,19 +185,24 @@ export const deletePost = async (postId, username) => {
   return false;
 };
 
-// 🔹 Elimina un comentari (només l'autor)
 export const deleteComment = async (postId, commentId, username) => {
   const user = await findUserByUsername(username);
   if (!user) {
     return false;
   }
 
-  const [comments] = await pool.query("SELECT userId FROM Comments WHERE id = ? AND postId = ?", [commentId, postId]);
+  const [comments] = await pool.query(
+    "SELECT userId FROM Comments WHERE id = ? AND postId = ?",
+    [commentId, postId]
+  );
   if (comments.length === 0 || comments[0].userId !== user.id) {
     return false;
   }
 
-  const [result] = await pool.query("DELETE FROM Comments WHERE id = ? AND userId = ?", [commentId, user.id]);
+  const [result] = await pool.query(
+    "DELETE FROM Comments WHERE id = ? AND userId = ?",
+    [commentId, user.id]
+  );
 
   if (result.affectedRows > 0) {
     broadcast("DELETE_COMMENT", { postId, commentId });

@@ -2,8 +2,6 @@
   <div
     class="relative min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex flex-col"
   >
-    <NotificationCenter />
-
     <!-- Pantalla de finalització de sessió -->
     <SessionEndScreen
       v-if="showEndScreen"
@@ -11,16 +9,16 @@
       @exit-session="leaveSession"
     />
 
-   <!-- Pantalla de càrrega de la IA -->
+    <!-- Pantalla de càrrega de la IA -->
     <LoadingScreen v-if="isAiLoading && !showEndScreen" />
 
-   <!-- Compta enrere abans de començar -->
+    <!-- Compta enrere abans de començar -->
     <CountdownTimer
       v-if="showCountdown && !showEndScreen"
       @countdown-finished="handleCountdownFinished"
     />
 
-   <!-- Reaccions flotants (emojis, punts) -->
+    <!-- Reaccions flotants (emojis, punts) -->
     <FloatingItem
       v-for="item in floatingItems"
       :key="item.id"
@@ -45,13 +43,21 @@
       class="absolute inset-0 w-full h-full object-cover z-0"
     />
 
-   <!-- Contingut principal per sobre de la càmera -->
+    <!-- Contingut principal per sobre de la càmera -->
     <div
       v-if="!showEndScreen && !isAiLoading"
       class="relative z-10 flex flex-col flex-grow"
     >
-      <div class="flex-grow flex justify-end items-start p-4">
-        <div class="flex flex-col space-y-4">
+      <div
+        class="absolute inset-0 w-full h-full pointer-events-none z-20 p-2 sm:p-4"
+      >
+        <div class="absolute top-4 left-2 sm:left-4 pointer-events-auto">
+          <NotificationCenter />
+        </div>
+
+        <div
+          class="absolute top-4 right-2 sm:right-4 flex flex-col items-end space-y-4 pointer-events-auto"
+        >
           <SessionProgressInfo
             v-if="
               currentExercise &&
@@ -79,7 +85,6 @@
         </div>
       </div>
 
-       <!-- Pantalla de descans -->
       <transition name="fade">
         <RestScreen
           v-if="isResting && !showCountdown"
@@ -99,7 +104,7 @@
         @toggle-info="toggleInfo"
       />
 
-       <!-- Pantalla de "llest per començar" -->
+      <!-- Pantalla de "llest per començar" -->
       <div
         v-if="currentSession && currentSession.state.status === 'WAITING'"
         class="absolute inset-0 flex items-center justify-center bg-black/50"
@@ -126,7 +131,7 @@ import NotificationCenter from "@/components/session/NotificationCenter.vue";
 import SessionScoreboard from "@/components/session/SessionScoreboard.vue";
 import SessionProgressInfo from "@/components/session/ProgressInfo.vue";
 import ReadyCard from "@/components/session/ReadyCard.vue";
-import RestScreen from "@/components/session/RestScreen.vue"; // Import RestScreen
+import RestScreen from "@/components/session/RestScreen.vue";
 
 const appStore = useAppStore();
 const websocketStore = useWebSocketStore();
@@ -191,9 +196,7 @@ const setReady = () => {
   websocketStore.sendMessage({ type: "SET_READY" });
 };
 
-const handleInPose = () => {
-
-};
+const handleInPose = () => {};
 
 const leaveSession = () => {
   if (currentSession.value?.state.status === "FINISHED") {
@@ -221,7 +224,6 @@ onUnmounted(() => {
 
 const showScoreboard = ref(true);
 
-
 const poseSkeletonRef = ref(null);
 const cameras = ref([]);
 
@@ -234,7 +236,6 @@ const handleCameraSelected = (deviceId) => {
 
 const toggleInfo = () => {
   showScoreboard.value = !showScoreboard.value;
-
 };
 
 const participantsWithDetails = computed(() => {
@@ -368,9 +369,8 @@ watch(
   transform: translateY(100%) translateX(-50%);
 }
 
-/* Classic Spinner CSS */
 .loader {
-  border-top-color: #3498db; /* Blue color for the spinner */
+  border-top-color: #3498db;
   animation: spin 1s linear infinite;
 }
 

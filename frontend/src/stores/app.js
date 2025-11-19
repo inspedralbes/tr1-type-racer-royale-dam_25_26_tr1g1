@@ -12,9 +12,13 @@ export const useAppStore = defineStore("app", {
       userId, // Use userId instead of user object
       currentSession: null,
       notification: { message: null, type: null },
+      lastGameEvent: null,
     };
   },
   actions: {
+    setLastGameEvent(event) {
+      this.lastGameEvent = { ...event, id: Date.now() };
+    },
     listenForStorageChanges() {
       window.addEventListener("storage", (event) => {
         if (event.key === "userId") {
