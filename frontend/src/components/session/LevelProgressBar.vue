@@ -1,3 +1,4 @@
+ <!-- Barra de progrés -->
 <template>
   <div class="w-full max-w-md p-4 rounded-lg shadow-lg bg-gray-800 text-white">
     <div class="flex items-center justify-between mb-2">
@@ -51,6 +52,7 @@ const displayLevel = ref(Math.floor(props.oldLevel));
 const progressWidth = ref((props.oldLevel % 1) * 100);
 const leveledUp = ref(false);
 
+// Funció per animar la barra de progrés 
 const animateProgressBar = () => {
   const startProgress = (props.oldLevel % 1) * 100;
   const endProgress = (props.newLevel % 1) * 100;
@@ -62,21 +64,21 @@ const animateProgressBar = () => {
 
   setTimeout(() => {
     if (startLevel < endLevel) {
-      // Level up animation
-      progressWidth.value = 100; // Fill the bar
+      //Animació quan es puja de nivell
+      progressWidth.value = 100; // Omple la barra
       setTimeout(() => {
         leveledUp.value = true;
         displayLevel.value = startLevel + 1;
-        progressWidth.value = 0; // Reset bar
+        progressWidth.value = 0; // Reinicia la barra
         setTimeout(() => {
-          progressWidth.value = endProgress; // Animate to new progress
+          progressWidth.value = endProgress;
         }, 500);
-      }, 1000); // Time for bar to fill
+      }, 1000); //Temps per omplir la barra
     } else {
-      // Just progress animation
+      // Animació del progrés
       progressWidth.value = endProgress;
     }
-  }, 100); // Small delay to ensure initial state is rendered
+  }, 100); // Retard per assegurar que l'estat inicial es renderitza
 };
 
 onMounted(() => {

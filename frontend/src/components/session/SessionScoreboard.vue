@@ -1,3 +1,4 @@
+<!-- Marcador  -->
 <template>
   <div
     class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-4 w-44 sm:w-64 text-gray-900 dark:text-white transition-all duration-300"
@@ -8,8 +9,8 @@
       <i class="mdi mdi-trophy text-amber-500 mr-1.5 text-lg sm:text-xl"></i>
       Marcador
     </h2>
-
-    <ul class="space-y-1.5">
+     <!-- Llista de participants ordenats per punts -->
+    <ul class="space-y-2">
       <li
         v-for="(participant, index) in sortedParticipants"
         :key="participant.userId"
@@ -60,6 +61,7 @@
 </template>
 
 <script setup>
+// llista de participants ordenats per punts
 defineProps({
   sortedParticipants: {
     type: Array,

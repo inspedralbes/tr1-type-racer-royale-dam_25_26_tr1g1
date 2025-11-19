@@ -1,3 +1,4 @@
+<!-- Sala d'espera-->
 <template>
   <div class="p-4 w-full max-w-md mx-auto">
     <div
@@ -6,12 +7,14 @@
       <h2 class="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-center">
         Sala d'Espera
       </h2>
+      <!-- Llista d'usuaris -->
       <ul class="space-y-2 md:space-y-3">
         <li
           v-for="user in users"
           :key="user.userId"
           class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 bg-opacity-50 dark:bg-opacity-50 p-2 md:p-3 rounded-lg"
         >
+         <!-- Contenidor amb la foto i nom d'usuari -->
           <div class="flex items-center">
             <img
               :src="
@@ -21,6 +24,7 @@
               alt="Foto de perfil"
               class="w-10 h-10 md:w-12 md:h-12 rounded-full mr-3 md:mr-4 border-2 border-gray-300 dark:border-gray-600"
             />
+            <!-- Indicador d'estat: llest o esperant -->
             <span class="font-medium text-sm md:text-base">{{
               user.username
             }}</span>
@@ -68,6 +72,7 @@ defineEmits(["ready"]);
 const appStore = useAppStore();
 const userId = appStore.userId;
 
+// Determinar si l'usuari actual està marcat com a llest
 const isReady = computed(() => {
   const currentUser = props.users.find((user) => user.userId === userId);
   return currentUser ? currentUser.ready : false;

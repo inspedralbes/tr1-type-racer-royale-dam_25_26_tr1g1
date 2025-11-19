@@ -1,7 +1,9 @@
+  <!-- Barra de navegació -->
 <template>
   <nav
     class="fixed bottom-4 left-1/2 w-11/12 max-w-md border border-gray-200 dark:border-transparent bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-900 dark:text-white rounded-xl shadow-lg z-50 bottom-bar transform -translate-x-1/2"
   >
+   <!-- Llista de càmeres disponibles -->
     <div v-if="showCameras" class="p-2 flex flex-col items-center">
       <h3 class="text-lg font-semibold mb-2">Selecciona una càmera</h3>
       <ul>
@@ -16,7 +18,7 @@
         </li>
       </ul>
     </div>
-
+  <!-- Emojis per enviar reaccions -->
     <div v-else-if="showEmojis" class="p-4 flex justify-around">
       <button
         v-for="emoji in emojis"
@@ -30,6 +32,7 @@
     </div>
 
     <div v-else class="flex justify-around">
+       <!-- Botó per sortir de la sessió -->
       <button
         @touchstart.stop.prevent="openLeaveDialog"
         @click.stop="openLeaveDialog"
@@ -38,7 +41,7 @@
         <i class="mdi mdi-exit-to-app text-xl"></i>
         <span class="text-xs mt-1 hidden sm:block">Sortir</span>
       </button>
-
+     <!-- Botó per mostrar càmeres disponibles -->
       <button
         @touchstart.stop.prevent="showCameras = true"
         @click.stop="showCameras = true"
@@ -67,6 +70,7 @@
       </button>
     </div>
   </nav>
+  <!-- Diàleg de confirmació per sortir de la sessió -->
   <div
     v-if="isLeaveDialogOpen"
     class="fixed inset-0 bg-gray-100 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 flex items-center justify-center z-50"
@@ -118,20 +122,21 @@ const showEmojis = ref(false);
 const emojis = ["👍", "❤️", "🎉", "😂", "🔥"];
 const isLeaveDialogOpen = ref(false);
 
+// Funció seleccionar una càmera
 const selectCamera = (deviceId) => {
   emit("camera-selected", deviceId);
   showCameras.value = false;
 };
-
+// Funció per enviar una reacció
 const sendReaction = (emoji) => {
   emit("send-reaction", emoji);
   showEmojis.value = false;
 };
-
+// Funció per confirmació de sortida
 const openLeaveDialog = () => {
   isLeaveDialogOpen.value = true;
 };
-
+// Funció per confirmar sortida
 const confirmLeave = () => {
   emit("leave-session");
   isLeaveDialogOpen.value = false;

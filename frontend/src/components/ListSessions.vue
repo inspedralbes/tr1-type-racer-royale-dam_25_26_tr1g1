@@ -4,7 +4,7 @@
     <div
       class="mb-6 flex flex-col items-center justify-between gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 p-4 shadow-lg backdrop-blur-sm sm:flex-row"
     >
-      <!-- Left side: Search -->
+      <!-- Lateral esquerre: Cercador per nom o id -->
       <div class="relative w-full sm:w-auto sm:flex-grow md:max-w-xs">
         <span
           class="mdi mdi-magnify absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-400"
@@ -18,11 +18,11 @@
         />
       </div>
 
-      <!-- Right side: Action Buttons -->
+      <!-- Lateral dret: filtre y crear sessió  -->
       <div
         class="flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto"
       >
-        <!-- Filter Button -->
+        <!-- Botó de filtre-->
         <div class="relative" ref="filterMenu">
           <button
             @click="toggleFilterMenu"
@@ -79,7 +79,7 @@
           </transition>
         </div>
 
-        <!-- Create Button -->
+        <!-- Botó Crear Sessió -->
         <button
           @click="openCreateModal"
           class="flex h-11 transform items-center justify-center gap-2 rounded-full bg-blue-500 px-4 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105"
@@ -90,7 +90,7 @@
       </div>
     </div>
 
-    <!-- Session List -->
+    <!-- Llista de Sessions-->
     <ul class="space-y-4">
       <li
         v-for="session in paginatedSessions"
@@ -106,7 +106,7 @@
             <span>{{ getRoutineEmoji(session.type) }}</span>
           </div>
 
-          <!-- Session Info -->
+          <!-- Informació de la sessió -->
           <div class="flex-grow">
             <h3 class="font-bold text-gray-900 dark:text-white sm:text-lg">
               {{ session.name }}
@@ -116,7 +116,7 @@
             </p>
           </div>
 
-          <!-- Stats -->
+          <!-- Estadístiques -->
           <div
             class="hidden flex-shrink-0 items-center gap-x-4 gap-y-2 text-sm text-gray-600 dark:text-gray-300 sm:flex"
           >
@@ -143,7 +143,7 @@
             </div>
           </div>
 
-          <!-- Status & Join -->
+          <!-- Estat de la sessió i botó Entrar-->
           <div class="ml-4 flex flex-shrink-0 items-center gap-4">
             <span
               class="hidden rounded-full px-3 py-1 text-xs font-semibold sm:inline-block"
@@ -166,7 +166,7 @@
       </li>
     </ul>
 
-    <!-- Pagination Controls -->
+    <!-- Controls de paginació -->
     <div
       v-if="totalPages > 1"
       class="mt-6 flex items-center justify-center space-x-2 sm:space-x-4"
@@ -190,14 +190,14 @@
       </button>
     </div>
 
-    <!-- No Sessions Found -->
+    <!-- Missatge quan no hi ha sessions -->
     <div v-if="filteredSessions.length === 0" class="py-10 text-center">
       <p class="text-lg text-gray-500 dark:text-gray-400">
         No s'han trobat sessions.
       </p>
     </div>
 
-    <!-- Modal for Create Session -->
+    <!-- Crear sessió-->
     <div
       v-if="showForm"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <!-- Password Dialog -->
+    <!-- Diàleg de contrasenya  -->
     <div
       v-if="showPasswordDialog"
       class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
@@ -269,8 +269,10 @@ const itemsPerPage = 5;
 const showFilterMenu = ref(false);
 const filterMenu = ref(null);
 
+// Sessions totals obtingudes 
 const allSessions = computed(() => websocketStore.sessions);
 
+// Sessions filtrades segons estat i cerca
 const filteredSessions = computed(() => {
   let sessions = allSessions.value;
 
@@ -289,7 +291,7 @@ const filteredSessions = computed(() => {
 
   return sessions;
 });
-
+//Paginació 
 const totalPages = computed(() => {
   return Math.ceil(filteredSessions.value.length / itemsPerPage);
 });
@@ -299,7 +301,7 @@ const paginatedSessions = computed(() => {
   const end = start + itemsPerPage;
   return filteredSessions.value.slice(start, end);
 });
-
+// Funcions de navegació de pàgines
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++;
@@ -311,7 +313,7 @@ const prevPage = () => {
     currentPage.value--;
   }
 };
-
+// Menú de filtre
 const toggleFilterMenu = () => {
   showFilterMenu.value = !showFilterMenu.value;
 };
@@ -320,7 +322,7 @@ const applyFilter = (status) => {
   selectedStatus.value = status;
   showFilterMenu.value = false;
 };
-
+// Tancar menú si es clica fora
 const handleClickOutside = (event) => {
   if (filterMenu.value && !filterMenu.value.contains(event.target)) {
     showFilterMenu.value = false;
@@ -330,7 +332,7 @@ const handleClickOutside = (event) => {
 watch([searchQuery, selectedStatus], () => {
   currentPage.value = 1;
 });
-
+// Funció per retornar emoji segons tipus de rutina
 const getRoutineEmoji = (type) => {
   if (!type) return "🏋🏽‍♂️";
   const typeLower = type.toLowerCase();
@@ -397,7 +399,7 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 
-// Create Session Modal Logic
+// Lògica de crear sessió
 const showForm = ref(false);
 
 const onSessionCreated = () => {

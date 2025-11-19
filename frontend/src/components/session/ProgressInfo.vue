@@ -1,3 +1,4 @@
+<!-- Temporitzador -->
 <template>
   <div
     class="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-3 sm:p-5 w-44 sm:w-64 text-center text-gray-900 dark:text-white transition-all duration-300"
@@ -66,7 +67,7 @@ const props = defineProps({
   currentSerie: { type: Number, required: true },
   totalSeries: { type: Number, required: true },
 });
-
+//  Formatar el temps a MM:SS
 const formattedTime = computed(() => {
   const minutes = Math.floor(props.timer / 60);
   const seconds = props.timer % 60;

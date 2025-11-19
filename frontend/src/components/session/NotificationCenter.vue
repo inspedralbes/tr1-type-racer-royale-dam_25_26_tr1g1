@@ -1,3 +1,4 @@
+<!-- Contenidor de les notificacions -->
 <template>
   <div
     class="fixed top-10 left-4 w-11/12 sm:w-full max-w-md p-2 sm:p-4 z-5 pointer-events-none"
@@ -35,11 +36,12 @@ import GameNotification from './GameNotification.vue';
 const websocketStore = useWebSocketStore();
 const notifications = ref([]);
 
+// // Funció per afegir una nova notificació
 const addNotification = (text, gif = null) => {
   const id = Date.now() + Math.random();
   notifications.value.unshift({ id, text, gif });
 };
-
+// Funció per eliminar una notificació
 const removeNotification = (id) => {
   notifications.value = notifications.value.filter((n) => n.id !== id);
 };

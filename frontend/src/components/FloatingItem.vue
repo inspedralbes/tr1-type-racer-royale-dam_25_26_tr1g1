@@ -1,3 +1,4 @@
+  <!-- Element flotant-->
 <template>
   <div
     class="floating-item"
@@ -26,7 +27,7 @@ const props = defineProps({
   },
   color: {
     type: String,
-    default: '#ffc107', // Default to golden color
+    default: '#ffc107',
   },
   duration: {
     type: String,

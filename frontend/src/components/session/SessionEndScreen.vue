@@ -1,3 +1,4 @@
+<!-- Pantalla de sessió finalitzada -->
 <template>
   <transition name="fade-zoom">
     <div
@@ -11,9 +12,9 @@
         </h1>
       </div>
 
-      <!-- Podium Section -->
+      <!-- Secció del podi-->
       <div class="flex items-end justify-center gap-4 mb-8 w-full max-w-4xl">
-        <!-- Second Place -->
+        <!-- Segon lloc -->
         <div
           v-if="secondPlace"
           class="flex flex-col items-center text-gray-900 dark:text-white relative"
@@ -42,7 +43,7 @@
           >
         </div>
 
-        <!-- First Place -->
+        <!-- Primer lloc -->
         <div
           v-if="firstPlace"
           class="flex flex-col items-center text-gray-900 dark:text-white relative z-10"
@@ -71,7 +72,7 @@
           >
         </div>
 
-        <!-- Third Place -->
+        <!-- Tercer lloc -->
         <div
           v-if="thirdPlace"
           class="flex flex-col items-center text-gray-900 dark:text-white relative"
@@ -101,9 +102,7 @@
         </div>
       </div>
 
-
-
-      <!-- Level Progression -->
+      <!-- Barra de progressió de nivell-->
       <div v-if="currentUserProgression" class="w-full max-w-md mt-8">
         <LevelProgressBar
           :old-level="currentUserProgression.oldLevel"

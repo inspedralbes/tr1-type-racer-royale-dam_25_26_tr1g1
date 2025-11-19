@@ -7,6 +7,8 @@
     >
       <div class="w-full max-w-6xl mx-auto">
         <div class="grid items-center gap-8 md:grid-cols-2">
+          
+          <!-- Logo i títol -->
           <div class="text-center md:text-left">
             <img
               src="@/assets/logo.png"
@@ -20,6 +22,7 @@
             </h1>
           </div>
 
+          <!-- Secció dreta: Formulari de login o registre -->
           <div class="w-full max-w-md mx-auto">
             <div
               v-if="appStore.notification.message"
@@ -41,18 +44,19 @@
             <div
               class="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-8 shadow-2xl backdrop-blur-lg"
             >
-              <!-- Form Components -->
+              <!-- Formulari de login -->
               <div v-if="tab === 'login'">
                 <FormLogin
                   :initialUsername="loginUsername"
                   :initialPassword="loginPassword"
                 />
               </div>
+              <!-- Formulari de registre -->
               <div v-if="tab === 'register'">
                 <FormRegister @registration-successful="handleRegistration" />
               </div>
             </div>
-            <!-- Toggle Button -->
+            <!-- Botó per alternar entre Login i Registre -->
             <div class="text-center mt-6">
               <button
                 @click="tab = tab === 'login' ? 'register' : 'login'"
@@ -85,6 +89,7 @@ const tab = ref("login");
 const loginUsername = ref("");
 const loginPassword = ref("");
 
+// Funció que s'executa quan el registre és exitós
 const handleRegistration = (credentials) => {
   loginUsername.value = credentials.username;
   loginPassword.value = credentials.password;

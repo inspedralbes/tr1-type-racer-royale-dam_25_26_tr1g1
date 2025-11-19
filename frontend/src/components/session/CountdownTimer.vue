@@ -1,3 +1,5 @@
+ <!-- Compte enrere -->
+
 <template>
   <div
     v-if="count > 0 && !showGo"
@@ -51,7 +53,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* *** ESTE CÓDIGO FUE RESTAURADO PARA EL EFECTO 3, 2, 1 *** */
+
 div.font-extrabold {
   font-size: clamp(6rem, 20vw, 18rem);
   line-height: 1;

@@ -1,3 +1,4 @@
+ <!-- Notificacions -->
 <template>
   <transition
     appear
@@ -27,7 +28,7 @@ const props = defineProps({
   },
   duration: {
     type: Number,
-    default: 4000, // 4 seconds
+    default: 4000, 
   },
   gif: {
     type: String,

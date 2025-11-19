@@ -1,3 +1,4 @@
+<!-- Informació de l'exercici següent -->
 <template>
   <div
     class="fixed bottom-28 left-1/2 w-11/12 max-w-md border border-gray-200 dark:border-transparent bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-gray-900 dark:text-white rounded-xl shadow-lg z-40 transform -translate-x-1/2 transition-all duration-300"
@@ -44,4 +45,16 @@ defineProps({
     default: () => ({ name: "", gif: "" }),
   },
 });
+// Formatejar el temps restant en MM:SS
+const formattedRestTime = computed(() => {
+  const minutes = Math.floor(props.remainingRestTime / 60);
+  const seconds = props.remainingRestTime % 60;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
+});
 </script>
+
+<style scoped>
+
+</style>
