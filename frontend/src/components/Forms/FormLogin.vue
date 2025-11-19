@@ -1,3 +1,4 @@
+ <!-- Formulari per iniciar sessió -->
 <template>
   <div class="w-full">
     <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white">Inici de sessió</h2>
@@ -56,6 +57,7 @@ const loading = ref(false);
 const appStore = useAppStore();
 const router = useRouter();
 
+//Funció per iniciar sessió
 const login = async () => {
   loading.value = true;
   const success = await appStore.login(username.value, password.value);

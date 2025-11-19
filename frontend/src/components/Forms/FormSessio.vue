@@ -1,9 +1,10 @@
+ <!-- Formulari per crear una nova sessió -->
 <template>
   <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-gray-900 dark:text-white">
     <h2 class="text-2xl font-bold mb-6 text-center">Crear Nova Sessió</h2>
 
     <form @submit.prevent="submitForm" class="space-y-6">
-      <!-- Routine Selection -->
+      <!-- Selecció de rutina -->
       <div>
         <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2"
           >Què vols entrenar?</label
@@ -27,7 +28,7 @@
         </div>
       </div>
 
-      <!-- Session Name -->
+      <!-- Nom de la sessió -->
       <div>
         <label for="name" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Nom de la sessió</label
@@ -46,7 +47,7 @@
         </div>
       </div>
 
-      <!-- Duration & Max Users -->
+      <!-- Duració i màxim d’usuaris -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div>
           <label
@@ -93,7 +94,7 @@
         </div>
       </div>
 
-      <!-- Password -->
+      <!-- Contrasenya -->
       <div>
         <label for="password" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Contrasenya (opcional)</label
@@ -112,7 +113,7 @@
         </div>
       </div>
 
-      <!-- Action Buttons -->
+      <!--  Botons d'acció -->
       <div class="flex justify-end gap-4 pt-4">
         <button
           type="button"
@@ -147,6 +148,7 @@ const usersStore = useUsersStore();
 
 const loggedInUser = computed(() => usersStore.getUser(appStore.userId));
 
+// Llista de rutines disponibles
 const routines = [
   { type: "fullbody", name: "Cos Complet", emoji: "🏋🏽‍♂️" },
   { type: "upper", name: "Tren Superior", emoji: "💪🏻" },
@@ -161,7 +163,7 @@ const session = ref({
   password: "",
   maxUsers: 5,
 });
-
+// Funció per seleccionar una rutina
 const selectRoutine = (type) => {
   session.value.type = type;
   session.value.name = `Sessió de ${
@@ -172,7 +174,7 @@ const selectRoutine = (type) => {
 const isFormValid = computed(() => {
   return session.value.type && session.value.name && session.value.maxUsers > 0;
 });
-
+// Enviar la sessió via WebSocket 
 const submitForm = () => {
   if (!isFormValid.value) return;
   websocketStore.sendMessage({

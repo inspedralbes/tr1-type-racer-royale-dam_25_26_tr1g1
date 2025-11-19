@@ -1,3 +1,4 @@
+ <!-- Formulari per editar perfil -->
 <template>
   <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-lg p-6 w-full max-w-lg">
     <h2 class="text-2xl font-bold mb-4">Editar Perfil</h2>
@@ -117,7 +118,7 @@ watch(
   },
   { immediate: true, deep: true }
 );
-
+//Funció per guardar les dades
 const handleSave = () => {
   emit("save", formData.value);
 };

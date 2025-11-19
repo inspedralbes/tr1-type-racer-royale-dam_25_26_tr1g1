@@ -1,8 +1,10 @@
+ <!-- Formulari de registre -->
 <template>
   <div class="w-full">
     <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white">Registra't</h2>
     <form @submit.prevent="register" class="space-y-6 mt-4">
-      <!-- Step 1: Core Credentials -->
+      
+     <!-- PAS 1: Credencials bàsiques de registre -->
       <div v-if="step === 1" class="space-y-4">
         <div>
           <input
@@ -33,7 +35,7 @@
         </div>
       </div>
 
-      <!-- Step 2: Optional Profile Info -->
+     <!-- PAS 2: Informació opcional del perfil -->
       <div v-if="step === 2" class="space-y-4">
         <div>
           <input
@@ -75,7 +77,7 @@
         </div>
       </div>
 
-      <!-- Navigation and Submit Buttons -->
+       <!-- Botons de navegació -->
       <div class="flex justify-between mt-4">
         <button
           type="button"
@@ -123,18 +125,19 @@ const loading = ref(false);
 
 const appStore = useAppStore();
 
+// Funció per avançar al següent pas
 const nextStep = () => {
   if (step.value < 2) {
     step.value++;
   }
 };
-
+// Funció per tornar a l'anterior pas
 const prevStep = () => {
   if (step.value > 1) {
     step.value--;
   }
 };
-
+// Funció per registrar l'usuari
 const register = async () => {
   loading.value = true;
   const weight = Number(pesoActual.value);
@@ -146,7 +149,7 @@ const register = async () => {
     password.value,
     weight,
     height,
-    null, // biografia is not in the form, so it's null
+    null, // No hi ha biografia
     foto_perfil.value
   );
   loading.value = false;
