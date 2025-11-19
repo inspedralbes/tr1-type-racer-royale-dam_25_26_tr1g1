@@ -4,6 +4,7 @@
   >
     <div class="w-full max-w-4xl mx-auto">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+
         <!-- Tip 1: Il·luminació -->
         <div class="flex flex-col items-center text-gray-700 dark:text-gray-300">
           <div
@@ -52,7 +53,7 @@
       </div>
     </div>
 
-    <!-- Loading Spinner -->
+    <!-- Indicador de càrrega -->
     <div class="mt-8 md:mt-12 text-center">
       <div
         class="loader ease-linear rounded-full border-8 border-t-8 border-gray-300 dark:border-gray-700 h-24 w-24 md:h-32 md:w-32 mx-auto mb-4"
@@ -65,9 +66,9 @@
 </template>
 
 <style scoped>
-/* Classic Spinner CSS */
+/* Spinner CSS */
 .loader {
-  border-top-color: #3498db; /* Blue color for the spinner */
+  border-top-color: #3498db; 
   animation: spin 1s linear infinite;
 }
 

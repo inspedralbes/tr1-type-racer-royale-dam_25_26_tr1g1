@@ -1,5 +1,7 @@
 <script setup>
+
 import { ref, onMounted, onBeforeUnmount } from "vue";
+//Funcions analisis moviment 
 import {
   countSquats,
   estimatePose,
@@ -13,6 +15,7 @@ import {
   checkPlank,
   checkSupermanHold,
 } from "./analysis.js";
+
 import { useWebSocketStore } from "@/stores/websocket";
 
 import * as tf from "@tensorflow/tfjs-core";
@@ -38,9 +41,10 @@ const videoRef = ref(null);
 const canvasRef = ref(null);
 
 const repCount = ref(0);
-const exerciseState = ref("up"); // 'up' or 'down'
+const exerciseState = ref("up"); 
 const cameras = ref([]);
 
+// Detecta càmeres 
 const getCameras = async () => {
   const devices = await navigator.mediaDevices.enumerateDevices();
   cameras.value = devices.filter((device) => device.kind === "videoinput");
@@ -53,6 +57,7 @@ let currentStream = null;
 let detector = null;
 let rafId = null;
 
+//Funció inciar càmera 
 async function startCamera(deviceId = null) {
   try {
     if (currentStream) {
@@ -86,13 +91,13 @@ async function startCamera(deviceId = null) {
     );
   }
 }
-
+//Funció detactar l'excecici 
 function detectExercise(keypoints) {
   if (!props.currentExercise) return;
 
   let repDone = false;
   let newState = exerciseState.value;
-  let inPose = keypoints && keypoints.length > 0; // Default to true if keypoints are detected
+  let inPose = keypoints && keypoints.length > 0; 
 
   switch (props.currentExercise.name) {
     case "Squat":
@@ -151,7 +156,7 @@ function detectExercise(keypoints) {
   }
 }
 
-// 3) Bucle principal: estima la pose i dibuixa
+// Bucle principal: estima la pose i dibuixa
 async function loop() {
   const video = videoRef.value;
   const canvas = canvasRef.value;
@@ -178,7 +183,7 @@ async function loop() {
   rafId = requestAnimationFrame(loop);
 }
 
-// 4) Inicialització i neteja
+// Inicialització i neteja
 onMounted(async () => {
   emit("loading-model");
   await tf.setBackend("webgl");
@@ -238,7 +243,7 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Default to cover */
+  object-fit: cover; 
   transform: scaleX(-1);
 }
 
