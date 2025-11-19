@@ -120,12 +120,6 @@
           "turmells"
         ],
         "gif": "/exercicis_gif/Jumping-Jacks.gif"
-      },
-      {
-        "name": "Squat",
-        "description": "Dempeus, peus a l'ample de les espatlles, baixa el cos flexionant genolls i torna a pujar.",
-        "keypoints_detected": ["malucs", "genolls", "turmells"],
-        "gif": "/exercicis_gif/Squat.gif"
       }
     ]
   }
