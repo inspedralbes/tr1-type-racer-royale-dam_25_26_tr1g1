@@ -7,7 +7,7 @@
 // Plugins
 import { registerPlugins } from "@/plugins";
 import router from "./router";
-import GTag from "vue-gtag-next"; // Import GTag
+import GTag from "vue-gtag-next";
 
 // Components
 import App from "./App.vue";
@@ -21,7 +21,8 @@ const app = createApp(App);
 registerPlugins(app);
 
 app.use(router);
-app.use(GTag, { // Initialize GTag
+app.use(GTag, {
+  // Initialize GTag
   property: {
     id: import.meta.env.VITE_GA_MEASUREMENT_ID,
   },

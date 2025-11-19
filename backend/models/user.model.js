@@ -32,11 +32,13 @@ const User = sequelize.define(
     },
     pesoActual: {
       type: DataTypes.FLOAT,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: 0,
     },
     altura: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
+      defaultValue: 0,
     },
     nivel: {
       type: DataTypes.FLOAT,

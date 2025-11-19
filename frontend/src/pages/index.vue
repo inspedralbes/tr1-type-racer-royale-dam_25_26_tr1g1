@@ -43,10 +43,13 @@
             >
               <!-- Form Components -->
               <div v-if="tab === 'login'">
-                <FormLogin />
+                <FormLogin
+                  :initialUsername="loginUsername"
+                  :initialPassword="loginPassword"
+                />
               </div>
               <div v-if="tab === 'register'">
-                <FormRegister />
+                <FormRegister @registration-successful="handleRegistration" />
               </div>
             </div>
             <!-- Toggle Button -->
@@ -79,4 +82,12 @@ import FormRegister from "@/components/Forms/FormRegister.vue";
 const appStore = useAppStore();
 
 const tab = ref("login");
+const loginUsername = ref("");
+const loginPassword = ref("");
+
+const handleRegistration = (credentials) => {
+  loginUsername.value = credentials.username;
+  loginPassword.value = credentials.password;
+  tab.value = "login";
+};
 </script>

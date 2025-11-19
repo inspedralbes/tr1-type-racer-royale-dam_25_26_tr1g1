@@ -107,8 +107,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 import { useAppStore } from "@/stores/app";
+
+const emit = defineEmits(["registration-successful"]);
 
 const step = ref(1);
 const username = ref("");
@@ -135,10 +137,10 @@ const prevStep = () => {
 
 const register = async () => {
   loading.value = true;
-  const weight = pesoActual.value === 0 ? null : Number(pesoActual.value);
-  const height = altura.value === 0 ? null : Number(altura.value);
+  const weight = Number(pesoActual.value);
+  const height = Number(altura.value);
 
-  await appStore.register(
+  const success = await appStore.register(
     username.value,
     email.value,
     password.value,
@@ -148,5 +150,11 @@ const register = async () => {
     foto_perfil.value
   );
   loading.value = false;
+  if (success) {
+    emit("registration-successful", {
+      username: username.value,
+      password: password.value,
+    });
+  }
 };
 </script>

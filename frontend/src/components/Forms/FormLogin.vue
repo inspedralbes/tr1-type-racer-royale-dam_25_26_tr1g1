@@ -34,12 +34,23 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, defineProps } from "vue";
 import { useAppStore } from "@/stores/app";
 import { useRouter } from "vue-router";
 
-const username = ref("");
-const password = ref("");
+const props = defineProps({
+  initialUsername: {
+    type: String,
+    default: "",
+  },
+  initialPassword: {
+    type: String,
+    default: "",
+  },
+});
+
+const username = ref(props.initialUsername);
+const password = ref(props.initialPassword);
 const loading = ref(false);
 
 const appStore = useAppStore();

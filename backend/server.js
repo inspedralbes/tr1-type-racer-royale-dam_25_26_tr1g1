@@ -109,7 +109,7 @@ app.post("/api/users/register", async (req, res) => {
     biografia,
     foto_perfil,
   } = req.body;
-  if (!username || !email || !password || !pesoActual || !altura)
+  if (!username || !email || !password || pesoActual == null || altura == null)
     return res.status(400).json({ message: "Falten camps obligatoris" });
 
   try {

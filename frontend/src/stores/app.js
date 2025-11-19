@@ -76,8 +76,8 @@ export const useAppStore = defineStore("app", {
               password,
               pesoActual,
               altura,
-              biografia: biografia || "",
-              foto_perfil: foto_perfil || "",
+              biografia: biografia,
+              foto_perfil: foto_perfil,
             }),
           }
         );

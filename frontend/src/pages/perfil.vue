@@ -87,11 +87,11 @@
                 }}</span
               >
             </div>
-            <div v-if="loggedInUser.pesoActual" class="flex items-center">
+            <div v-if="loggedInUser.pesoActual !== null" class="flex items-center">
               <i class="mdi mdi-weight-kilogram text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">{{ loggedInUser.pesoActual }} kg</span>
             </div>
-            <div v-if="loggedInUser.altura" class="flex items-center">
+            <div v-if="loggedInUser.altura !== null" class="flex items-center">
               <i class="mdi mdi-human-male-height text-gray-500 dark:text-gray-400 w-6"></i>
               <span class="ml-3">{{ loggedInUser.altura }} cm</span>
             </div>
@@ -282,11 +282,7 @@ const isBioOverLimit = computed(() => wordCount.value > BIO_WORD_LIMIT);
 
 const isProfileComplete = computed(() => {
   if (!loggedInUser.value) return false;
-  return (
-    loggedInUser.value.pesoActual > 0 &&
-    loggedInUser.value.altura > 0 &&
-    !!loggedInUser.value.biografia
-  );
+  return !!loggedInUser.value.biografia;
 });
 
 onMounted(async () => {
