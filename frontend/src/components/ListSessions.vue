@@ -85,7 +85,7 @@
           class="flex h-11 transform items-center justify-center gap-2 rounded-full bg-blue-500 px-4 font-bold text-white shadow-lg transition duration-300 ease-in-out hover:scale-105"
         >
           <span class="mdi mdi-plus text-xl"></span>
-          <span class="hidden sm:inline">Crear Sessió</span>
+          <span>Crear Sessió</span>
         </button>
       </div>
     </div>

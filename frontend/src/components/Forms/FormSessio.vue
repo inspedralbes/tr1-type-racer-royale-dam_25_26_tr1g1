@@ -1,12 +1,15 @@
- <!-- Formulari per crear una nova sessió -->
+<!-- Formulari per crear una nova sessió -->
 <template>
-  <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-gray-900 dark:text-white">
+  <div
+    class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg text-gray-900 dark:text-white"
+  >
     <h2 class="text-2xl font-bold mb-6 text-center">Crear Nova Sessió</h2>
 
     <form @submit.prevent="submitForm" class="space-y-6">
       <!-- Selecció de rutina -->
       <div>
-        <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2"
+        <label
+          class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2"
           >Què vols entrenar?</label
         >
         <div class="grid grid-cols-4 gap-3">
@@ -30,7 +33,9 @@
 
       <!-- Nom de la sessió -->
       <div>
-        <label for="name" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
+        <label
+          for="name"
+          class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Nom de la sessió</label
         >
         <div class="relative mt-2">
@@ -96,7 +101,9 @@
 
       <!-- Contrasenya -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-600 dark:text-gray-300"
+        <label
+          for="password"
+          class="block text-sm font-medium text-gray-600 dark:text-gray-300"
           >Contrasenya (opcional)</label
         >
         <div class="relative mt-2">
@@ -174,7 +181,7 @@ const selectRoutine = (type) => {
 const isFormValid = computed(() => {
   return session.value.type && session.value.name && session.value.maxUsers > 0;
 });
-// Enviar la sessió via WebSocket 
+// Enviar la sessió via WebSocket
 const submitForm = () => {
   if (!isFormValid.value) return;
   websocketStore.sendMessage({

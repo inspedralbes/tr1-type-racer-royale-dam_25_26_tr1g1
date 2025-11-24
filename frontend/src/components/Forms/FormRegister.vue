@@ -14,6 +14,7 @@
             v-model="username"
             required
           />
+          <span v-if="usernameError" class="text-red-500 text-sm">{{ usernameError }}</span>
         </div>
         <div>
           <input
@@ -23,6 +24,7 @@
             v-model="email"
             required
           />
+          <span v-if="emailError" class="text-red-500 text-sm">{{ emailError }}</span>
         </div>
         <div>
           <input
@@ -32,6 +34,7 @@
             v-model="password"
             required
           />
+          <span v-if="passwordError" class="text-red-500 text-sm">{{ passwordError }}</span>
         </div>
       </div>
 
@@ -123,11 +126,75 @@ const altura = ref(0);
 const foto_perfil = ref("");
 const loading = ref(false);
 
+const usernameError = ref("");
+const emailError = ref("");
+const passwordError = ref("");
+
 const appStore = useAppStore();
+
+const validateUsername = () => {
+  usernameError.value = "";
+  if (!username.value) {
+    usernameError.value = "El nom d'usuari és obligatori.";
+    return false;
+  }
+  if (username.value.length > 20) {
+    usernameError.value = "El nom d'usuari no pot tenir més de 20 caràcters.";
+    return false;
+  }
+  const specialChars = /[`!@#$%^&*()+\-=\[\]{};':"\\|,.<>\/?~]/;
+  if (specialChars.test(username.value)) {
+    usernameError.value = "El nom d'usuari no pot contenir caràcters especials.";
+    return false;
+  }
+  return true;
+};
+
+const validateEmail = () => {
+  emailError.value = "";
+  if (!email.value) {
+    emailError.value = "L'email és obligatori.";
+    return false;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email.value)) {
+    emailError.value = "El format de l'email no és vàlid.";
+    return false;
+  }
+  return true;
+};
+
+const validatePassword = () => {
+  passwordError.value = "";
+  if (!password.value) {
+    passwordError.value = "La contrasenya és obligatòria.";
+    return false;
+  }
+  if (password.value.length < 8) {
+    passwordError.value = "La contrasenya ha de tenir almenys 8 caràcters.";
+    return false;
+  }
+  if (!/[A-Z]/.test(password.value)) {
+    passwordError.value = "La contrasenya ha de contenir almenys una lletra majúscula.";
+    return false;
+  }
+  if (!/\d/.test(password.value)) {
+    passwordError.value = "La contrasenya ha de contenir almenys un número.";
+    return false;
+  }
+  return true;
+};
 
 // Funció per avançar al següent pas
 const nextStep = () => {
-  if (step.value < 2) {
+  if (step.value === 1) {
+    const isUsernameValid = validateUsername();
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+    if (isUsernameValid && isEmailValid && isPasswordValid) {
+      step.value++;
+    }
+  } else if (step.value < 2) {
     step.value++;
   }
 };
