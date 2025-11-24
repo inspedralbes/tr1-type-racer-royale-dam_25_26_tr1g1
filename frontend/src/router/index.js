@@ -44,11 +44,15 @@ router.isReady().then(() => {
 
 router.beforeEach((to, from, next) => {
   const appStore = useAppStore();
-  const publicPages = ["/"]; 
+  const publicPages = ["/"];
   const authRequired = !publicPages.includes(to.path);
 
   if (authRequired && !appStore.isAuthenticated) {
     return next("/");
+  }
+
+  if (to.path === "/" && appStore.isAuthenticated) {
+    return next("/sessions");
   }
 
   next();
