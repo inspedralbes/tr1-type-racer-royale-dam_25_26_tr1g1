@@ -115,6 +115,7 @@ export const useWebSocketStore = defineStore("websocket", {
         this.socket.onclose = () => {
           console.log("WebSocket desconectado", this.socket);
           this.isConnected = false;
+          this.socket = null;
         };
 
         this.socket.onerror = (error) => {

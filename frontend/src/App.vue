@@ -24,5 +24,19 @@ onMounted(() => {
   } else {
     webSocketSotre.connect(wsURL);
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      if (!webSocketSotre.isConnected) {
+        console.log("Reconnecting WebSocket due to visibility change...");
+        const userId = appStore.userId;
+        if (userId) {
+          webSocketSotre.connect(wsURL, userId);
+        } else {
+          webSocketSotre.connect(wsURL);
+        }
+      }
+    }
+  });
 });
 </script>
