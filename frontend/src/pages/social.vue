@@ -1,18 +1,19 @@
 <template>
-  <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+  <div
+    class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+  >
     <NavBar />
 
     <div class="container mx-auto p-4 pb-40" style="max-width: 800px">
-      <!-- Crear nou post -->
       <div
         class="p-4 bg-white dark:bg-gray-800/50 rounded-2xl mb-6 border border-gray-200 dark:border-gray-700/50 backdrop-blur-sm"
       >
         <h2 class="text-xl font-semibold mb-4">Crea una publicació</h2>
-        <div class="flex items-start">
+        <div class="flex">
           <img
             :src="currentUser?.foto_perfil || DEFAULT_AVATAR"
             alt="Avatar"
-            class="w-12 h-12 rounded-full mr-4 object-cover"
+            class="w-12 h-12 rounded-full mr-4 object-cover flex-shrink-0"
           />
           <textarea
             v-model="newPostContent"
@@ -34,32 +35,39 @@
         </div>
       </div>
 
-      <!-- Llista de posts -->
       <div class="space-y-4">
         <div
           v-for="post in posts"
           :key="post.id"
           class="p-4 rounded-2xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-800/40 shadow-lg backdrop-blur-sm"
-          :class="{ 'bg-blue-50 dark:bg-sky-500/10': post.authorType === 'system' }"
+          :class="{
+            'bg-blue-50 dark:bg-sky-500/10': post.authorType === 'system',
+          }"
         >
-          <div class="flex">
+          <div class="flex mb-2">
             <img
               :src="post.foto_perfil || DEFAULT_AVATAR"
               alt="Avatar"
-              class="w-12 h-12 rounded-full mr-4 object-cover"
+              class="w-12 h-12 rounded-full mr-4 object-cover flex-shrink-0"
             />
-            <div class="w-full">
+
+            <div class="flex-grow min-w-0">
               <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ post.username }}</h3>
-                  <p class="text-gray-500 dark:text-gray-500 text-sm ml-2">
+                  <h3
+                    class="text-lg font-semibold text-gray-900 dark:text-white truncate"
+                  >
+                    {{ post.username }}
+                  </h3>
+                  <p
+                    class="text-gray-500 dark:text-gray-500 text-sm ml-2 flex-shrink-0"
+                  >
                     · {{ timeAgo(post.timestamp) }}
                   </p>
                 </div>
-                <!-- Menú d'edició / eliminació si és el mateix usuari -->
                 <div
                   v-if="currentUser && currentUser.username === post.username"
-                  class="relative"
+                  class="relative flex-shrink-0 ml-2"
                 >
                   <button
                     @click="post.showDropdown = !post.showDropdown"
@@ -85,135 +93,127 @@
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
 
-              <!-- Mode edició -->
-              <div v-if="editingPost && editingPost.id === post.id">
-                <textarea
-                  v-model="editedContent"
-                  class="w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white p-2 rounded-lg mt-2"
-                  rows="3"
-                ></textarea>
-                <div class="flex justify-end mt-2 space-x-2">
-                  <button
-                    @click="cancelEditing"
-                    class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-1 rounded-full"
-                  >
-                    Cancel·lar
-                  </button>
-                  <button
-                    @click="updatePost(post.id)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-full"
-                  >
-                    Guardar
-                  </button>
-                </div>
-              </div>
-              <!-- Mode normal -->
-              <p v-else class="text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap">
-                {{ post.content }}
-              </p>
-
-              <!-- Accions del post-->
-              <div class="flex items-center justify-end mt-4 text-gray-500 dark:text-gray-500">
-                <button
-                  @click="post.showComments = !post.showComments"
-                  class="flex items-center space-x-2 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
-                >
-                  <i class="mdi mdi-comment-processing-outline"></i>
-                  <span>{{ post.comments.length }}</span>
-                </button>
-              </div>
-
-              <!-- Secció comentaris -->
-              <div
-                v-if="post.showComments"
-                class="mt-4 border-t border-gray-200 dark:border-gray-700/50 pt-4"
+          <div v-if="editingPost && editingPost.id === post.id">
+            <textarea
+              v-model="editedContent"
+              class="w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white p-2 rounded-lg mt-2"
+              rows="3"
+            ></textarea>
+            <div class="flex justify-end mt-2 space-x-2">
+              <button
+                @click="cancelEditing"
+                class="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-3 py-1 rounded-full"
               >
-                <!-- Formulari de comentari-->
-                <div class="flex items-center mb-4">
-                  <img
-                    :src="currentUser?.foto_perfil || DEFAULT_AVATAR"
-                    alt="Avatar"
-                    class="w-9 h-9 rounded-full mr-3 object-cover"
-                  />
-                  <input
-                    v-model="commentText[post.id]"
-                    @keyup.enter="addComment(post.id)"
-                    class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white p-2 rounded-full outline-none px-4 focus:ring-2 focus:ring-blue-500"
-                    placeholder="Escriu un comentari..."
-                  />
-                  <button
-                    @click="addComment(post.id)"
-                    class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full ml-2 text-white"
+                Cancel·lar
+              </button>
+              <button
+                @click="updatePost(post.id)"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded-full"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+          <p
+            v-else
+            class="text-gray-700 dark:text-gray-300 mt-1 whitespace-pre-wrap overflow-hidden break-words"
+          >
+            {{ post.content }}
+          </p>
+
+          <div
+            class="flex items-center justify-end mt-2 text-gray-500 dark:text-gray-500"
+          >
+            <button
+              @click="post.showComments = !post.showComments"
+              class="flex items-center space-x-2 hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+            >
+              <i class="mdi mdi-comment-processing-outline"></i>
+              <span>{{ post.comments.length }}</span>
+            </button>
+          </div>
+
+          <div
+            v-if="post.showComments"
+            class="mt-4 border-t border-gray-200 dark:border-gray-700/50 pt-4"
+          >
+            <div class="flex items-center mb-4">
+              <input
+                v-model="commentText[post.id]"
+                @keyup.enter="addComment(post.id)"
+                class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white p-2 rounded-full outline-none px-4 focus:ring-2 focus:ring-blue-500"
+                placeholder="Escriu un comentari..."
+              />
+              <button
+                @click="addComment(post.id)"
+                class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full ml-2 text-white flex-shrink-0"
+              >
+                <i class="mdi mdi-send"></i>
+              </button>
+            </div>
+            <div class="space-y-3">
+              <div
+                v-for="comment in post.comments"
+                :key="comment.id"
+                class="flex items-start"
+              >
+                <div
+                  class="bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-2 text-sm w-full min-w-0"
+                >
+                  <strong
+                    class="font-semibold text-gray-900 dark:text-white block truncate"
+                    >{{ comment.username }}</strong
                   >
-                    <i class="mdi mdi-send"></i>
-                  </button>
-                </div>
-                <!-- Llista de comentaris-->
-                <div class="space-y-3">
-                  <div
-                    v-for="comment in post.comments"
-                    :key="comment.id"
-                    class="flex items-start"
-                  >
-                    <img
-                      :src="comment.foto_perfil || DEFAULT_AVATAR"
-                      alt="Avatar"
-                      class="w-8 h-8 rounded-full mr-3 object-cover"
-                    />
-                    <div
-                      class="bg-gray-100 dark:bg-gray-700/50 rounded-lg px-3 py-2 text-sm w-full"
-                    >
-                      <strong class="font-semibold text-gray-900 dark:text-white">{{
-                        comment.username
-                      }}</strong>
-                      <p class="text-gray-700 dark:text-gray-300">{{ comment.text }}</p>
-                    </div>
-                  </div>
-                  <p
-                    v-if="!post.comments.length"
-                    class="text-gray-500 dark:text-gray-500 text-sm text-center pt-2"
-                  >
-                    No hi ha comentaris encara.
+                  <p class="text-gray-700 dark:text-gray-300 break-words">
+                    {{ comment.text }}
                   </p>
                 </div>
               </div>
+              <p
+                v-if="!post.comments.length"
+                class="text-gray-500 dark:text-gray-500 text-sm text-center pt-2"
+              >
+                No hi ha comentaris encara.
+              </p>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Confirmació de eliminació-->
+  <div
+    v-if="isDeleteDialogOpen"
+    class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center backdrop-blur-sm"
+  >
     <div
-      v-if="isDeleteDialogOpen"
-      class="fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center backdrop-blur-sm"
+      class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl shadow-2xl p-6 w-full max-w-sm"
     >
-      <div
-        class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-2xl shadow-2xl p-6 w-full max-w-sm"
-      >
-        <h2 class="text-xl font-bold mb-4">Eliminar Publicació</h2>
-        <p class="text-gray-700 dark:text-gray-300">
-          Estàs segur que vols eliminar aquesta publicació?
-        </p>
-        <div class="mt-6 flex justify-end space-x-4">
-          <button
-            @click="isDeleteDialogOpen = false"
-            class="px-5 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Cancel·lar
-          </button>
-          <button
-            @click="confirmDelete"
-            class="px-5 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors"
-          >
-            Confirmar
-          </button>
-        </div>
+      <h2 class="text-xl font-bold mb-4">Eliminar Publicació</h2>
+      <p class="text-gray-700 dark:text-gray-300">
+        Estàs segur que vols eliminar aquesta publicació?
+      </p>
+      <div class="mt-6 flex justify-end space-x-4">
+        <button
+          @click="isDeleteDialogOpen = false"
+          class="px-5 py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          Cancel·lar
+        </button>
+        <button
+          @click="confirmDelete"
+          class="px-5 py-2 rounded-md font-semibold text-white bg-red-600 hover:bg-red-700 transition-colors"
+        >
+          Confirmar
+        </button>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { storeToRefs } from "pinia";
